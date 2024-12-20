@@ -2,7 +2,7 @@
   "name": "case-request-app",
   "version": "1.0.0",
   "description": "A React Native form for case requests",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "react-native start --reset-cache",
     "build": "react-scripts build",
