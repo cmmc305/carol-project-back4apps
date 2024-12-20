@@ -4,7 +4,7 @@
   "description": "A React Native form for case requests",
   "main": "index.js",
   "scripts": {
-    "start": "react-native start",
+    "start": "react-native start --reset-cache",
     "build": "react-scripts build",
     "web": "serve -s build -l 3000",
     "test": "jest"
@@ -13,7 +13,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.0",
-    "react-native-web": "^0.18.10"
+    "react-native-web": "^0.18.10",
+    "react-native-svg-transformer": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",
