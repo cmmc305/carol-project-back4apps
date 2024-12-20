@@ -6,8 +6,8 @@
   "scripts": {
     "start": "react-native start",
     "build": "react-scripts build",
-    "test": "jest",
-    "web": "serve -s build -l 3000"
+    "web": "serve -s build -l 3000",
+    "test": "jest"
   },
   "dependencies": {
     "react": "18.2.0",
