@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import DocumentPicker from 'react-native-document-picker';
 
 const CaseRequestForm = () => {
-  const [einList, setEinList] = useState(['']);
-  const [ssnList, setSsnList] = useState(['']);
   const [uccFiles, setUccFiles] = useState([]);
   const [transactionProofFiles, setTransactionProofFiles] = useState([]);
   const [formData, setFormData] = useState({
@@ -16,155 +15,119 @@ const CaseRequestForm = () => {
     lienBalance: '',
   });
 
-  const addEin = () => setEinList([...einList, '']);
-  const addSsn = () => setSsnList([...ssnList, '']);
-
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleEinChange = (index, value) => {
-    const updatedList = [...einList];
-    updatedList[index] = value;
-    setEinList(updatedList);
-  };
-
-  const handleSsnChange = (index, value) => {
-    const updatedList = [...ssnList];
-    updatedList[index] = value;
-    setSsnList(updatedList);
+  const handleFileUpload = async (setter) => {
+    try {
+      const result = await DocumentPicker.pickMultiple({
+        type: [DocumentPicker.types.allFiles],
+      });
+      setter((prevFiles) => [...prevFiles, ...result]);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        Alert.alert('File selection canceled');
+      } else {
+        console.error('Error selecting file:', err);
+      }
+    }
   };
 
   const handleSubmit = () => {
-    console.log('Submitted Data:', { ...formData, einList, ssnList, uccFiles, transactionProofFiles });
+    console.log('Submitted Data:', {
+      ...formData,
+      uccFiles,
+      transactionProofFiles,
+    });
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Case Request Form</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.form}>
+        <Text style={styles.header}>Case Request Form</Text>
 
-      <Text style={styles.label}>Requester Type</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter requester type"
-        value={formData.requesterType}
-        onChangeText={(value) => handleInputChange('requesterType', value)}
-      />
-
-      <Text style={styles.label}>Requester Email</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="you@example.com"
-        value={formData.requesterEmail}
-        onChangeText={(value) => handleInputChange('requesterEmail', value)}
-        keyboardType="email-address"
-      />
-
-      <Text style={styles.label}>Creditor Name or Legal Representative</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter creditor name"
-        value={formData.creditorName}
-        onChangeText={(value) => handleInputChange('creditorName', value)}
-      />
-
-      <Text style={styles.label}>Business Name</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter business name"
-        value={formData.businessName}
-        onChangeText={(value) => handleInputChange('businessName', value)}
-      />
-
-      <Text style={styles.label}>Doing Business As</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter trade name"
-        value={formData.doingBusinessAs}
-        onChangeText={(value) => handleInputChange('doingBusinessAs', value)}
-      />
-
-      <Text style={styles.label}>Request Type</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter request type"
-        value={formData.requestType}
-        onChangeText={(value) => handleInputChange('requestType', value)}
-      />
-
-      <Text style={styles.label}>Lien Balance Amount</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="0.00"
-        value={formData.lienBalance}
-        onChangeText={(value) => handleInputChange('lienBalance', value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.label}>EIN</Text>
-      {einList.map((ein, index) => (
+        <Text style={styles.label}>Requester Type</Text>
         <TextInput
-          key={`ein-${index}`}
           style={styles.input}
-          placeholder="Enter EIN"
-          value={ein}
-          keyboardType="numeric"
-          onChangeText={(value) => handleEinChange(index, value)}
+          placeholder="Enter requester type"
+          value={formData.requesterType}
+          onChangeText={(value) => handleInputChange('requesterType', value)}
         />
-      ))}
-      <Button title="Add Another EIN" onPress={addEin} />
 
-      <Text style={styles.label}>SSN</Text>
-      {ssnList.map((ssn, index) => (
+        <Text style={styles.label}>Requester Email</Text>
         <TextInput
-          key={`ssn-${index}`}
           style={styles.input}
-          placeholder="Enter SSN"
-          value={ssn}
-          keyboardType="numeric"
-          onChangeText={(value) => handleSsnChange(index, value)}
+          placeholder="you@example.com"
+          value={formData.requesterEmail}
+          onChangeText={(value) => handleInputChange('requesterEmail', value)}
+          keyboardType="email-address"
         />
-      ))}
-      <Button title="Add Another SSN" onPress={addSsn} />
 
-      <Text style={styles.label}>UCC Notice Files</Text>
-      <TouchableOpacity style={styles.fileUploadButton}>
-        <Text style={styles.fileUploadText}>Upload Files</Text>
-      </TouchableOpacity>
+        {/* Outros campos aqui */}
 
-      <Text style={styles.label}>Proof of Transaction</Text>
-      <TouchableOpacity style={styles.fileUploadButton}>
-        <Text style={styles.fileUploadText}>Upload Proof</Text>
-      </TouchableOpacity>
+        <Text style={styles.label}>UCC Notice Files</Text>
+        <TouchableOpacity
+          style={styles.fileUploadButton}
+          onPress={() => handleFileUpload(setUccFiles)}
+        >
+          <Text style={styles.fileUploadText}>Upload Files</Text>
+        </TouchableOpacity>
 
-      <Button title="Submit" onPress={handleSubmit} />
+        <Text style={styles.label}>Proof of Transaction</Text>
+        <TouchableOpacity
+          style={styles.fileUploadButton}
+          onPress={() => handleFileUpload(setTransactionProofFiles)}
+        >
+          <Text style={styles.fileUploadText}>Upload Proof</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+    backgroundColor: '#f0f0f5',
+  },
+  form: {
+    width: '90%',
+    maxWidth: 400,
+    backgroundColor: '#fff',
+    borderRadius: 10,
     padding: 20,
-    backgroundColor: '#f9f9f9',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 20,
+    color: '#333',
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 20,
+    fontWeight: '600',
+    color: '#555',
+    marginTop: 15,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ddd',
     borderRadius: 5,
     padding: 10,
     marginVertical: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#f9f9f9',
   },
   fileUploadButton: {
     backgroundColor: '#5469d4',
@@ -176,6 +139,18 @@ const styles = StyleSheet.create({
   fileUploadText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  submitButton: {
+    backgroundColor: '#28a745',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 
