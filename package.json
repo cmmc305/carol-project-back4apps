@@ -1,0 +1,21 @@
+{
+  "name": "case-request-app",
+  "version": "1.0.0",
+  "description": "A React Native form for case requests",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-native start",
+    "build": "react-native bundle --platform ios --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-native": "0.72.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.0",
+    "@babel/runtime": "^7.21.0",
+    "react-test-renderer": "18.2.0"
+  },
+  "license": "ISC"
+}
