@@ -1,5 +1,5 @@
 import React from 'react';
-import CaseRequestForm from './CaseRequestForm';
+import CaseRequestForm from './components/CaseRequestForm';
 
 function App() {
   return (
