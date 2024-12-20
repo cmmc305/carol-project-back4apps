@@ -5,16 +5,20 @@
   "main": "index.js",
   "scripts": {
     "start": "react-native start",
-    "build": "react-native bundle --platform ios --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios",
-    "test": "jest"
+    "build": "react-scripts build",
+    "test": "jest",
+    "web": "serve -s build -l 3000"
   },
   "dependencies": {
     "react": "18.2.0",
-    "react-native": "0.72.0"
+    "react-dom": "18.2.0",
+    "react-native": "0.72.0",
+    "react-native-web": "^0.18.10"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",
     "@babel/runtime": "^7.21.0",
+    "react-scripts": "5.0.1",
     "react-test-renderer": "18.2.0"
   },
   "license": "ISC"
