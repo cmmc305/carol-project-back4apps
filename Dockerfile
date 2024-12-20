@@ -1,26 +1,26 @@
-# Use a Node.js base image
+# Use uma imagem base do Node.js
 FROM node:18
 
-# Set the working directory
+# Defina o diretório de trabalho no container
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copie o package.json e o package-lock.json
 COPY package*.json ./
 
-# Install dependencies
+# Instale as dependências
 RUN npm install
 
-# Copy the rest of the application code
+# Copie o restante do código do aplicativo
 COPY . .
 
-# Build the app
+# Construa o aplicativo
 RUN npm run build
 
-# Install a static file server
+# Instale o servidor estático
 RUN npm install -g serve
 
-# Expose the port
+# Exponha a porta usada pela aplicação
 EXPOSE 3000
 
-# Start the server
+# Inicie o servidor
 CMD ["serve", "-s", "build", "-l", "3000"]
