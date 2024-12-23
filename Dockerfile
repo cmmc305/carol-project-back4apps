@@ -16,7 +16,7 @@ COPY . .
 # Construa o aplicativo
 RUN npm run build
 
-# Instale o servidor estático
+# Instale o servidor estático para servir os arquivos React
 RUN npm install -g serve
 
 # Exponha a porta do aplicativo
