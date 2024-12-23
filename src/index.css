@@ -1,5 +1,122 @@
+/* Estilização geral */
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Container principal */
+form {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 600px;
+  width: 90%;
+  margin: 20px;
+}
+
+/* Cabeçalho do formulário */
+form h1 {
+  font-size: 1.8rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Labels */
+form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #555;
+  font-weight: bold;
+}
+
+/* Inputs e botões */
+form input,
+form button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* Estilo de inputs */
+form input {
+  background-color: #fdfdfd;
+  transition: border-color 0.3s ease;
+}
+
+form input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+}
+
+/* Botão adicionar (EIN e SSN) */
+form button.add-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: -5px;
+}
+
+form button.add-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Botão enviar */
+form button.submit-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+form button.submit-btn:hover {
+  background-color: #218838;
+}
+
+/* Alinhamento dos campos */
+form .group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+form .group input {
+  flex: 1;
+}
+
+/* Estilização de mensagens de erro ou sucesso (opcional) */
+.alert {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.alert.success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.alert.error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
 }
