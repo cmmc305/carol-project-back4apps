@@ -105,7 +105,7 @@ const CaseRequestForm = () => {
             onChange={(e) => handleEinChange(index, e.target.value)}
           />
         ))}
-        <button type="button" onClick={addEin}>
+        <button type="button" className="add-btn" onClick={addEin}>
           + Add EIN
         </button>
       </label>
@@ -120,7 +120,7 @@ const CaseRequestForm = () => {
             onChange={(e) => handleSsnChange(index, e.target.value)}
           />
         ))}
-        <button type="button" onClick={addSsn}>
+        <button type="button" className="add-btn" onClick={addSsn}>
           + Add SSN
         </button>
       </label>
@@ -135,7 +135,7 @@ const CaseRequestForm = () => {
         <input type="file" multiple onChange={(e) => handleFileUpload(e, setTransactionProofFiles)} />
       </label>
 
-      <button type="button" onClick={handleSubmit}>
+      <button type="button" className="submit-btn" onClick={handleSubmit}>
         Submit
       </button>
     </div>
