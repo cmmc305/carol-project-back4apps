@@ -96,13 +96,17 @@ const CaseRequestForm = () => {
       <h1>Case Request Form</h1>
 
       <label>
-        Requester Type:
-        <input
-          type="text"
-          value={formData.requesterType}
-          onChange={(e) => handleInputChange('requesterType', e.target.value)}
-        />
-      </label>
+  Request Type:
+  <select
+    value={formData.requestType}
+    onChange={(e) => handleInputChange('requestType', e.target.value)}
+  >
+    <option value="" disabled>Select Request Type</option>
+    <option value="Lien">Lien</option>
+    <option value="Garnishment">Garnishment</option>
+    <option value="Release">Release</option>
+  </select>
+</label>
 
       <label>
         Requester Email:
@@ -190,12 +194,14 @@ const CaseRequestForm = () => {
       </label>
 
       <label>
-        Additional Entities:
-        <textarea
-          value={formData.additionalEntities}
-          onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
-        ></textarea>
-      </label>
+  Additional Entities:
+  <textarea
+    value={formData.additionalEntities || ''}
+    onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
+    rows="3"
+    placeholder="Enter additional entities"
+  ></textarea>
+</label>
 
       <label>
         EIN:
