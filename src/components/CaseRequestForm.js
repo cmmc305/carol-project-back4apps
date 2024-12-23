@@ -93,20 +93,7 @@ const CaseRequestForm = () => {
 
   return (
     <div className="form-container">
-      <h1>Case Request Form</h1>
-
-      <label>
-  Request Type:
-  <select
-    value={formData.requestType}
-    onChange={(e) => handleInputChange('requestType', e.target.value)}
-  >
-    <option value="" disabled>Select Request Type</option>
-    <option value="Lien">Lien</option>
-    <option value="Garnishment">Garnishment</option>
-    <option value="Release">Release</option>
-  </select>
-</label>
+      <h1>Case Request Form</h1>      
 
       <label>
         Requester Email:
