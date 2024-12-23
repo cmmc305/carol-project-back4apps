@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Parse from '../config/parseConfig';
-import '../CaseRequestForm.css';
+import './CaseRequestForm.css';
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
@@ -15,6 +15,14 @@ const CaseRequestForm = () => {
     doingBusinessAs: '',
     requestType: '',
     lienBalance: '',
+    additionalEntities: '',
+    defaultDate: '',
+    address: '',
+    state: '',
+    city: '',
+    zipcode: '',
+    emailAddress: '',
+    phoneNumber: ''
   });
 
   const handleInputChange = (name, value) => {
@@ -64,6 +72,14 @@ const CaseRequestForm = () => {
         doingBusinessAs: '',
         requestType: '',
         lienBalance: '',
+        additionalEntities: '',
+        defaultDate: '',
+        address: '',
+        state: '',
+        city: '',
+        zipcode: '',
+        emailAddress: '',
+        phoneNumber: ''
       });
       setEinList(['']);
       setSsnList(['']);
@@ -77,72 +93,112 @@ const CaseRequestForm = () => {
 
   return (
     <div className="form-container">
-      <h1 className="form-title">Case Request Form</h1>
-      <div className="form-group">
-        <label>Requester Type:</label>
+      <h1>Case Request Form</h1>
+
+      <label>
+        Requester Type:
         <input
           type="text"
           value={formData.requesterType}
           onChange={(e) => handleInputChange('requesterType', e.target.value)}
         />
-      </div>
+      </label>
 
-      <div className="form-group">
-        <label>Requester Email:</label>
+      <label>
+        Requester Email:
         <input
           type="email"
           value={formData.requesterEmail}
           onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
         />
-      </div>
+      </label>
 
-      <div className="form-group">
-        <label>Creditor Name:</label>
-        <input
-          type="text"
-          value={formData.creditorName}
-          onChange={(e) => handleInputChange('creditorName', e.target.value)}
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Business Name:</label>
-        <input
-          type="text"
-          value={formData.businessName}
-          onChange={(e) => handleInputChange('businessName', e.target.value)}
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Doing Business As:</label>
-        <input
-          type="text"
-          value={formData.doingBusinessAs}
-          onChange={(e) => handleInputChange('doingBusinessAs', e.target.value)}
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Request Type:</label>
-        <input
-          type="text"
+      <label>
+        Request Type:
+        <select
           value={formData.requestType}
           onChange={(e) => handleInputChange('requestType', e.target.value)}
-        />
-      </div>
+        >
+          <option value="">Select Request Type</option>
+          <option value="Lien">Lien</option>
+          <option value="Garnishment">Garnishment</option>
+          <option value="Release">Release</option>
+        </select>
+      </label>
 
-      <div className="form-group">
-        <label>Lien Balance:</label>
+      <label>
+        Address:
         <input
-          type="number"
-          value={formData.lienBalance}
-          onChange={(e) => handleInputChange('lienBalance', e.target.value)}
+          type="text"
+          value={formData.address}
+          onChange={(e) => handleInputChange('address', e.target.value)}
         />
-      </div>
+      </label>
 
-      <div className="form-group">
-        <label>EIN:</label>
+      <label>
+        City:
+        <input
+          type="text"
+          value={formData.city}
+          onChange={(e) => handleInputChange('city', e.target.value)}
+        />
+      </label>
+
+      <label>
+        State:
+        <input
+          type="text"
+          value={formData.state}
+          onChange={(e) => handleInputChange('state', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Zip Code:
+        <input
+          type="text"
+          value={formData.zipcode}
+          onChange={(e) => handleInputChange('zipcode', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Email Address:
+        <input
+          type="email"
+          value={formData.emailAddress}
+          onChange={(e) => handleInputChange('emailAddress', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Phone Number:
+        <input
+          type="text"
+          value={formData.phoneNumber}
+          onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Default Date:
+        <input
+          type="date"
+          value={formData.defaultDate}
+          onChange={(e) => handleInputChange('defaultDate', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Additional Entities:
+        <textarea
+          value={formData.additionalEntities}
+          onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
+        ></textarea>
+      </label>
+
+      <label>
+        EIN:
         {einList.map((ein, index) => (
           <input
             key={`ein-${index}`}
@@ -154,10 +210,10 @@ const CaseRequestForm = () => {
         <button type="button" className="add-btn" onClick={addEin}>
           + Add EIN
         </button>
-      </div>
+      </label>
 
-      <div className="form-group">
-        <label>SSN:</label>
+      <label>
+        SSN:
         {ssnList.map((ssn, index) => (
           <input
             key={`ssn-${index}`}
@@ -169,17 +225,17 @@ const CaseRequestForm = () => {
         <button type="button" className="add-btn" onClick={addSsn}>
           + Add SSN
         </button>
-      </div>
+      </label>
 
-      <div className="form-group">
-        <label>UCC Files:</label>
+      <label>
+        UCC Files:
         <input type="file" multiple onChange={(e) => handleFileUpload(e, setUccFiles)} />
-      </div>
+      </label>
 
-      <div className="form-group">
-        <label>Transaction Proof Files:</label>
+      <label>
+        Transaction Proof Files:
         <input type="file" multiple onChange={(e) => handleFileUpload(e, setTransactionProofFiles)} />
-      </div>
+      </label>
 
       <button type="button" className="submit-btn" onClick={handleSubmit}>
         Submit
