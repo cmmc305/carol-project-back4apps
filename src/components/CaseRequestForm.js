@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import Parse from '../config/parseConfig';
-
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
@@ -37,23 +35,28 @@ const CaseRequestForm = () => {
   const addEin = () => setEinList([...einList, '']);
   const addSsn = () => setSsnList([...ssnList, '']);
 
-  const saveDataToBack4App = async () => {
-    const CaseRequest = new Parse.Object('CaseRequest');
-    CaseRequest.set('requesterType', formData.requesterType);
-    CaseRequest.set('requesterEmail', formData.requesterEmail);
-    CaseRequest.set('creditorName', formData.creditorName);
-    CaseRequest.set('businessName', formData.businessName);
-    CaseRequest.set('doingBusinessAs', formData.doingBusinessAs);
-    CaseRequest.set('requestType', formData.requestType);
-    CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
-    CaseRequest.set('uccFiles', uccFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
-    CaseRequest.set('transactionProofFiles', transactionProofFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
-    CaseRequest.set('einList', einList); // Armazena EIN como array
-    CaseRequest.set('ssnList', ssnList); // Armazena SSN como array
+  const handleFileUpload = (event, setter) => {
+    const files = Array.from(event.target.files);
+    setter((prevFiles) => [...prevFiles, ...files]);
+  };
 
+  const handleSubmit = async () => {
     try {
+      const CaseRequest = new Parse.Object('CaseRequest');
+      CaseRequest.set('requesterType', formData.requesterType);
+      CaseRequest.set('requesterEmail', formData.requesterEmail);
+      CaseRequest.set('creditorName', formData.creditorName);
+      CaseRequest.set('businessName', formData.businessName);
+      CaseRequest.set('doingBusinessAs', formData.doingBusinessAs);
+      CaseRequest.set('requestType', formData.requestType);
+      CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
+      CaseRequest.set('uccFiles', uccFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
+      CaseRequest.set('transactionProofFiles', transactionProofFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
+      CaseRequest.set('einList', einList);
+      CaseRequest.set('ssnList', ssnList);
+
       await CaseRequest.save();
-      Alert.alert('Success', 'Data saved successfully!');
+      alert('Case Request saved successfully!');
       setFormData({
         requesterType: '',
         requesterEmail: '',
@@ -68,155 +71,77 @@ const CaseRequestForm = () => {
       setUccFiles([]);
       setTransactionProofFiles([]);
     } catch (error) {
-      Alert.alert('Error', 'Failed to save data. Please try again.');
-      console.error('Error saving data:', error);
+      console.error('Error saving Case Request:', error);
+      alert('Failed to save Case Request. Please try again.');
     }
   };
 
-  const handleSubmit = async () => {
-  try {
-    const CaseRequest = new Parse.Object('CaseRequest');
-    CaseRequest.set('requesterType', formData.requesterType);
-    CaseRequest.set('requesterEmail', formData.requesterEmail);
-    CaseRequest.set('creditorName', formData.creditorName);
-    CaseRequest.set('businessName', formData.businessName);
-    CaseRequest.set('doingBusinessAs', formData.doingBusinessAs);
-    CaseRequest.set('requestType', formData.requestType);
-    CaseRequest.set('lienBalance', Number(formData.lienBalance));
-    CaseRequest.set('uccFiles', uccFiles);
-    CaseRequest.set('transactionProofFiles', transactionProofFiles);
-    CaseRequest.set('einList', einList);
-    CaseRequest.set('ssnList', ssnList);
-
-    await CaseRequest.save();
-    alert('Case Request saved successfully!');
-  } catch (error) {
-    console.error('Error saving Case Request:', error);
-    alert('Failed to save Case Request. Please try again.');
-  }
-};
-
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.form}>
-        <Text style={styles.header}>Case Request Form</Text>
-
-        <Text style={styles.label}>Requester Type</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter requester type"
+    <div style={{ padding: '20px', maxWidth: '600px', margin: 'auto' }}>
+      <h1>Case Request Form</h1>
+      <label>
+        Requester Type:
+        <input
+          type="text"
           value={formData.requesterType}
-          onChangeText={(value) => handleInputChange('requesterType', value)}
+          onChange={(e) => handleInputChange('requesterType', e.target.value)}
         />
+      </label>
 
-        <Text style={styles.label}>Requester Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="you@example.com"
+      <label>
+        Requester Email:
+        <input
+          type="email"
           value={formData.requesterEmail}
-          onChangeText={(value) => handleInputChange('requesterEmail', value)}
-          keyboardType="email-address"
+          onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
         />
+      </label>
 
-        <Text style={styles.label}>EIN</Text>
+      <label>
+        EIN:
         {einList.map((ein, index) => (
-          <TextInput
+          <input
             key={`ein-${index}`}
-            style={styles.input}
-            placeholder="Enter EIN"
+            type="text"
             value={ein}
-            onChangeText={(value) => handleEinChange(index, value)}
+            onChange={(e) => handleEinChange(index, e.target.value)}
           />
         ))}
-        <TouchableOpacity style={styles.addButton} onPress={addEin}>
-          <Text style={styles.addButtonText}>+ Add EIN</Text>
-        </TouchableOpacity>
+        <button type="button" onClick={addEin}>
+          + Add EIN
+        </button>
+      </label>
 
-        <Text style={styles.label}>SSN</Text>
+      <label>
+        SSN:
         {ssnList.map((ssn, index) => (
-          <TextInput
+          <input
             key={`ssn-${index}`}
-            style={styles.input}
-            placeholder="Enter SSN"
+            type="text"
             value={ssn}
-            onChangeText={(value) => handleSsnChange(index, value)}
+            onChange={(e) => handleSsnChange(index, e.target.value)}
           />
         ))}
-        <TouchableOpacity style={styles.addButton} onPress={addSsn}>
-          <Text style={styles.addButtonText}>+ Add SSN</Text>
-        </TouchableOpacity>
+        <button type="button" onClick={addSsn}>
+          + Add SSN
+        </button>
+      </label>
 
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      <label>
+        UCC Files:
+        <input type="file" multiple onChange={(e) => handleFileUpload(e, setUccFiles)} />
+      </label>
+
+      <label>
+        Transaction Proof Files:
+        <input type="file" multiple onChange={(e) => handleFileUpload(e, setTransactionProofFiles)} />
+      </label>
+
+      <button type="button" onClick={handleSubmit}>
+        Submit
+      </button>
+    </div>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 20,
-    backgroundColor: '#f0f0f5',
-  },
-  form: {
-    width: '90%',
-    maxWidth: 400,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#555',
-    marginTop: 15,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    marginVertical: 10,
-    backgroundColor: '#f9f9f9',
-  },
-  addButton: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  submitButton: {
-    backgroundColor: '#28a745',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
 
 export default CaseRequestForm;
