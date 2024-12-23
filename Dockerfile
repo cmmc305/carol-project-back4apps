@@ -7,8 +7,8 @@ WORKDIR /app
 # Copie os arquivos de dependências
 COPY package*.json ./
 
-# Instale as dependências com cache forçado para evitar erros de compatibilidade
-RUN npm install --force
+# Instale as dependências
+RUN npm install
 
 # Copie o restante do código do aplicativo
 COPY . .
@@ -16,7 +16,7 @@ COPY . .
 # Construa o aplicativo
 RUN npm run build
 
-# Instale o servidor estático para servir os arquivos React
+# Instale o servidor estático
 RUN npm install -g serve
 
 # Exponha a porta do aplicativo
