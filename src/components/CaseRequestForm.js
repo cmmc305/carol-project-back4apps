@@ -43,12 +43,10 @@ const CaseRequestForm = () => {
   const handleSubmit = async () => {
     try {
       const CaseRequest = new Parse.Object('CaseRequest');
-      CaseRequest.set('requesterType', formData.requesterType);
-      CaseRequest.set('requesterEmail', formData.requesterEmail);
-      CaseRequest.set('creditorName', formData.creditorName);
-      CaseRequest.set('businessName', formData.businessName);
-      CaseRequest.set('doingBusinessAs', formData.doingBusinessAs);
-      CaseRequest.set('requestType', formData.requestType);
+      Object.keys(formData).forEach((key) => {
+        CaseRequest.set(key, formData[key]);
+      });
+
       CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
       CaseRequest.set('uccFiles', uccFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
       CaseRequest.set('transactionProofFiles', transactionProofFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
