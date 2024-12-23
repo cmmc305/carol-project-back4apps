@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import DocumentPicker from 'react-native-document-picker';
+import Parse from './parseConfig';
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
   const [transactionProofFiles, setTransactionProofFiles] = useState([]);
+  const [einList, setEinList] = useState(['']);
+  const [ssnList, setSsnList] = useState(['']);
   const [formData, setFormData] = useState({
     requesterType: '',
     requesterEmail: '',
@@ -19,27 +21,59 @@ const CaseRequestForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileUpload = async (setter) => {
+  const handleEinChange = (index, value) => {
+    const updatedList = [...einList];
+    updatedList[index] = value;
+    setEinList(updatedList);
+  };
+
+  const handleSsnChange = (index, value) => {
+    const updatedList = [...ssnList];
+    updatedList[index] = value;
+    setSsnList(updatedList);
+  };
+
+  const addEin = () => setEinList([...einList, '']);
+  const addSsn = () => setSsnList([...ssnList, '']);
+
+  const saveDataToBack4App = async () => {
+    const CaseRequest = new Parse.Object('CaseRequest');
+    CaseRequest.set('requesterType', formData.requesterType);
+    CaseRequest.set('requesterEmail', formData.requesterEmail);
+    CaseRequest.set('creditorName', formData.creditorName);
+    CaseRequest.set('businessName', formData.businessName);
+    CaseRequest.set('doingBusinessAs', formData.doingBusinessAs);
+    CaseRequest.set('requestType', formData.requestType);
+    CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
+    CaseRequest.set('uccFiles', uccFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
+    CaseRequest.set('transactionProofFiles', transactionProofFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
+    CaseRequest.set('einList', einList); // Armazena EIN como array
+    CaseRequest.set('ssnList', ssnList); // Armazena SSN como array
+
     try {
-      const result = await DocumentPicker.pickMultiple({
-        type: [DocumentPicker.types.allFiles],
+      await CaseRequest.save();
+      Alert.alert('Success', 'Data saved successfully!');
+      setFormData({
+        requesterType: '',
+        requesterEmail: '',
+        creditorName: '',
+        businessName: '',
+        doingBusinessAs: '',
+        requestType: '',
+        lienBalance: '',
       });
-      setter((prevFiles) => [...prevFiles, ...result]);
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        Alert.alert('File selection canceled');
-      } else {
-        console.error('Error selecting file:', err);
-      }
+      setEinList(['']);
+      setSsnList(['']);
+      setUccFiles([]);
+      setTransactionProofFiles([]);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save data. Please try again.');
+      console.error('Error saving data:', error);
     }
   };
 
   const handleSubmit = () => {
-    console.log('Submitted Data:', {
-      ...formData,
-      uccFiles,
-      transactionProofFiles,
-    });
+    saveDataToBack4App();
   };
 
   return (
@@ -64,22 +98,32 @@ const CaseRequestForm = () => {
           keyboardType="email-address"
         />
 
-        {/* Outros campos aqui */}
-
-        <Text style={styles.label}>UCC Notice Files</Text>
-        <TouchableOpacity
-          style={styles.fileUploadButton}
-          onPress={() => handleFileUpload(setUccFiles)}
-        >
-          <Text style={styles.fileUploadText}>Upload Files</Text>
+        <Text style={styles.label}>EIN</Text>
+        {einList.map((ein, index) => (
+          <TextInput
+            key={`ein-${index}`}
+            style={styles.input}
+            placeholder="Enter EIN"
+            value={ein}
+            onChangeText={(value) => handleEinChange(index, value)}
+          />
+        ))}
+        <TouchableOpacity style={styles.addButton} onPress={addEin}>
+          <Text style={styles.addButtonText}>+ Add EIN</Text>
         </TouchableOpacity>
 
-        <Text style={styles.label}>Proof of Transaction</Text>
-        <TouchableOpacity
-          style={styles.fileUploadButton}
-          onPress={() => handleFileUpload(setTransactionProofFiles)}
-        >
-          <Text style={styles.fileUploadText}>Upload Proof</Text>
+        <Text style={styles.label}>SSN</Text>
+        {ssnList.map((ssn, index) => (
+          <TextInput
+            key={`ssn-${index}`}
+            style={styles.input}
+            placeholder="Enter SSN"
+            value={ssn}
+            onChangeText={(value) => handleSsnChange(index, value)}
+          />
+        ))}
+        <TouchableOpacity style={styles.addButton} onPress={addSsn}>
+          <Text style={styles.addButtonText}>+ Add SSN</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
@@ -129,14 +173,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     backgroundColor: '#f9f9f9',
   },
-  fileUploadButton: {
-    backgroundColor: '#5469d4',
-    padding: 15,
+  addButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     marginVertical: 10,
   },
-  fileUploadText: {
+  addButtonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
