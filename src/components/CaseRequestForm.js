@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import Parse from './parseConfig';
+import Parse from '../config/parseConfig';
+
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
@@ -72,9 +73,29 @@ const CaseRequestForm = () => {
     }
   };
 
-  const handleSubmit = () => {
-    saveDataToBack4App();
-  };
+  const handleSubmit = async () => {
+  try {
+    const CaseRequest = new Parse.Object('CaseRequest');
+    CaseRequest.set('requesterType', formData.requesterType);
+    CaseRequest.set('requesterEmail', formData.requesterEmail);
+    CaseRequest.set('creditorName', formData.creditorName);
+    CaseRequest.set('businessName', formData.businessName);
+    CaseRequest.set('doingBusinessAs', formData.doingBusinessAs);
+    CaseRequest.set('requestType', formData.requestType);
+    CaseRequest.set('lienBalance', Number(formData.lienBalance));
+    CaseRequest.set('uccFiles', uccFiles);
+    CaseRequest.set('transactionProofFiles', transactionProofFiles);
+    CaseRequest.set('einList', einList);
+    CaseRequest.set('ssnList', ssnList);
+
+    await CaseRequest.save();
+    alert('Case Request saved successfully!');
+  } catch (error) {
+    console.error('Error saving Case Request:', error);
+    alert('Failed to save Case Request. Please try again.');
+  }
+};
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
