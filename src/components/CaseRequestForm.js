@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Parse from '../config/parseConfig';
-import './CaseRequestForm.css'; // Certifique-se de ter o CSS para estilos
+import '../CaseRequestForm.css'; // Certifique-se de ter o CSS para estilos
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
