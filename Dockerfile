@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instale as dependências
-RUN npm install
+RUN npm install --force
 
 # Instale o SDK do Parse
 RUN npm install parse
