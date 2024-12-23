@@ -10,6 +10,9 @@ COPY package*.json ./
 # Instale as dependências
 RUN npm install
 
+# Instale o SDK do Parse
+RUN npm install parse
+
 # Copie o restante do código do aplicativo
 COPY . .
 
