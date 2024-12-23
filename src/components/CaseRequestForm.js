@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Parse from '../config/parseConfig';
-import '../CaseRequestForm.css';
+import './CaseRequestForm.css'; // Certifique-se de ter o CSS para estilos
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
@@ -16,13 +16,12 @@ const CaseRequestForm = () => {
     requestType: '',
     lienBalance: '',
     additionalEntities: '',
-    defaultDate: '',
     address: '',
     state: '',
     city: '',
     zipcode: '',
     emailAddress: '',
-    phoneNumber: ''
+    phoneNumber: '',
   });
 
   const handleInputChange = (name, value) => {
@@ -49,6 +48,29 @@ const CaseRequestForm = () => {
     setter((prevFiles) => [...prevFiles, ...files]);
   };
 
+  const resetForm = () => {
+    setFormData({
+      requesterType: '',
+      requesterEmail: '',
+      creditorName: '',
+      businessName: '',
+      doingBusinessAs: '',
+      requestType: '',
+      lienBalance: '',
+      additionalEntities: '',
+      address: '',
+      state: '',
+      city: '',
+      zipcode: '',
+      emailAddress: '',
+      phoneNumber: '',
+    });
+    setEinList(['']);
+    setSsnList(['']);
+    setUccFiles([]);
+    setTransactionProofFiles([]);
+  };
+
   const handleSubmit = async () => {
     try {
       const CaseRequest = new Parse.Object('CaseRequest');
@@ -56,35 +78,31 @@ const CaseRequestForm = () => {
         CaseRequest.set(key, formData[key]);
       });
 
+      const uccParseFiles = await Promise.all(
+        uccFiles.map(async (file) => {
+          const parseFile = new Parse.File(file.name, file);
+          await parseFile.save();
+          return parseFile;
+        })
+      );
+
+      const transactionParseFiles = await Promise.all(
+        transactionProofFiles.map(async (file) => {
+          const parseFile = new Parse.File(file.name, file);
+          await parseFile.save();
+          return parseFile;
+        })
+      );
+
+      CaseRequest.set('uccFiles', uccParseFiles);
+      CaseRequest.set('transactionProofFiles', transactionParseFiles);
       CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
-      CaseRequest.set('uccFiles', uccFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
-      CaseRequest.set('transactionProofFiles', transactionProofFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
       CaseRequest.set('einList', einList);
       CaseRequest.set('ssnList', ssnList);
 
       await CaseRequest.save();
       alert('Case Request saved successfully!');
-      setFormData({
-        requesterType: '',
-        requesterEmail: '',
-        creditorName: '',
-        businessName: '',
-        doingBusinessAs: '',
-        requestType: '',
-        lienBalance: '',
-        additionalEntities: '',
-        defaultDate: '',
-        address: '',
-        state: '',
-        city: '',
-        zipcode: '',
-        emailAddress: '',
-        phoneNumber: ''
-      });
-      setEinList(['']);
-      setSsnList(['']);
-      setUccFiles([]);
-      setTransactionProofFiles([]);
+      resetForm();
     } catch (error) {
       console.error('Error saving Case Request:', error);
       alert('Failed to save Case Request. Please try again.');
@@ -93,144 +111,116 @@ const CaseRequestForm = () => {
 
   return (
     <div className="form-container">
-      <h1>Case Request Form</h1>      
+      <h1>Case Request Form</h1>
 
-      <label>
-        Requester Email:
-        <input
-          type="email"
-          value={formData.requesterEmail}
-          onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
-        />
-      </label>
+      <label>Requester Type:</label>
+      <input
+        type="text"
+        value={formData.requesterType}
+        onChange={(e) => handleInputChange('requesterType', e.target.value)}
+      />
 
-      <label>
-        Request Type:
-        <select
-          value={formData.requestType}
-          onChange={(e) => handleInputChange('requestType', e.target.value)}
-        >
-          <option value="">Select Request Type</option>
-          <option value="Lien">Lien</option>
-          <option value="Garnishment">Garnishment</option>
-          <option value="Release">Release</option>
-        </select>
-      </label>
+      <label>Requester Email:</label>
+      <input
+        type="email"
+        value={formData.requesterEmail}
+        onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
+      />
 
-      <label>
-        Address:
-        <input
-          type="text"
-          value={formData.address}
-          onChange={(e) => handleInputChange('address', e.target.value)}
-        />
-      </label>
+      <label>Creditor Name:</label>
+      <input
+        type="text"
+        value={formData.creditorName}
+        onChange={(e) => handleInputChange('creditorName', e.target.value)}
+      />
 
-      <label>
-        City:
-        <input
-          type="text"
-          value={formData.city}
-          onChange={(e) => handleInputChange('city', e.target.value)}
-        />
-      </label>
+      <label>Business Name:</label>
+      <input
+        type="text"
+        value={formData.businessName}
+        onChange={(e) => handleInputChange('businessName', e.target.value)}
+      />
 
-      <label>
-        State:
-        <input
-          type="text"
-          value={formData.state}
-          onChange={(e) => handleInputChange('state', e.target.value)}
-        />
-      </label>
+      <label>Doing Business As:</label>
+      <input
+        type="text"
+        value={formData.doingBusinessAs}
+        onChange={(e) => handleInputChange('doingBusinessAs', e.target.value)}
+      />
 
-      <label>
-        Zip Code:
-        <input
-          type="text"
-          value={formData.zipcode}
-          onChange={(e) => handleInputChange('zipcode', e.target.value)}
-        />
-      </label>
+      <label>Request Type:</label>
+      <select
+        value={formData.requestType}
+        onChange={(e) => handleInputChange('requestType', e.target.value)}
+      >
+        <option value="">Select Request Type</option>
+        <option value="Lien">Lien</option>
+        <option value="Garnishment">Garnishment</option>
+        <option value="Release">Release</option>
+      </select>
 
-      <label>
-        Email Address:
-        <input
-          type="email"
-          value={formData.emailAddress}
-          onChange={(e) => handleInputChange('emailAddress', e.target.value)}
-        />
-      </label>
+      <label>Lien Balance:</label>
+      <input
+        type="number"
+        value={formData.lienBalance}
+        onChange={(e) => handleInputChange('lienBalance', e.target.value)}
+      />
 
-      <label>
-        Phone Number:
-        <input
-          type="text"
-          value={formData.phoneNumber}
-          onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-        />
-      </label>
+      <label>Additional Entities:</label>
+      <textarea
+        value={formData.additionalEntities}
+        onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
+      ></textarea>
 
-      <label>
-        Default Date:
-        <input
-          type="date"
-          value={formData.defaultDate}
-          onChange={(e) => handleInputChange('defaultDate', e.target.value)}
-        />
-      </label>
+      <label>Address:</label>
+      <input
+        type="text"
+        value={formData.address}
+        onChange={(e) => handleInputChange('address', e.target.value)}
+      />
 
-      <label>
-  Additional Entities:
-  <textarea
-    value={formData.additionalEntities || ''}
-    onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
-    rows="3"
-    placeholder="Enter additional entities"
-  ></textarea>
-</label>
+      <label>State:</label>
+      <input
+        type="text"
+        value={formData.state}
+        onChange={(e) => handleInputChange('state', e.target.value)}
+      />
 
-      <label>
-        EIN:
-        {einList.map((ein, index) => (
-          <input
-            key={`ein-${index}`}
-            type="text"
-            value={ein}
-            onChange={(e) => handleEinChange(index, e.target.value)}
-          />
-        ))}
-        <button type="button" className="add-btn" onClick={addEin}>
-          + Add EIN
-        </button>
-      </label>
+      <label>City:</label>
+      <input
+        type="text"
+        value={formData.city}
+        onChange={(e) => handleInputChange('city', e.target.value)}
+      />
 
-      <label>
-        SSN:
-        {ssnList.map((ssn, index) => (
-          <input
-            key={`ssn-${index}`}
-            type="text"
-            value={ssn}
-            onChange={(e) => handleSsnChange(index, e.target.value)}
-          />
-        ))}
-        <button type="button" className="add-btn" onClick={addSsn}>
-          + Add SSN
-        </button>
-      </label>
+      <label>Zipcode:</label>
+      <input
+        type="text"
+        value={formData.zipcode}
+        onChange={(e) => handleInputChange('zipcode', e.target.value)}
+      />
 
-      <label>
-        UCC Files:
-        <input type="file" multiple onChange={(e) => handleFileUpload(e, setUccFiles)} />
-      </label>
+      <label>Email Address:</label>
+      <input
+        type="email"
+        value={formData.emailAddress}
+        onChange={(e) => handleInputChange('emailAddress', e.target.value)}
+      />
 
-      <label>
-        Transaction Proof Files:
-        <input type="file" multiple onChange={(e) => handleFileUpload(e, setTransactionProofFiles)} />
-      </label>
+      <label>Phone Number:</label>
+      <input
+        type="tel"
+        value={formData.phoneNumber}
+        onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+      />
 
-      <button type="button" className="submit-btn" onClick={handleSubmit}>
+      <label>UCC Files:</label>
+      <input type="file" multiple onChange={(e) => handleFileUpload(e, setUccFiles)} />
+
+      <label>Transaction Proof Files:</label>
+      <input type="file" multiple onChange={(e) => handleFileUpload(e, setTransactionProofFiles)} />
+
+      <button className="submit-btn" onClick={handleSubmit}>
         Submit
       </button>
     </div>
