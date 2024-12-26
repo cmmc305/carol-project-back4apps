@@ -1,10 +1,34 @@
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  justify-content: space-between;
+}
+
+.form-header {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.react-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: 2rem;
+  color: #333;
+}
+
 .form-container {
   max-width: 600px;
-  margin: auto;
+  width: 100%;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
   background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
@@ -25,7 +49,6 @@ textarea {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  box-sizing: border-box;
 }
 
 input[type="file"] {
@@ -45,4 +68,12 @@ input[type="file"] {
 
 .submit-btn:hover {
   background: #218838;
+}
+
+.form-footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  background: #f1f1f1;
+  width: 100%;
 }
