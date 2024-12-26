@@ -88,10 +88,7 @@ const CaseRequestForm = () => {
 
   return (
     <div className="form-container">
-      <h1>Case Request Form</h1>    
-      <label>
-        Requester Email:
-      </div>
+      <h1>Case Request Form</h1>
       <div className="form-group">
         <label>Requester Email:</label>
         <input
@@ -99,10 +96,6 @@ const CaseRequestForm = () => {
           value={formData.requesterEmail}
           onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
         />
-      </label>
-            </label>      
-      <label>
-        Creditor Name:
       </div>
       <div className="form-group">
         <label>Creditor Name:</label>
@@ -111,9 +104,6 @@ const CaseRequestForm = () => {
           value={formData.creditorName}
           onChange={(e) => handleInputChange('creditorName', e.target.value)}
         />
-      </label>
-      <label>
-        Business Name:
       </div>
       <div className="form-group">
         <label>Business Name:</label>
@@ -122,7 +112,7 @@ const CaseRequestForm = () => {
           value={formData.businessName}
           onChange={(e) => handleInputChange('businessName', e.target.value)}
         />
-      </label>
+      </div>
       <label>
         Doing Business As:
       </div>
