@@ -115,6 +115,7 @@ const CaseRequestForm = () => {
       </div>
       <label>
         Doing Business As:
+          </label>
       </div>
       <div className="form-group">
         <label>Doing Business As:</label>
