@@ -100,6 +100,7 @@ const CaseRequestForm = () => {
           onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
         />
       </label>
+            </label>      
       <label>
         Creditor Name:
       </div>
