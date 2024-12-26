@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import InputMask from 'react-input-mask';
 import Parse from '../config/parseConfig';
 import '../CaseRequestForm.css';
+import ReactLogo from '../assets/react-logo.png'; // Certifique-se de adicionar o logo do React à pasta `assets`
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
@@ -86,91 +87,32 @@ const CaseRequestForm = () => {
   };
 
   return (
-    <div className="form-container">
-      <h1>Case Request Form</h1>
-      <div className="form-group">
-        <label>Requester Type:</label>
-        <input
-          type="text"
-          value={formData.requesterType}
-          onChange={(e) => handleInputChange('requesterType', e.target.value)}
-        />
+    <div className="form-wrapper">
+      <header className="form-header">
+        <img src={ReactLogo} alt="React Logo" className="react-logo" />
+        <h1>Case Request Form</h1>
+      </header>
+      <div className="form-container">
+        <div className="form-group">
+          <label>Requester Type:</label>
+          <input
+            type="text"
+            value={formData.requesterType}
+            onChange={(e) => handleInputChange('requesterType', e.target.value)}
+          />
+        </div>
+        {/* Outros campos */}
+        <div className="form-group">
+          <label>Transaction Proof Files:</label>
+          <input type="file" multiple onChange={(e) => handleFileUpload(e, setTransactionProofFiles)} />
+        </div>
+        <button className="submit-btn" onClick={handleSubmit}>
+          Submit
+        </button>
       </div>
-      <div className="form-group">
-        <label>Requester Email:</label>
-        <input
-          type="email"
-          value={formData.requesterEmail}
-          onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
-        />
-      </div>
-      <div className="form-group">
-        <label>Creditor Name:</label>
-        <input
-          type="text"
-          value={formData.creditorName}
-          onChange={(e) => handleInputChange('creditorName', e.target.value)}
-        />
-      </div>
-      <div className="form-group">
-        <label>Business Name:</label>
-        <input
-          type="text"
-          value={formData.businessName}
-          onChange={(e) => handleInputChange('businessName', e.target.value)}
-        />
-      </div>
-      <div className="form-group">
-        <label>Doing Business As:</label>
-        <input
-          type="text"
-          value={formData.doingBusinessAs}
-          onChange={(e) => handleInputChange('doingBusinessAs', e.target.value)}
-        />
-      </div>
-      <div className="form-group">
-        <label>Request Type:</label>
-        <select
-          value={formData.requestType}
-          onChange={(e) => handleInputChange('requestType', e.target.value)}
-        >
-          <option value="">Select</option>
-          <option value="Lien">Lien</option>
-          <option value="Garnishment">Garnishment</option>
-          <option value="Release">Release</option>
-        </select>
-      </div>
-      <div className="form-group">
-        <label>Lien Balance:</label>
-        <InputMask
-          mask="99999.99"
-          value={formData.lienBalance}
-          onChange={(e) => handleInputChange('lienBalance', e.target.value)}
-        />
-      </div>
-      <div className="form-group">
-        <label>Phone Number:</label>
-        <InputMask
-          mask="(999) 999-9999"
-          value={formData.phoneNumber}
-          onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-        />
-      </div>
-      <div className="form-group">
-        <label>Zipcode:</label>
-        <InputMask
-          mask="99999-999"
-          value={formData.zipcode}
-          onChange={(e) => handleInputChange('zipcode', e.target.value)}
-        />
-      </div>
-      <div className="form-group">
-        <label>UCC Files:</label>
-        <input type="file" multiple onChange={(e) => handleFileUpload(e, setUccFiles)} />
-      </div>
-      <button className="submit-btn" onClick={handleSubmit}>
-        Submit
-      </button>
+      <footer className="form-footer">
+        &copy; {new Date().getFullYear()} Your Company. All rights reserved.
+      </footer>
     </div>
   );
 };
