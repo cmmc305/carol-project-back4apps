@@ -21,7 +21,7 @@
 }
 
 .main-menu li {
-  margin: 10px 0; /* Espaço entre os itens */
+  margin: 15px 0; /* Adiciona espaço vertical entre os botões */
 }
 
 .main-menu a {
@@ -37,4 +37,3 @@
 .main-menu a:hover {
   background-color: #0056b3; /* Cor mais escura ao passar o mouse */
 }
-
