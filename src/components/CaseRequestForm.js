@@ -214,8 +214,8 @@ const CaseRequestForm = () => {
       <label>
         Zipcode:
         <InputMask
-          mask="99999-999"
-          placeholder="Enter zipcode"
+          mask="99999"
+          placeholder="Enter ZIP code (e.g., 12345)"
           value={formData.zipcode}
           onChange={(e) => handleInputChange('zipcode', e.target.value)}
         />
@@ -223,8 +223,8 @@ const CaseRequestForm = () => {
       <label>
         Phone Number:
         <InputMask
-          mask="(99) 99999-9999"
-          placeholder="Enter phone number"
+          mask="(999) 999-9999"
+          placeholder="Enter phone number (e.g., (555) 123-4567)"
           value={formData.phoneNumber}
           onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
         />
