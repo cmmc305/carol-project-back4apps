@@ -1,53 +1,40 @@
-/* MainMenu.css */
-
 .main-menu {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #f8f9fa;
-  font-family: 'Arial', sans-serif;
-  color: #333;
+  flex-direction: column; /* Organiza os itens verticalmente */
+  align-items: center; /* Centraliza os itens horizontalmente */
+  justify-content: center; /* Centraliza os itens verticalmente */
+  height: 100vh; /* Faz a altura ocupar a tela inteira */
+  background-color: #f4f4f4; /* Cor de fundo suave */
+  font-family: Arial, sans-serif;
 }
 
 .main-menu h1 {
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #007BFF;
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 30px;
 }
 
 .main-menu ul {
-  list-style-type: none;
+  list-style-type: none; /* Remove os marcadores da lista */
   padding: 0;
   margin: 0;
 }
 
-.main-menu ul li {
-  margin: 10px 0;
+.main-menu li {
+  margin: 10px 0; /* Espaço entre os itens */
 }
 
-.main-menu ul li a {
-  text-decoration: none;
-  font-size: 18px;
-  color: #007BFF;
-  padding: 10px 20px;
-  border: 2px solid #007BFF;
+.main-menu a {
+  text-decoration: none; /* Remove o sublinhado dos links */
+  padding: 15px 30px;
+  background-color: #007bff; /* Cor azul para os botões */
+  color: white;
   border-radius: 5px;
-  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  transition: background-color 0.3s ease; /* Animação suave para hover */
 }
 
-.main-menu ul li a:hover {
-  background-color: #007BFF;
-  color: #fff;
+.main-menu a:hover {
+  background-color: #0056b3; /* Cor mais escura ao passar o mouse */
 }
 
-.main-menu ul li a:active {
-  transform: scale(0.95);
-}
-
-.main-menu ul li a:focus {
-  outline: none;
-  box-shadow: 0 0 5px #007BFF;
-}
