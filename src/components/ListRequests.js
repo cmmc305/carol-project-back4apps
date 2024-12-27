@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Parse from '../config/parseConfig';
-import '../ListRequests.css'; // Adicione este arquivo para estilização
+import '../ListRequests.css';
 
 const ListRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -19,6 +19,11 @@ const ListRequests = () => {
     fetchRequests();
   }, []);
 
+  const handleEdit = (requestId) => {
+    // Redireciona para a página de edição, passando o ID do request
+    window.location.href = `/update-request/${requestId}`;
+  };
+
   return (
     <div className="list-requests-container">
       <h1 className="title">List of Requests</h1>
@@ -29,9 +34,16 @@ const ListRequests = () => {
             <th>Requester Email</th>
             <th>Creditor Name</th>
             <th>Business Name</th>
-            <th>City</th>
+            <th>Doing Business As</th>
+            <th>Request Type</th>
+            <th>Additional Entities</th>
+            <th>Address</th>
             <th>State</th>
+            <th>City</th>
+            <th>Zipcode</th>
+            <th>Phone Number</th>
             <th>Lien Balance</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -42,14 +54,30 @@ const ListRequests = () => {
                 <td>{request.get('requesterEmail')}</td>
                 <td>{request.get('creditorName')}</td>
                 <td>{request.get('businessName')}</td>
-                <td>{request.get('city')}</td>
+                <td>{request.get('doingBusinessAs')}</td>
+                <td>{request.get('requestType')}</td>
+                <td>{request.get('additionalEntities')}</td>
+                <td>{request.get('address')}</td>
                 <td>{request.get('state')}</td>
+                <td>{request.get('city')}</td>
+                <td>{request.get('zipcode')}</td>
+                <td>{request.get('phoneNumber')}</td>
                 <td>{request.get('lienBalance')}</td>
+                <td>
+                  <button
+                    className="edit-button"
+                    onClick={() => handleEdit(request.id)}
+                  >
+                    Edit
+                  </button>
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="7" className="no-data">No requests found</td>
+              <td colSpan="14" className="no-data">
+                No requests found
+              </td>
             </tr>
           )}
         </tbody>
