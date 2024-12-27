@@ -4,7 +4,6 @@ import Login from './components/Login';
 import MainMenu from './components/MainMenu';
 import CaseRequestForm from './components/CaseRequestForm';
 import ListRequests from './components/ListRequests';
-import UpdateRequestForm from './components/UpdateRequestForm';
 
 const App = () => {
   return (
@@ -21,9 +20,6 @@ const App = () => {
 
         {/* Listar Requests */}
         <Route path="/list-requests" element={<ListRequests />} />
-
-        {/* Atualizar Request */}
-        <Route path="/update-request/:id" element={<UpdateRequestForm />} />
 
         {/* Página não encontrada */}
         <Route path="*" element={<div>404 - Page Not Found</div>} />
