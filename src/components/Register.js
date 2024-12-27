@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Parse from '../config/parseConfig';
-import './RegisterUser.css';
+import '../Register.css';
 
 const RegisterUser = () => {
   const [formData, setFormData] = useState({
