@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import NumberFormat from 'react-number-format';
+import { NumericFormat } from 'react-number-format'; 
 import InputMask from 'react-input-mask';
 import Parse from '../config/parseConfig';
 import '../CaseRequestForm.css';
@@ -138,13 +138,13 @@ const CaseRequestForm = () => {
       <label>
         Lien Balance:
         <NumericFormat
-  value={formData.lienBalance}
-  onValueChange={(values) => handleInputChange('lienBalance', values.value)}
-  thousandSeparator=","
-  prefix="$"
-  placeholder="$0.00"
-/>
-
+          value={formData.lienBalance}
+          onValueChange={(values) => handleInputChange('lienBalance', values.value)}
+          thousandSeparator=","
+          prefix="$"
+          placeholder="Enter lien balance (e.g., $0.00)"
+          customInput={(props) => <input {...props} />}
+        />
       </label>
       <label>
         Address:

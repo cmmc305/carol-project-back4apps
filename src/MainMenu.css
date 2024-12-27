@@ -1,10 +1,10 @@
 .main-menu {
   display: flex;
-  flex-direction: column; /* Organiza os itens verticalmente */
-  align-items: center; /* Centraliza os itens horizontalmente */
-  justify-content: center; /* Centraliza os itens verticalmente */
-  height: 100vh; /* Faz a altura ocupar a tela inteira */
-  background-color: #f4f4f4; /* Cor de fundo suave */
+  flex-direction: column; /* Organiza itens verticalmente */
+  align-items: center; /* Centraliza horizontalmente */
+  justify-content: center; /* Centraliza verticalmente */
+  height: 100vh; /* Altura da tela inteira */
+  background-color: #f4f4f4; /* Fundo suave */
   font-family: Arial, sans-serif;
 }
 
@@ -15,23 +15,26 @@
 }
 
 .main-menu ul {
-  list-style-type: none; /* Remove os marcadores da lista */
+  list-style-type: none; /* Remove marcadores da lista */
   padding: 0;
   margin: 0;
 }
 
 .main-menu li {
-  margin: 15px 0; /* Adiciona espaço vertical entre os botões */
+  margin: 10px 0; /* Espaçamento vertical entre os itens */
 }
 
 .main-menu a {
-  text-decoration: none; /* Remove o sublinhado dos links */
+  text-decoration: none; /* Remove sublinhado dos links */
   padding: 15px 30px;
-  background-color: #007bff; /* Cor azul para os botões */
+  background-color: #007bff; /* Azul para botões */
   color: white;
   border-radius: 5px;
   font-size: 1.2rem;
-  transition: background-color 0.3s ease; /* Animação suave para hover */
+  transition: background-color 0.3s ease; /* Animação suave */
+  display: inline-block; /* Garante tamanho uniforme */
+  text-align: center; /* Centraliza texto */
+  width: 250px; /* Define largura fixa */
 }
 
 .main-menu a:hover {
