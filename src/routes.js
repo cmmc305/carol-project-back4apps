@@ -12,7 +12,7 @@ const routes = [
   { path: '/main-menu', element: <MainMenu /> },
   { path: '/create-request', element: <CaseRequestForm /> },
   { path: '/list-requests', element: <ListRequests /> },
-  { path: '/update-request/:id', element: <UpdateRequestForm /> },
+  { path: '/update-request/:id', element: <CaseRequestForm /> },
   { path: '/register', element: <RegisterUser /> },
 ];
 
