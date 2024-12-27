@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import InputMask from 'react-input-mask';
 import Parse from '../config/parseConfig';
 import '../CaseRequestForm.css';
 
@@ -11,8 +12,8 @@ const CaseRequestForm = () => {
     creditorName: '',
     businessName: '',
     doingBusinessAs: '',
+    requestType: '',
     lienBalance: '',
-    additionalEntities: '',
     address: '',
     state: '',
     city: '',
@@ -66,8 +67,8 @@ const CaseRequestForm = () => {
         creditorName: '',
         businessName: '',
         doingBusinessAs: '',
+        requestType: '',
         lienBalance: '',
-        additionalEntities: '',
         address: '',
         state: '',
         city: '',
@@ -85,7 +86,7 @@ const CaseRequestForm = () => {
   return (
     <div className="form-container">
       <img src="/react-logo.png" alt="React Logo" className="logo" />
-      <h1>Case Request Form</h1>
+      <h1 className="form-title">Case Request Form</h1>
       <label>
         Requester Type:
         <input
@@ -127,18 +128,24 @@ const CaseRequestForm = () => {
         />
       </label>
       <label>
-        Lien Balance:
-        <input
-          type="text"
-          value={formData.lienBalance}
-          onChange={(e) => handleInputChange('lienBalance', e.target.value)}
-        />
+        Request Type:
+        <select
+          value={formData.requestType}
+          onChange={(e) => handleInputChange('requestType', e.target.value)}
+        >
+          <option value="">Select</option>
+          <option value="Lien">Lien</option>
+          <option value="Garnishment">Garnishment</option>
+          <option value="Release">Release</option>
+        </select>
       </label>
       <label>
-        Additional Entities:
-        <textarea
-          value={formData.additionalEntities}
-          onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
+        Lien Balance:
+        <InputMask
+          mask="currency"
+          value={formData.lienBalance}
+          onChange={(e) => handleInputChange('lienBalance', e.target.value)}
+          placeholder="0.00"
         />
       </label>
       <label>
@@ -167,16 +174,16 @@ const CaseRequestForm = () => {
       </label>
       <label>
         Zipcode:
-        <input
-          type="text"
+        <InputMask
+          mask="99999-999"
           value={formData.zipcode}
           onChange={(e) => handleInputChange('zipcode', e.target.value)}
         />
       </label>
       <label>
         Phone Number:
-        <input
-          type="text"
+        <InputMask
+          mask="(99) 99999-9999"
           value={formData.phoneNumber}
           onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
         />
