@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import NumberFormat from 'react-number-format'; // Para lidar com valores monetários
 import InputMask from 'react-input-mask';
 import Parse from '../config/parseConfig';
 import '../CaseRequestForm.css';
@@ -85,11 +86,12 @@ const CaseRequestForm = () => {
   return (
     <div className="form-container">
       <img src={reactLogo} alt="React Logo" className="logo" />
-      <h1 className="form-title">Case Request Form</h1>    
+      <h1 className="form-title">Case Request Form</h1>
       <label>
         Requester Email:
         <input
           type="email"
+          placeholder="Enter requester email"
           value={formData.requesterEmail}
           onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
         />
@@ -98,6 +100,7 @@ const CaseRequestForm = () => {
         Creditor Name:
         <input
           type="text"
+          placeholder="Enter creditor name"
           value={formData.creditorName}
           onChange={(e) => handleInputChange('creditorName', e.target.value)}
         />
@@ -106,6 +109,7 @@ const CaseRequestForm = () => {
         Business Name:
         <input
           type="text"
+          placeholder="Enter business name"
           value={formData.businessName}
           onChange={(e) => handleInputChange('businessName', e.target.value)}
         />
@@ -114,6 +118,7 @@ const CaseRequestForm = () => {
         Doing Business As:
         <input
           type="text"
+          placeholder="Enter doing business as"
           value={formData.doingBusinessAs}
           onChange={(e) => handleInputChange('doingBusinessAs', e.target.value)}
         />
@@ -124,7 +129,7 @@ const CaseRequestForm = () => {
           value={formData.requestType}
           onChange={(e) => handleInputChange('requestType', e.target.value)}
         >
-          <option value="">Select</option>
+          <option value="">Select request type</option>
           <option value="Lien">Lien</option>
           <option value="Garnishment">Garnishment</option>
           <option value="Release">Release</option>
@@ -132,17 +137,19 @@ const CaseRequestForm = () => {
       </label>
       <label>
         Lien Balance:
-        <InputMask
-          mask="currency"
+        <NumberFormat
           value={formData.lienBalance}
-          onChange={(e) => handleInputChange('lienBalance', e.target.value)}
-          placeholder="0.00"
+          onValueChange={(values) => handleInputChange('lienBalance', values.floatValue)}
+          thousandSeparator
+          prefix="$"
+          placeholder="$0.00"
         />
       </label>
       <label>
         Address:
         <input
           type="text"
+          placeholder="Enter address"
           value={formData.address}
           onChange={(e) => handleInputChange('address', e.target.value)}
         />
@@ -151,6 +158,7 @@ const CaseRequestForm = () => {
         State:
         <input
           type="text"
+          placeholder="Enter state"
           value={formData.state}
           onChange={(e) => handleInputChange('state', e.target.value)}
         />
@@ -159,6 +167,7 @@ const CaseRequestForm = () => {
         City:
         <input
           type="text"
+          placeholder="Enter city"
           value={formData.city}
           onChange={(e) => handleInputChange('city', e.target.value)}
         />
@@ -167,6 +176,7 @@ const CaseRequestForm = () => {
         Zipcode:
         <InputMask
           mask="99999-999"
+          placeholder="Enter zipcode"
           value={formData.zipcode}
           onChange={(e) => handleInputChange('zipcode', e.target.value)}
         />
@@ -175,6 +185,7 @@ const CaseRequestForm = () => {
         Phone Number:
         <InputMask
           mask="(99) 99999-9999"
+          placeholder="Enter phone number"
           value={formData.phoneNumber}
           onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
         />

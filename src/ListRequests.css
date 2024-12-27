@@ -1,27 +1,26 @@
 .list-requests-container {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: auto;
 }
 
 .title {
   text-align: center;
   margin-bottom: 20px;
+  font-size: 2rem;
   color: #333;
 }
 
 .requests-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 }
 
 .requests-table th,
 .requests-table td {
+  padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
-  padding: 8px;
 }
 
 .requests-table th {
@@ -29,16 +28,21 @@
   font-weight: bold;
 }
 
-.requests-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.requests-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.no-data {
+.requests-table .no-data {
   text-align: center;
   color: #888;
-  font-style: italic;
+}
+
+.edit-button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+  background-color: #0056b3;
 }
