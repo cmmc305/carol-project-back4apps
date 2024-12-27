@@ -1,19 +1,25 @@
 import React from 'react';
 import CaseRequestForm from './components/CaseRequestForm';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import MainMenu from './components/MainMenu';
+import CaseRequestForm from './components/CaseRequestForm';
+import ListRequests from './components/ListRequests';
+import UpdateRequest from './components/UpdateRequest';
+import Register from './components/Register';
+import Login from './components/Login';
 
 function App() {
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <h1>Case Request Application</h1>
-      </header>
-      <main className="app-main">
-        <CaseRequestForm />
-      </main>
-      <footer className="app-footer">
-        <p>&copy; {new Date().getFullYear()} Case Request Inc. All rights reserved.</p>
-      </footer>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainMenu />} />
+        <Route path="/create-request" element={<CaseRequestForm />} />
+        <Route path="/list-requests" element={<ListRequests />} />
+        <Route path="/update-request" element={<UpdateRequest />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
   );
 }
 
