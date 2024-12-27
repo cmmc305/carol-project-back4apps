@@ -138,12 +138,13 @@ const CaseRequestForm = () => {
       <label>
         Lien Balance:
         <NumericFormat
-          value={formData.lienBalance}
-          onValueChange={(values) => handleInputChange('lienBalance', values.value)}
-          thousandSeparator=","
-          prefix="$"
-          placeholder="$0.00"
-        />
+  value={formData.lienBalance}
+  onValueChange={(values) => handleInputChange('lienBalance', values.value)}
+  thousandSeparator=","
+  prefix="$"
+  placeholder="$0.00"
+/>
+
       </label>
       <label>
         Address:
