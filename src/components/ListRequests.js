@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Parse from '../config/parseConfig';
-import './ListRequests.css'; // Adicione este arquivo para estilização
+import '../ListRequests.css'; // Adicione este arquivo para estilização
 
 const ListRequests = () => {
   const [requests, setRequests] = useState([]);
