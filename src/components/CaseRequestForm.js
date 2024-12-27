@@ -26,18 +26,31 @@ const CaseRequestForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const allowedExtensions = ["png", "jpg", "jpeg", "pdf", "doc", "docx"];
+
   const handleFileUpload = (event, setter) => {
     const files = Array.from(event.target.files);
-    setter((prevFiles) => [...prevFiles, ...files]);
+    const validFiles = files.filter((file) => {
+      const extension = file.name.split('.').pop().toLowerCase();
+      return allowedExtensions.includes(extension);
+    });
+
+    if (validFiles.length !== files.length) {
+      alert("Some files have unsupported extensions and were not uploaded.");
+    }
+
+    setter((prevFiles) => [...prevFiles, ...validFiles]);
   };
 
   const uploadFileToParse = async (file) => {
     try {
+      console.log("Uploading file:", file.name);
       const parseFile = new Parse.File(file.name, file);
       await parseFile.save();
+      console.log("File uploaded successfully:", parseFile.url());
       return parseFile.url();
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error("Error uploading file:", error.message);
       throw error;
     }
   };
