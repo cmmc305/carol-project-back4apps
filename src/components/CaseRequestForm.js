@@ -4,7 +4,6 @@ import { NumericFormat } from 'react-number-format';
 import InputMask from 'react-input-mask';
 import Parse from '../config/parseConfig';
 import { Container, Form, Button, Row, Col, Spinner } from 'react-bootstrap';
-import '../CaseRequestForm.css';
 import reactLogo from '../assets/react-logo.png';
 
 const CaseRequestForm = () => {
