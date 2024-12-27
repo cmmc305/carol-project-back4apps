@@ -1,6 +1,38 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { RouterProvider } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
+import MainMenu from './components/MainMenu';
+import CaseRequestForm from './components/CaseRequestForm';
+import ListRequests from './components/ListRequests';
+import UpdateRequest from './components/UpdateRequest';
+import Login from './components/Login';
+import RegisterUser from './components/RegisterUser';
+
+const routes = [
+  {
+    path: '/',
+    element: <Login />,
+  },
+  {
+    path: '/main-menu',
+    element: <MainMenu />,
+  },
+  {
+    path: '/create-request',
+    element: <CaseRequestForm />,
+  },
+  {
+    path: '/list-requests',
+    element: <ListRequests />,
+  },
+  {
+    path: '/update-request/:id',
+    element: <UpdateRequest />,
+  },
+  {
+    path: '/register',
+    element: <RegisterUser />,
+  },
+];
 
 const router = createBrowserRouter(routes, {
   future: {
@@ -9,9 +41,4 @@ const router = createBrowserRouter(routes, {
   },
 });
 
-ReactDOM.render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+export default router;
