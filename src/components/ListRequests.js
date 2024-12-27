@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Parse from '../config/parseConfig';
+import './ListRequests.css'; // Adicione este arquivo para estilização
 
 const ListRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -19,15 +20,40 @@ const ListRequests = () => {
   }, []);
 
   return (
-    <div>
-      <h1>List of Requests</h1>
-      <ul>
-        {requests.map((request) => (
-          <li key={request.id}>
-            <strong>Requester:</strong> {request.get('requesterEmail')}
-          </li>
-        ))}
-      </ul>
+    <div className="list-requests-container">
+      <h1 className="title">List of Requests</h1>
+      <table className="requests-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Requester Email</th>
+            <th>Creditor Name</th>
+            <th>Business Name</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Lien Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {requests.length > 0 ? (
+            requests.map((request) => (
+              <tr key={request.id}>
+                <td>{request.id}</td>
+                <td>{request.get('requesterEmail')}</td>
+                <td>{request.get('creditorName')}</td>
+                <td>{request.get('businessName')}</td>
+                <td>{request.get('city')}</td>
+                <td>{request.get('state')}</td>
+                <td>{request.get('lienBalance')}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="7" className="no-data">No requests found</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
