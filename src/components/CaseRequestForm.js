@@ -239,13 +239,20 @@ const CaseRequestForm = () => {
 </label>
 <ul>
   {uccFiles.length > 0 &&
-    uccFiles.map((file, index) => (
-      <li key={index}>
-        <a href={file} target="_blank" rel="noopener noreferrer">
-          {file.split('/').pop()}
-        </a>
-      </li>
-    ))}
+    uccFiles.map((file, index) => {
+      const fileName = typeof file === 'string' ? file.split('/').pop() : 'Unknown File';
+      return (
+        <li key={index}>
+          <a
+            href={typeof file === 'string' ? file : '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {fileName}
+          </a>
+        </li>
+      );
+    })}
 </ul>
 
 <label>
@@ -258,13 +265,20 @@ const CaseRequestForm = () => {
 </label>
 <ul>
   {transactionProofFiles.length > 0 &&
-    transactionProofFiles.map((file, index) => (
-      <li key={index}>
-        <a href={file} target="_blank" rel="noopener noreferrer">
-          {file.split('/').pop()}
-        </a>
-      </li>
-    ))}
+    transactionProofFiles.map((file, index) => {
+      const fileName = typeof file === 'string' ? file.split('/').pop() : 'Unknown File';
+      return (
+        <li key={index}>
+          <a
+            href={typeof file === 'string' ? file : '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {fileName}
+          </a>
+        </li>
+      );
+    })}
 </ul>
       <button className="submit-btn" onClick={handleSubmit}>
         {id ? 'Save Changes' : 'Create Request'}
