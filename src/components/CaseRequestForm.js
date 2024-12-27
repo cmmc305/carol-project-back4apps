@@ -69,7 +69,7 @@ const CaseRequestForm = () => {
 
   const handleFileUpload = (event, setter) => {
     const files = Array.from(event.target.files);
-    setter((prevFiles) => [...prevFiles, ...files]);
+    setter(files); // Substitui os arquivos antigos pelos novos
   };
 
   const uploadFileToParse = async (file) => {
@@ -81,17 +81,17 @@ const CaseRequestForm = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-
-      const uploadedUccFiles = await Promise.all(
-        uccFiles.map((file) => uploadFileToParse(file))
-      );
-
-      const uploadedTransactionProofFiles = await Promise.all(
-        transactionProofFiles.map((file) => uploadFileToParse(file))
-      );
-
+  
+      const uploadedUccFiles = uccFiles.length
+        ? await Promise.all(uccFiles.map((file) => uploadFileToParse(file)))
+        : [];
+  
+      const uploadedTransactionProofFiles = transactionProofFiles.length
+        ? await Promise.all(transactionProofFiles.map((file) => uploadFileToParse(file)))
+        : [];
+  
       let CaseRequest;
-
+  
       if (id) {
         // Atualizar request existente
         const query = new Parse.Query('CaseRequest');
@@ -100,16 +100,16 @@ const CaseRequestForm = () => {
         // Criar novo request
         CaseRequest = new Parse.Object('CaseRequest');
       }
-
+  
       Object.keys(formData).forEach((key) => {
         CaseRequest.set(key, formData[key]);
       });
-
+  
       CaseRequest.set('uccFiles', uploadedUccFiles);
       CaseRequest.set('transactionProofFiles', uploadedTransactionProofFiles);
-
+  
       await CaseRequest.save();
-
+  
       alert(id ? 'Request updated successfully!' : 'Request created successfully!');
       navigate('/list-requests');
     } catch (error) {
@@ -234,7 +234,10 @@ const CaseRequestForm = () => {
   <input
     type="file"
     multiple
-    onChange={(e) => handleFileUpload(e, setUccFiles)}
+    onChange={(e) => {
+      // Substituir arquivos antigos por novos
+      handleFileUpload(e, setUccFiles);
+    }}
   />
 </label>
 <ul>
@@ -260,7 +263,10 @@ const CaseRequestForm = () => {
   <input
     type="file"
     multiple
-    onChange={(e) => handleFileUpload(e, setTransactionProofFiles)}
+    onChange={(e) => {
+      // Substituir arquivos antigos por novos
+      handleFileUpload(e, setTransactionProofFiles);
+    }}
   />
 </label>
 <ul>
