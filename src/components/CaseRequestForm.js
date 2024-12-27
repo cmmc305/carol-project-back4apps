@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import NumberFormat from 'react-number-format'; // Para lidar com valores monetários
+import NumberFormat from 'react-number-format';
 import InputMask from 'react-input-mask';
 import Parse from '../config/parseConfig';
 import '../CaseRequestForm.css';
@@ -137,10 +137,10 @@ const CaseRequestForm = () => {
       </label>
       <label>
         Lien Balance:
-        <NumberFormat
+        <NumericFormat
           value={formData.lienBalance}
-          onValueChange={(values) => handleInputChange('lienBalance', values.floatValue)}
-          thousandSeparator
+          onValueChange={(values) => handleInputChange('lienBalance', values.value)}
+          thousandSeparator=","
           prefix="$"
           placeholder="$0.00"
         />
