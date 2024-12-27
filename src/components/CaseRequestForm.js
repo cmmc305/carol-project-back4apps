@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import InputMask from 'react-input-mask';
 import Parse from '../config/parseConfig';
 import '../CaseRequestForm.css';
-import reactLogo from './assets/react-logo.png'; // Importação correta do logo
+import reactLogo from '../assets/react-logo.png';
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
@@ -86,7 +86,7 @@ const CaseRequestForm = () => {
 
   return (
     <div className="form-container">
-      <img src="/react-logo.png" alt="React Logo" className="logo" />
+      <img src={reactLogo} alt="React Logo" className="logo" />
       <h1 className="form-title">Case Request Form</h1>
       <label>
         Requester Type:
