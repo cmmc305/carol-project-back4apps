@@ -1,3 +1,10 @@
+.logo {
+  width: 100px; /* Ajuste o tamanho conforme necessário */
+  height: auto; /* Mantém a proporção */
+  display: block; /* Centraliza o bloco */
+  margin: 0 auto 20px; /* Centraliza horizontalmente e adiciona espaço inferior */
+}
+
 .form-wrapper {
   display: flex;
   flex-direction: column;
