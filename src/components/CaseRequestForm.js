@@ -87,15 +87,7 @@ const CaseRequestForm = () => {
   return (
     <div className="form-container">
       <img src={reactLogo} alt="React Logo" className="logo" />
-      <h1 className="form-title">Case Request Form</h1>
-      <label>
-        Requester Type:
-        <input
-          type="text"
-          value={formData.requesterType}
-          onChange={(e) => handleInputChange('requesterType', e.target.value)}
-        />
-      </label>
+      <h1 className="form-title">Case Request Form</h1>    
       <label>
         Requester Email:
         <input
