@@ -229,6 +229,43 @@ const CaseRequestForm = () => {
           onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
         />
       </label>
+      <label>
+  UCC Files:
+  <input
+    type="file"
+    multiple
+    onChange={(e) => handleFileUpload(e, setUccFiles)}
+  />
+</label>
+<ul>
+  {uccFiles.length > 0 &&
+    uccFiles.map((file, index) => (
+      <li key={index}>
+        <a href={file} target="_blank" rel="noopener noreferrer">
+          {file.split('/').pop()}
+        </a>
+      </li>
+    ))}
+</ul>
+
+<label>
+  Transaction Proof Files:
+  <input
+    type="file"
+    multiple
+    onChange={(e) => handleFileUpload(e, setTransactionProofFiles)}
+  />
+</label>
+<ul>
+  {transactionProofFiles.length > 0 &&
+    transactionProofFiles.map((file, index) => (
+      <li key={index}>
+        <a href={file} target="_blank" rel="noopener noreferrer">
+          {file.split('/').pop()}
+        </a>
+      </li>
+    ))}
+</ul>
       <button className="submit-btn" onClick={handleSubmit}>
         {id ? 'Save Changes' : 'Create Request'}
       </button>
