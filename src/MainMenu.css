@@ -1,42 +1,44 @@
-.main-menu {
+.main-menu-container {
   display: flex;
-  flex-direction: column; /* Organiza itens verticalmente */
-  align-items: center; /* Centraliza horizontalmente */
-  justify-content: center; /* Centraliza verticalmente */
-  height: 100vh; /* Altura da tela inteira */
-  background-color: #f4f4f4; /* Fundo suave */
-  font-family: Arial, sans-serif;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f4f4f4;
 }
 
-.main-menu h1 {
+h1 {
   font-size: 2.5rem;
-  color: #333;
   margin-bottom: 30px;
+  color: #333;
 }
 
-.main-menu ul {
-  list-style-type: none; /* Remove marcadores da lista */
-  padding: 0;
-  margin: 0;
+.menu-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Adiciona espaçamento entre os botões */
+  width: 100%;
+  max-width: 400px; /* Limita a largura */
 }
 
-.main-menu li {
-  margin: 10px 0; /* Espaçamento vertical entre os itens */
-}
-
-.main-menu a {
-  text-decoration: none; /* Remove sublinhado dos links */
-  padding: 15px 30px;
-  background-color: #007bff; /* Azul para botões */
+.menu-button {
+  text-align: center;
+  padding: 15px 20px;
+  background-color: #007bff;
   color: white;
-  border-radius: 5px;
+  text-decoration: none;
   font-size: 1.2rem;
-  transition: background-color 0.3s ease; /* Animação suave */
-  display: inline-block; /* Garante tamanho uniforme */
-  text-align: center; /* Centraliza texto */
-  width: 250px; /* Define largura fixa */
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.main-menu a:hover {
-  background-color: #0056b3; /* Cor mais escura ao passar o mouse */
+.menu-button:hover {
+  background-color: #0056b3;
+}
+
+.menu-button:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
 }

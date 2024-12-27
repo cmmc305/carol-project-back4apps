@@ -4,13 +4,19 @@ import '../MainMenu.css';
 
 const MainMenu = () => {
   return (
-    <div className="main-menu">
+    <div className="main-menu-container">
       <h1>Main Menu</h1>
-      <ul>
-        <li><Link to="/create-request">Create Request Form</Link></li>
-        <li><Link to="/list-requests">List Request Forms</Link></li>
-        <li><Link to="/register">Register User</Link></li>
-      </ul>
+      <div className="menu-options">
+        <Link to="/create-request" className="menu-button">
+          Create Request Form
+        </Link>
+        <Link to="/list-requests" className="menu-button">
+          List Request Forms
+        </Link>
+        <Link to="/register" className="menu-button">
+          Register User
+        </Link>
+      </div>
     </div>
   );
 };

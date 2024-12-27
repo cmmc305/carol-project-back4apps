@@ -4,6 +4,7 @@ import '../ListRequests.css';
 
 const ListRequests = () => {
   const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true); // Adicionado para feedback de carregamento
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -13,6 +14,8 @@ const ListRequests = () => {
         setRequests(results);
       } catch (error) {
         console.error('Error fetching requests:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -27,28 +30,30 @@ const ListRequests = () => {
   return (
     <div className="list-requests-container">
       <h1 className="title">List of Requests</h1>
-      <table className="requests-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Requester Email</th>
-            <th>Creditor Name</th>
-            <th>Business Name</th>
-            <th>Doing Business As</th>
-            <th>Request Type</th>
-            <th>Additional Entities</th>
-            <th>Address</th>
-            <th>State</th>
-            <th>City</th>
-            <th>Zipcode</th>
-            <th>Phone Number</th>
-            <th>Lien Balance</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {requests.length > 0 ? (
-            requests.map((request) => (
+      {loading ? (
+        <p className="loading-message">Loading requests...</p>
+      ) : requests.length > 0 ? (
+        <table className="requests-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Requester Email</th>
+              <th>Creditor Name</th>
+              <th>Business Name</th>
+              <th>Doing Business As</th>
+              <th>Request Type</th>
+              <th>Additional Entities</th>
+              <th>Address</th>
+              <th>State</th>
+              <th>City</th>
+              <th>Zipcode</th>
+              <th>Phone Number</th>
+              <th>Lien Balance</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {requests.map((request) => (
               <tr key={request.id}>
                 <td>{request.id}</td>
                 <td>{request.get('requesterEmail')}</td>
@@ -62,26 +67,24 @@ const ListRequests = () => {
                 <td>{request.get('city')}</td>
                 <td>{request.get('zipcode')}</td>
                 <td>{request.get('phoneNumber')}</td>
-                <td>{request.get('lienBalance')}</td>
+                <td>
+                  ${parseFloat(request.get('lienBalance') || 0).toFixed(2)}
+                </td>
                 <td>
                   <button
                     className="edit-button"
                     onClick={() => handleEdit(request.id)}
                   >
-                    Edit
+                    ✏️ Edit
                   </button>
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="14" className="no-data">
-                No requests found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className="no-data">No requests found</p>
+      )}
     </div>
   );
 };

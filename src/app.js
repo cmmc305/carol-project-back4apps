@@ -10,12 +10,23 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        {/* Página inicial - Login */}
         <Route path="/" element={<Login />} />
+
+        {/* Menu principal */}
         <Route path="/main-menu" element={<MainMenu />} />
+
+        {/* Criar Request */}
         <Route path="/create-request" element={<CaseRequestForm />} />
+
+        {/* Listar Requests */}
         <Route path="/list-requests" element={<ListRequests />} />
+
+        {/* Atualizar Request */}
         <Route path="/update-request/:id" element={<UpdateRequestForm />} />
-        {/* Outras rotas aqui */}
+
+        {/* Página não encontrada */}
+        <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </Router>
   );

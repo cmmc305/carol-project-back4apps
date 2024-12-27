@@ -7,16 +7,25 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
       await Parse.User.logIn(username, password);
       navigate('/main-menu'); // Redireciona para o Main Menu
     } catch (err) {
-      setError('Invalid username or password');
+      if (err.code === 101) {
+        setError('Invalid username or password');
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
       console.error('Login failed:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -29,6 +38,7 @@ const Login = () => {
           <input
             type="text"
             id="username"
+            placeholder="Enter your username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -39,14 +49,15 @@ const Login = () => {
           <input
             type="password"
             id="password"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
         {error && <p className="error-message">{error}</p>}
-        <button type="submit" className="login-btn">
-          Login
+        <button type="submit" className="login-btn" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
     </div>

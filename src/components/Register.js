@@ -37,31 +37,46 @@ const RegisterUser = () => {
       <h1>Register User</h1>
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
-      <label>
-        Username:
-        <input
-          type="text"
-          value={formData.username}
-          onChange={(e) => handleInputChange('username', e.target.value)}
-        />
-      </label>
-      <label>
-        Email:
-        <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => handleInputChange('email', e.target.value)}
-        />
-      </label>
-      <label>
-        Password:
-        <input
-          type="password"
-          value={formData.password}
-          onChange={(e) => handleInputChange('password', e.target.value)}
-        />
-      </label>
-      <button onClick={handleRegister}>Register</button>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleRegister();
+        }}
+      >
+        <label>
+          Username:
+          <input
+            type="text"
+            placeholder="Enter a username"
+            value={formData.username}
+            onChange={(e) => handleInputChange('username', e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Email:
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Password:
+          <input
+            type="password"
+            placeholder="Enter a password"
+            value={formData.password}
+            onChange={(e) => handleInputChange('password', e.target.value)}
+            required
+          />
+        </label>
+        <button type="submit" className="register-btn">
+          Register
+        </button>
+      </form>
     </div>
   );
 };
