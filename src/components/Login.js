@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Parse from '../config/parseConfig';
-import './Login.css';
+import '../Register.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({
