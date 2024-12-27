@@ -1,8 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import { RouterProvider } from 'react-router-dom';
-import { createBrowserRouter } from 'react-router-dom';
-import routes from './routes.js'; // Seu arquivo com as definições de rotas
+import router from './routes';
 
 const router = createBrowserRouter(routes, {
   future: {
