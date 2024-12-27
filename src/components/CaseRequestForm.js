@@ -8,7 +8,6 @@ const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
   const [transactionProofFiles, setTransactionProofFiles] = useState([]);
   const [formData, setFormData] = useState({
-    requesterType: '',
     requesterEmail: '',
     creditorName: '',
     businessName: '',
@@ -63,7 +62,6 @@ const CaseRequestForm = () => {
       await CaseRequest.save();
       alert('Case Request saved successfully!');
       setFormData({
-        requesterType: '',
         requesterEmail: '',
         creditorName: '',
         businessName: '',
