@@ -24,7 +24,7 @@ const ListRequests = () => {
 
   const handleEdit = (requestId) => {
     // Redireciona para a página de edição, passando o ID do request
-    window.location.href = `/update-request/${requestId}`;
+    window.location.href = `/create-request/${requestId}`;
   };
 
   return (

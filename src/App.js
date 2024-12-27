@@ -18,8 +18,13 @@ const App = () => {
         {/* Criar Request */}
         <Route path="/create-request" element={<CaseRequestForm />} />
 
+        {/* Editar Requests */}
+        <Route path="/create-request/:id?" element={<CaseRequestForm />} />
+
         {/* Listar Requests */}
         <Route path="/list-requests" element={<ListRequests />} />
+
+        
 
         {/* Página não encontrada */}
         <Route path="*" element={<div>404 - Page Not Found</div>} />
