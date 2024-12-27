@@ -1,52 +1,54 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Parse from '../config/parseConfig';
-import '../Register.css';
+import './Login.css';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
-  const handleInputChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
-      await Parse.User.logIn(formData.username, formData.password);
-      setSuccess('Logged in successfully!');
-      setError('');
+      await Parse.User.logIn(username, password);
+      navigate('/main-menu'); // Redireciona para o Main Menu
     } catch (err) {
-      setError(err.message || 'Failed to log in');
-      setSuccess('');
+      setError('Invalid username or password');
+      console.error('Login failed:', err);
     }
   };
 
   return (
     <div className="login-container">
       <h1>Login</h1>
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
-      <label>
-        Username:
-        <input
-          type="text"
-          value={formData.username}
-          onChange={(e) => handleInputChange('username', e.target.value)}
-        />
-      </label>
-      <label>
-        Password:
-        <input
-          type="password"
-          value={formData.password}
-          onChange={(e) => handleInputChange('password', e.target.value)}
-        />
-      </label>
-      <button onClick={handleLogin}>Login</button>
+      <form onSubmit={handleLogin}>
+        <div className="form-group">
+          <label htmlFor="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        {error && <p className="error-message">{error}</p>}
+        <button type="submit" className="login-btn">
+          Login
+        </button>
+      </form>
     </div>
   );
 };
