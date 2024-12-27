@@ -1,0 +1,21 @@
+.main-menu {
+  text-align: center;
+}
+
+.main-menu ul {
+  list-style: none;
+  padding: 0;
+}
+
+.main-menu li {
+  margin: 10px 0;
+}
+
+.main-menu a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.main-menu a:hover {
+  text-decoration: underline;
+}
