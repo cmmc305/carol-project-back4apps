@@ -7,8 +7,8 @@ WORKDIR /app
 # Copie os arquivos de dependências
 COPY package*.json ./
 
-# Instale as dependências
-RUN npm install
+# Instale as dependências com cache
+RUN npm install --legacy-peer-deps
 
 # Copie o restante do código do aplicativo
 COPY . .
@@ -16,7 +16,7 @@ COPY . .
 # Construa o aplicativo
 RUN npm run build
 
-# Instale o servidor estático
+# Instale o servidor estático globalmente
 RUN npm install -g serve
 
 # Exponha a porta do aplicativo
