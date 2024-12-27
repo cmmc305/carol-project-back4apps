@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import InputMask from 'react-input-mask';
 import Parse from '../config/parseConfig';
 import '../CaseRequestForm.css';
-import ReactLogo from '../assets/react-logo.png'; // Certifique-se de adicionar o logo do React à pasta `assets`
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
@@ -13,7 +11,6 @@ const CaseRequestForm = () => {
     creditorName: '',
     businessName: '',
     doingBusinessAs: '',
-    requestType: '',
     lienBalance: '',
     additionalEntities: '',
     address: '',
@@ -48,6 +45,7 @@ const CaseRequestForm = () => {
       const uploadedUccFiles = await Promise.all(
         uccFiles.map((file) => uploadFileToParse(file))
       );
+
       const uploadedTransactionProofFiles = await Promise.all(
         transactionProofFiles.map((file) => uploadFileToParse(file))
       );
@@ -62,14 +60,12 @@ const CaseRequestForm = () => {
 
       await CaseRequest.save();
       alert('Case Request saved successfully!');
-
       setFormData({
         requesterType: '',
         requesterEmail: '',
         creditorName: '',
         businessName: '',
         doingBusinessAs: '',
-        requestType: '',
         lienBalance: '',
         additionalEntities: '',
         address: '',
@@ -88,37 +84,42 @@ const CaseRequestForm = () => {
 
   return (
     <div className="form-container">
+      <img src="/react-logo.png" alt="React Logo" className="logo" />
       <h1>Case Request Form</h1>
-      <div className="form-group">
-        <label>Requester Email:</label>
+      <label>
+        Requester Type:
+        <input
+          type="text"
+          value={formData.requesterType}
+          onChange={(e) => handleInputChange('requesterType', e.target.value)}
+        />
+      </label>
+      <label>
+        Requester Email:
         <input
           type="email"
           value={formData.requesterEmail}
           onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
         />
-      </div>
-      <div className="form-group">
-        <label>Creditor Name:</label>
+      </label>
+      <label>
+        Creditor Name:
         <input
           type="text"
           value={formData.creditorName}
           onChange={(e) => handleInputChange('creditorName', e.target.value)}
         />
-      </div>
-      <div className="form-group">
-        <label>Business Name:</label>
+      </label>
+      <label>
+        Business Name:
         <input
           type="text"
           value={formData.businessName}
           onChange={(e) => handleInputChange('businessName', e.target.value)}
         />
-      </div>
+      </label>
       <label>
         Doing Business As:
-          </label>
-      </div>
-      <div className="form-group">
-        <label>Doing Business As:</label>
         <input
           type="text"
           value={formData.doingBusinessAs}
@@ -126,30 +127,18 @@ const CaseRequestForm = () => {
         />
       </label>
       <label>
-        Request Type:
-      </div>
-      <div className="form-group">
-        <label>Request Type:</label>
-        <select
-          value={formData.requestType}
-          onChange={(e) => handleInputChange('requestType', e.target.value)}
-@@ -143,63 +139,36 @@ const CaseRequestForm = () => {
-          <option value="Garnishment">Garnishment</option>
-          <option value="Release">Release</option>
-        </select>
+        Lien Balance:
+        <input
+          type="text"
+          value={formData.lienBalance}
+          onChange={(e) => handleInputChange('lienBalance', e.target.value)}
+        />
       </label>
       <label>
         Additional Entities:
         <textarea
           value={formData.additionalEntities}
           onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
-      </div>
-      <div className="form-group">
-        <label>Lien Balance:</label>
-        <InputMask
-          mask="99999.99"
-          value={formData.lienBalance}
-          onChange={(e) => handleInputChange('lienBalance', e.target.value)}
         />
       </label>
       <label>
@@ -174,24 +163,12 @@ const CaseRequestForm = () => {
           type="text"
           value={formData.city}
           onChange={(e) => handleInputChange('city', e.target.value)}
-      </div>
-      <div className="form-group">
-        <label>Phone Number:</label>
-        <InputMask
-          mask="(999) 999-9999"
-          value={formData.phoneNumber}
-          onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
         />
       </label>
       <label>
         Zipcode:
         <input
           type="text"
-      </div>
-      <div className="form-group">
-        <label>Zipcode:</label>
-        <InputMask
-          mask="99999-999"
           value={formData.zipcode}
           onChange={(e) => handleInputChange('zipcode', e.target.value)}
         />
@@ -206,9 +183,6 @@ const CaseRequestForm = () => {
       </label>
       <label>
         UCC Files:
-      </div>
-      <div className="form-group">
-        <label>UCC Files:</label>
         <input type="file" multiple onChange={(e) => handleFileUpload(e, setUccFiles)} />
       </label>
       <label>
@@ -216,10 +190,11 @@ const CaseRequestForm = () => {
         <input type="file" multiple onChange={(e) => handleFileUpload(e, setTransactionProofFiles)} />
       </label>
       <button type="button" className="submit-btn" onClick={handleSubmit}>
-      </div>
-      <button className="submit-btn" onClick={handleSubmit}>
         Submit
       </button>
+      <footer className="footer">
+        &copy; 2024 Your Company Name. All rights reserved.
+      </footer>
     </div>
   );
 };
