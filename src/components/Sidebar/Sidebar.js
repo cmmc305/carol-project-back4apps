@@ -9,7 +9,6 @@ import {
   faList,
   faUser,
   faSignOutAlt,
-  faHome,
 } from '@fortawesome/free-solid-svg-icons';
 import Parse from '../../config/parseConfig';
 import styles from './Sidebar.module.css'; // Usando CSS Modules
@@ -21,7 +20,7 @@ const Sidebar = () => {
   const handleLogout = async () => {
     try {
       await Parse.User.logOut();
-      navigate('/');
+      navigate('/'); // Redireciona para a página de login
     } catch (error) {
       console.error('Error during logout:', error);
       alert('Failed to log out. Please try again.');
@@ -31,17 +30,17 @@ const Sidebar = () => {
   // Definindo os links da Sidebar
   const navLinks = [
     {
-      to: '/create-request',
+      to: '/app/create-request', // Altere para corresponder ao caminho configurado em routes.js
       label: 'Create Request',
       icon: faPlus,
     },
     {
-      to: '/list-requests',
+      to: '/app/list-requests', // Altere para corresponder ao caminho configurado em routes.js
       label: 'List Requests',
       icon: faList,
     },
     {
-      to: '/register',
+      to: '/app/register', // Altere para corresponder ao caminho configurado em routes.js
       label: 'Register User',
       icon: faUser,
     },
