@@ -8,26 +8,17 @@ import RegisterUser from './components/Register/Register'; // Importação Corri
 import CaseRequestForm from './components/CaseRequestForm/CaseRequestForm';
 import ListRequests from './components/ListRequests/ListRequests';
 import NotFound from './components/NotFound/NotFound';
-import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 
 const AppRoutes = () => (
   <Routes>
     {/* Rota de Login */}
     <Route path="/" element={<Login />} />
 
-    {/* Rotas Protegidas com MainLayout */}
-    <Route
-      path="/app"
-      element={
-        <PrivateRoute>
-          <MainLayout />
-        </PrivateRoute>
-      }
-    >
+    {/* Rotas com MainLayout */}
+    <Route path="/app" element={<MainLayout />}>
       <Route path="register" element={<RegisterUser />} />
       <Route path="create-request" element={<CaseRequestForm />} />
       <Route path="list-requests" element={<ListRequests />} />
-      {/* Adicione outras rotas protegidas aqui */}
       {/* Rota 404 para rotas protegidas */}
       <Route path="*" element={<NotFound />} />
     </Route>
