@@ -1,23 +1,20 @@
 import React from 'react';
-import SidebarMenu from './SidebarMenu';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Outlet } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import '../css/Sidebar.css';
 import '../css/App.css';
-import '../css/Layout.css'; // Certifique-se de que o caminho do CSS está correto.
 
-
-const Layout = ({ children }) => {
+const MainLayout = () => {
   return (
-    <Row className="gx-0 vh-100">
+    <div className="d-flex">
       {/* Sidebar */}
-      <Col md={3} className="bg-light border-end">
-        <SidebarMenu />
-      </Col>
+      <Sidebar />
       {/* Main Content */}
-      <Col md={9} className="p-4">
-        <Container fluid>{children}</Container>
-      </Col>
-    </Row>
+      <div className="container-main">
+        <Outlet />
+      </div>
+    </div>
   );
 };
 
-export default Layout;
+export default MainLayout;
