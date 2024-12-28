@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
-import MainLayout from './components/MainLayout';
-import CaseRequestForm from './components/CaseRequestForm';
-import ListRequests from './components/ListRequests';
-import RegisterUser from './components/RegisterUser';
+import Login from '../components/Login';
+import MainLayout from '../components/MainLayout';
+import CaseRequestForm from '../components/CaseRequestForm';
+import ListRequests from '../components/ListRequests';
+import RegisterUser from '../components/Register';
 
 const App = () => (
   <Router>
