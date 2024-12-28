@@ -4,10 +4,11 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import MainLayout from './components/MainLayout/MainLayout';
 import Login from './components/Login/Login';
-import RegisterUser from './components/Register/Register';
+import RegisterUser from './components/Register/RegisterUser'; // Importação Corrigida
 import CaseRequestForm from './components/CaseRequestForm/CaseRequestForm';
 import ListRequests from './components/ListRequests/ListRequests';
 import NotFound from './components/NotFound/NotFound';
+import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 
 const AppRoutes = () => (
   <Routes>
@@ -15,7 +16,14 @@ const AppRoutes = () => (
     <Route path="/" element={<Login />} />
 
     {/* Rotas Protegidas com MainLayout */}
-    <Route path="/app" element={<MainLayout />}>
+    <Route
+      path="/app"
+      element={
+        <PrivateRoute>
+          <MainLayout />
+        </PrivateRoute>
+      }
+    >
       <Route path="register" element={<RegisterUser />} />
       <Route path="create-request" element={<CaseRequestForm />} />
       <Route path="list-requests" element={<ListRequests />} />
