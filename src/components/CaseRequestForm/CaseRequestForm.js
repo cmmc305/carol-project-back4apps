@@ -139,6 +139,34 @@ const CaseRequestForm = () => {
 
         <Row>
           <Col md={6}>
+            <Form.Group className="mb-3" controlId="businessName">
+              <Form.Label>Business Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter business name"
+                value={formData.businessName}
+                onChange={(e) => handleInputChange('businessName', e.target.value)}
+                className={styles.input}
+                required
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="doingBusinessAs">
+              <Form.Label>Doing Business As</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter doing business as"
+                value={formData.doingBusinessAs}
+                onChange={(e) => handleInputChange('doingBusinessAs', e.target.value)}
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={6}>
             <Form.Group className="mb-3" controlId="address">
               <Form.Label>Address</Form.Label>
               <Form.Control
@@ -224,7 +252,33 @@ const CaseRequestForm = () => {
           </Col>
         </Row>
 
-        {/* Campos adicionais como 'doingBusinessAs', 'businessName', etc., podem ser adicionados aqui de forma similar */}
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="lienBalance">
+              <Form.Label>Lien Balance</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter lien balance"
+                value={formData.lienBalance}
+                onChange={(e) => handleInputChange('lienBalance', e.target.value)}
+                className={styles.input}
+                required
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="defaultDate">
+              <Form.Label>Default Date</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="Enter default date"
+                value={formData.defaultDate}
+                onChange={(e) => handleInputChange('defaultDate', e.target.value)}
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
 
         <Row>
           <Col md={12}>
@@ -237,6 +291,31 @@ const CaseRequestForm = () => {
                 value={formData.additionalEntities}
                 onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
                 className={styles.textarea}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="uccFiles" className="mb-3">
+              <Form.Label>UCC Files</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                onChange={(e) => setUccFiles(Array.from(e.target.files))}
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="transactionProofFiles" className="mb-3">
+              <Form.Label>Transaction Proof Files</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                onChange={(e) => setTransactionProofFiles(Array.from(e.target.files))}
+                className={styles.input}
               />
             </Form.Group>
           </Col>
