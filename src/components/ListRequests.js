@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Container, Spinner, Button } from 'react-bootstrap';
+import { Table, Container, Spinner, Button, Accordion } from 'react-bootstrap';
 import Parse from '../config/parseConfig';
 import '../css/App.css';
 
@@ -38,52 +38,58 @@ const ListRequests = () => {
           <p>Loading requests...</p>
         </div>
       ) : requests.length > 0 ? (
-        <Table striped bordered hover responsive className="mt-4">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Requester Email</th>
-              <th>Creditor Name</th>
-              <th>Business Name</th>
-              <th>Doing Business As</th>
-              <th>Request Type</th>
-              <th>Address</th>
-              <th>State</th>
-              <th>City</th>
-              <th>Zipcode</th>
-              <th>Phone Number</th>
-              <th>Lien Balance</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requests.map((request) => (
-              <tr key={request.id}>
-                <td>{request.id}</td>
-                <td>{request.get('requesterEmail')}</td>
-                <td>{request.get('creditorName')}</td>
-                <td>{request.get('businessName')}</td>
-                <td>{request.get('doingBusinessAs')}</td>
-                <td>{request.get('requestType')}</td>
-                <td>{request.get('address')}</td>
-                <td>{request.get('state')}</td>
-                <td>{request.get('city')}</td>
-                <td>{request.get('zipcode')}</td>
-                <td>{request.get('phoneNumber')}</td>
-                <td>${parseFloat(request.get('lienBalance') || 0).toFixed(2)}</td>
-                <td>
-                  <Button
-                    variant="warning"
-                    size="sm"
-                    onClick={() => handleEdit(request.id)}
-                  >
-                    ✏️ Edit
-                  </Button>
-                </td>
+        <div className="table-responsive">
+          <Table striped bordered hover className="table-sm">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Requester Email</th>
+                <th>Creditor Name</th>
+                <th>Business Name</th>
+                <th>Request Type</th>
+                <th>Actions</th>
               </tr>
+            </thead>
+            <tbody>
+              {requests.map((request) => (
+                <tr key={request.id}>
+                  <td>{request.id}</td>
+                  <td>{request.get('requesterEmail')}</td>
+                  <td>{request.get('creditorName')}</td>
+                  <td>{request.get('businessName')}</td>
+                  <td>{request.get('requestType')}</td>
+                  <td>
+                    <Button
+                      variant="warning"
+                      size="sm"
+                      onClick={() => handleEdit(request.id)}
+                    >
+                      ✏️ Edit
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <Accordion className="mt-3">
+            {requests.map((request, index) => (
+              <Accordion.Item eventKey={index.toString()} key={index}>
+                <Accordion.Header>Details for ID: {request.id}</Accordion.Header>
+                <Accordion.Body>
+                  <p><strong>Address:</strong> {request.get('address')}</p>
+                  <p><strong>State:</strong> {request.get('state')}</p>
+                  <p><strong>City:</strong> {request.get('city')}</p>
+                  <p><strong>Zipcode:</strong> {request.get('zipcode')}</p>
+                  <p><strong>Phone Number:</strong> {request.get('phoneNumber')}</p>
+                  <p>
+                    <strong>Lien Balance:</strong> $
+                    {parseFloat(request.get('lienBalance') || 0).toFixed(2)}
+                  </p>
+                </Accordion.Body>
+              </Accordion.Item>
             ))}
-          </tbody>
-        </Table>
+          </Accordion>
+        </div>
       ) : (
         <p className="text-center">No requests found</p>
       )}

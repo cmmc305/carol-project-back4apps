@@ -1,7 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client'; // Import correto para React 18+
 import App from './App';
-import './css/Login.css'; // Se necessário, ajuste para incluir outros estilos globais.
+import './css/Login.css'; // Ajuste conforme necessário para incluir estilos globais.
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

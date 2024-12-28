@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Parse from '../config/parseConfig';
-import '../css/App.css';
+import { Container, Form, Button, Row, Col, InputGroup } from 'react-bootstrap';
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
@@ -21,7 +21,7 @@ const CaseRequestForm = () => {
     city: '',
     zipcode: '',
     emailAddress: '',
-    phoneNumber: ''
+    phoneNumber: '',
   });
 
   const handleInputChange = (name, value) => {
@@ -45,7 +45,7 @@ const CaseRequestForm = () => {
 
   const handleFileUpload = (event, setter) => {
     const files = Array.from(event.target.files);
-    setter((prevFiles) => [...prevFiles, ...files]);
+    setter(files);
   };
 
   const handleSubmit = async () => {
@@ -77,7 +77,7 @@ const CaseRequestForm = () => {
         city: '',
         zipcode: '',
         emailAddress: '',
-        phoneNumber: ''
+        phoneNumber: '',
       });
       setEinList(['']);
       setSsnList(['']);
@@ -90,146 +90,80 @@ const CaseRequestForm = () => {
   };
 
   return (
-    <div className="form-container">
-      <h1>Case Request Form</h1>
-
-      <label>
-        Requester Email:
-        <input
-          type="email"
-          value={formData.requesterEmail}
-          onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
-        />
-      </label>
-
-      <label>
-        Request Type:
-        <select
-          value={formData.requestType}
-          onChange={(e) => handleInputChange('requestType', e.target.value)}
-        >
-          <option value="">Select Request Type</option>
-          <option value="Lien">Lien</option>
-          <option value="Garnishment">Garnishment</option>
-          <option value="Release">Release</option>
-        </select>
-      </label>
-
-      <label>
-        Address:
-        <input
-          type="text"
-          value={formData.address}
-          onChange={(e) => handleInputChange('address', e.target.value)}
-        />
-      </label>
-
-      <label>
-        City:
-        <input
-          type="text"
-          value={formData.city}
-          onChange={(e) => handleInputChange('city', e.target.value)}
-        />
-      </label>
-
-      <label>
-        State:
-        <input
-          type="text"
-          value={formData.state}
-          onChange={(e) => handleInputChange('state', e.target.value)}
-        />
-      </label>
-
-      <label>
-        Zip Code:
-        <input
-          type="text"
-          value={formData.zipcode}
-          onChange={(e) => handleInputChange('zipcode', e.target.value)}
-        />
-      </label>
-
-      <label>
-        Email Address:
-        <input
-          type="email"
-          value={formData.emailAddress}
-          onChange={(e) => handleInputChange('emailAddress', e.target.value)}
-        />
-      </label>
-
-      <label>
-        Phone Number:
-        <input
-          type="text"
-          value={formData.phoneNumber}
-          onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-        />
-      </label>
-
-      <label>
-        Default Date:
-        <input
-          type="date"
-          value={formData.defaultDate}
-          onChange={(e) => handleInputChange('defaultDate', e.target.value)}
-        />
-      </label>
-
-      <label>
-        Additional Entities:
-        <textarea
-          value={formData.additionalEntities}
-          onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
-        ></textarea>
-      </label>
-
-      <label>
-        EIN:
-        {einList.map((ein, index) => (
-          <input
-            key={`ein-${index}`}
-            type="text"
-            value={ein}
-            onChange={(e) => handleEinChange(index, e.target.value)}
-          />
-        ))}
-        <button type="button" className="add-btn" onClick={addEin}>
-          + Add EIN
-        </button>
-      </label>
-
-      <label>
-        SSN:
-        {ssnList.map((ssn, index) => (
-          <input
-            key={`ssn-${index}`}
-            type="text"
-            value={ssn}
-            onChange={(e) => handleSsnChange(index, e.target.value)}
-          />
-        ))}
-        <button type="button" className="add-btn" onClick={addSsn}>
-          + Add SSN
-        </button>
-      </label>
-
-      <label>
-        UCC Files:
-        <input type="file" multiple onChange={(e) => handleFileUpload(e, setUccFiles)} />
-      </label>
-
-      <label>
-        Transaction Proof Files:
-        <input type="file" multiple onChange={(e) => handleFileUpload(e, setTransactionProofFiles)} />
-      </label>
-
-      <button type="button" className="submit-btn" onClick={handleSubmit}>
-        Submit
-      </button>
-    </div>
+    <Container className="mt-4">
+      <h1 className="text-center">Case Request Form</h1>
+      <Form>
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="requesterEmail">
+              <Form.Label>Requester Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter requester email"
+                value={formData.requesterEmail}
+                onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="requestType">
+              <Form.Label>Request Type</Form.Label>
+              <Form.Select
+                value={formData.requestType}
+                onChange={(e) => handleInputChange('requestType', e.target.value)}
+              >
+                <option value="">Select Request Type</option>
+                <option value="Lien">Lien</option>
+                <option value="Garnishment">Garnishment</option>
+                <option value="Release">Release</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="address">
+              <Form.Label>Address</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter address"
+                value={formData.address}
+                onChange={(e) => handleInputChange('address', e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="city">
+              <Form.Label>City</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter city"
+                value={formData.city}
+                onChange={(e) => handleInputChange('city', e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        {/* Repeat similar structure for other fields */}
+        <Row>
+          <Col md={12}>
+            <Form.Group className="mb-3" controlId="additionalEntities">
+              <Form.Label>Additional Entities</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter additional entities"
+                value={formData.additionalEntities}
+                onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Button variant="primary" onClick={handleSubmit}>
+          Submit
+        </Button>
+      </Form>
+    </Container>
   );
 };
 

@@ -30,6 +30,9 @@ const RegisterUser = () => {
       await user.signUp();
       setSuccess('User registered successfully!');
       setFormData({ username: '', email: '', password: '' });
+
+      // Auto-hide success message
+      setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
       setError(err.message || 'Failed to register user');
     } finally {
@@ -41,7 +44,7 @@ const RegisterUser = () => {
     <Container className="mt-4">
       <Row className="justify-content-center">
         <Col md={6}>
-          <h1 className="text-center">Register User</h1>
+          <h1 className="text-center mb-4">Register User</h1>
           {error && <Alert variant="danger">{error}</Alert>}
           {success && <Alert variant="success">{success}</Alert>}
           <Form
@@ -82,7 +85,14 @@ const RegisterUser = () => {
             </Form.Group>
             <div className="d-grid">
               <Button variant="primary" type="submit" disabled={loading}>
-                {loading ? <Spinner as="span" animation="border" size="sm" /> : 'Register'}
+                {loading ? (
+                  <>
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                    {' '}Registering...
+                  </>
+                ) : (
+                  'Register'
+                )}
               </Button>
             </div>
           </Form>

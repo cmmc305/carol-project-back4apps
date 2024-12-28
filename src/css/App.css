@@ -1,131 +1,184 @@
 /* Global Reset */
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa; /* Cor neutra de fundo */
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #343a40; /* Cor primária para títulos */
-  }
-  
-  p, label {
-    margin-bottom: 10px;
-    color: #495057; /* Cor para texto secundário */
-  }
-  
-  /* Botões */
-  .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-  }
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #004085;
-  }
-  
-  /* Tabelas */
-  .table {
-    background-color: #fff;
-    border-collapse: separate;
-    border-spacing: 0;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .table th, .table td {
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .table th {
-    background-color: #007bff;
-    color: #fff;
-  }
-  
-  .table-hover tbody tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  /* Formulários */
-  .form-container {
-    background: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-label {
-    font-weight: bold;
-  }
-  
-  .form-control {
-    border-radius: 5px;
-  }
-  
-  .form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
-  }
-  
-  /* Navbar */
-  .navbar {
-    background-color: #007bff;
-  }
-  
-  .nav-link {
-    color: #fff;
-  }
-  
-  .nav-link:hover {
-    color: #dcdcdc;
-  }
-  
-  /* Footer */
-  .footer {
-    background: #343a40;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa; /* Cor neutra de fundo */
+}
 
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #343a40; /* Cor primária para títulos */
+}
+
+p, label {
+  margin-bottom: 10px;
+  color: #495057; /* Cor para texto secundário */
+}
+
+/* Botões */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+/* Tabelas */
+.table {
+  background-color: #fff;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  table-layout: auto; /* Ajusta colunas automaticamente */
+}
+
+.table th, .table td {
+  padding: 10px;
+  text-align: left;
+  white-space: nowrap; /* Evita quebras de linha nos dados */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table th {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Container responsivo para tabelas */
+.table-container {
+  overflow-x: auto; /* Permite rolagem horizontal em telas menores */
+}
+
+/* Formulários */
+.form-container {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-weight: bold;
+}
+
+.form-control {
+  border-radius: 5px;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+/* Navbar */
+.navbar {
+  background-color: #007bff;
+}
+
+.nav-link {
+  color: #fff;
+}
+
+.nav-link:hover {
+  color: #dcdcdc;
+}
+
+/* Sidebar Menu */
+.sidebar-menu {
+  height: 100vh; /* Altura total da janela */
+  position: fixed; /* Fixa o menu na lateral */
+  top: 0;
+  left: 0;
+  width: 250px; /* Largura fixa */
+  background-color: #007bff; /* Cor de fundo */
+  color: white;
+  overflow-y: auto; /* Rola o menu se exceder a altura */
+  z-index: 1000;
+  transition: left 0.3s;
+}
+
+.sidebar-menu h3 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin: 20px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-menu .nav-link {
+  padding: 10px 20px;
+  color: white;
+  display: block;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.sidebar-menu .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Container principal para compensar o menu */
+.container {
+  margin-left: 250px; /* Compensa a largura do menu lateral */
+  padding: 20px;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
   .sidebar-menu {
-    height: 100vh; /* Altura total da janela */
-    position: fixed; /* Fixa o menu na lateral */
-    top: 0;
-    left: 0;
-    width: 250px; /* Largura fixa */
-    background-color: #007bff; /* Cor de fundo */
-    color: white;
-    overflow-y: auto; /* Rola o menu se exceder a altura */
+    left: -250px; /* Esconde o menu lateral inicialmente */
   }
-  
-  .sidebar-menu h3 {
-    text-align: center;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  .sidebar-menu.active {
+    left: 0; /* Mostra o menu lateral */
   }
-  
-  .sidebar-menu .nav-link {
-    padding: 10px 20px;
-    color: white;
-    transition: background-color 0.3s;
-  }
-  
-  .sidebar-menu .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
   .container {
-    margin-left: 250px; /* Compensa a largura do menu */
-    padding: 20px;
+    margin-left: 0; /* Remove o deslocamento em telas menores */
   }
-  
-  
+}
+
+/* Botão de menu hambúrguer */
+.hamburger-menu {
+  display: none;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 1100;
+  cursor: pointer;
+}
+
+.hamburger-menu span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px 0;
+  background-color: white;
+}
+
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: block;
+  }
+}
+
+/* Footer */
+.footer {
+  background: #343a40;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  z-index: 1000;
+}

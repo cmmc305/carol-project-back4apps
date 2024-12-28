@@ -1,29 +1,29 @@
-# Use uma imagem base
-FROM node:18
+# Etapa 1: Build
+FROM node:18 AS builder
 
-# Defina o diretório de trabalho no container
+# Diretório de trabalho para o build
 WORKDIR /app
 
-# Copie os arquivos de dependências
+# Copiar arquivos de dependências
 COPY package*.json ./
 
-# Instale as dependências
-RUN npm install
+# Instalar dependências
+RUN npm ci
 
-# Instale o ajv manualmente, se necessário
-RUN npm install ajv ajv-keywords
-
-# Copie o restante do código do aplicativo
+# Copiar o restante do código do aplicativo
 COPY . .
 
-# Construa o aplicativo
+# Construir o aplicativo
 RUN npm run build
 
-# Instale o servidor estático
-RUN npm install -g serve
+# Etapa 2: Imagem final
+FROM nginx:alpine
 
-# Exponha a porta do aplicativo
-EXPOSE 3000
+# Copiar arquivos construídos para o servidor NGINX
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Expor a porta 80 para o servidor
+EXPOSE 80
 
 # Comando padrão para iniciar o servidor
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["nginx", "-g", "daemon off;"]

@@ -8,7 +8,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "web": "serve -s build -l 3000"
+    "web": "serve -s build -l 3000",
+    "clean": "rm -rf node_modules build && npm cache clean --force"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -23,7 +24,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.0",
     "@babel/runtime": "^7.21.0",
     "serve": "^14.2.0"
   },
