@@ -16,7 +16,7 @@ const App = () => (
       <Route element={<MainLayout />}>
         <Route path="/create-request" element={<CaseRequestForm />} />
         <Route path="/list-requests" element={<ListRequests />} />
-        <Route path="/register" element={<RegisterUser />} />
+        <Route path="/register" element={<Register />} />
       </Route>
     </Routes>
   </Router>
