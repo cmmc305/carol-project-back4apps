@@ -1,0 +1,76 @@
+/* Centralizar o formulário na tela */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa; /* Cor de fundo clara */
+  }
+  
+  /* Caixa de login */
+  .login-box {
+    width: 100%;
+    max-width: 400px; /* Define uma largura máxima */
+    background-color: #ffffff; /* Fundo branco */
+    padding: 30px;
+    border-radius: 8px; /* Bordas arredondadas */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  }
+  
+  /* Título */
+  .login-box h1 {
+    font-size: 1.8rem;
+    color: #343a40;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Labels */
+  .login-box label {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #495057;
+  }
+  
+  /* Inputs */
+  .login-box input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .login-box input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+    outline: none;
+  }
+  
+  /* Botão de login */
+  .login-box .login-btn {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .login-box .login-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Mensagem de erro */
+  .error-message {
+    color: #dc3545;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  

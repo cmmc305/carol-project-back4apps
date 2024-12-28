@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Parse from '../config/parseConfig';
 import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import '../css/App.css';
+import '../css/Login.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
