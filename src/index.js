@@ -1,11 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client'; // Atualizado para usar createRoot no React 18
 import App from './App';
-import './index.css'; // Estilo global do aplicativo
+import 'bootstrap/dist/css/bootstrap.min.css'; // Adiciona o estilo global do Bootstrap
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Parse from '../config/parseConfig';
-import '../Login.css';
+import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -30,37 +30,54 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <h1>Login</h1>
-      <form onSubmit={handleLogin}>
-        <div className="form-group">
-          <label htmlFor="username">Username:</label>
-          <input
+    <Container className="mt-5">
+      <h1 className="text-center">Login</h1>
+      <Form onSubmit={handleLogin} className="mt-4">
+        <Form.Group className="mb-3" controlId="username">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
             type="text"
-            id="username"
             placeholder="Enter your username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
-          <input
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
             type="password"
-            id="password"
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+        </Form.Group>
+        {error && <Alert variant="danger">{error}</Alert>}
+        <div className="text-center">
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={loading}
+            className="w-100"
+          >
+            {loading ? (
+              <>
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />{' '}
+                Logging in...
+              </>
+            ) : (
+              'Login'
+            )}
+          </Button>
         </div>
-        {error && <p className="error-message">{error}</p>}
-        <button type="submit" className="login-btn" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-    </div>
+      </Form>
+    </Container>
   );
 };
 

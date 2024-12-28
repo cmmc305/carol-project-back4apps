@@ -1,23 +1,43 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import '../MainMenu.css';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const MainMenu = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="main-menu-container">
+    <Container className="text-center mt-5">
       <h1>Main Menu</h1>
-      <div className="menu-options">
-        <Link to="/create-request" className="menu-button">
-          Create Request Form
-        </Link>
-        <Link to="/list-requests" className="menu-button">
-          List Request Forms
-        </Link>
-        <Link to="/register" className="menu-button">
-          Register User
-        </Link>
-      </div>
-    </div>
+      <Row className="mt-4">
+        <Col md={4}>
+          <Button
+            variant="primary"
+            className="w-100 mb-3"
+            onClick={() => navigate('/create-request')}
+          >
+            Create Request Form
+          </Button>
+        </Col>
+        <Col md={4}>
+          <Button
+            variant="success"
+            className="w-100 mb-3"
+            onClick={() => navigate('/list-requests')}
+          >
+            List Request Forms
+          </Button>
+        </Col>
+        <Col md={4}>
+          <Button
+            variant="info"
+            className="w-100 mb-3"
+            onClick={() => navigate('/register')}
+          >
+            Register User
+          </Button>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

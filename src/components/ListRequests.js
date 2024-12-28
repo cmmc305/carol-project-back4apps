@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Table, Container, Spinner, Button } from 'react-bootstrap';
 import Parse from '../config/parseConfig';
-import '../ListRequests.css';
 
 const ListRequests = () => {
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true); // Adicionado para feedback de carregamento
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -23,17 +23,21 @@ const ListRequests = () => {
   }, []);
 
   const handleEdit = (requestId) => {
-    // Redireciona para a página de edição, passando o ID do request
     window.location.href = `/create-request/${requestId}`;
   };
 
   return (
-    <div className="list-requests-container">
-      <h1 className="title">List of Requests</h1>
+    <Container className="mt-4">
+      <h1 className="text-center mb-4">List of Requests</h1>
       {loading ? (
-        <p className="loading-message">Loading requests...</p>
+        <div className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <p>Loading requests...</p>
+        </div>
       ) : requests.length > 0 ? (
-        <table className="requests-table">
+        <Table striped bordered hover responsive className="mt-4">
           <thead>
             <tr>
               <th>ID</th>
@@ -42,7 +46,6 @@ const ListRequests = () => {
               <th>Business Name</th>
               <th>Doing Business As</th>
               <th>Request Type</th>
-              <th>Additional Entities</th>
               <th>Address</th>
               <th>State</th>
               <th>City</th>
@@ -61,31 +64,29 @@ const ListRequests = () => {
                 <td>{request.get('businessName')}</td>
                 <td>{request.get('doingBusinessAs')}</td>
                 <td>{request.get('requestType')}</td>
-                <td>{request.get('additionalEntities')}</td>
                 <td>{request.get('address')}</td>
                 <td>{request.get('state')}</td>
                 <td>{request.get('city')}</td>
                 <td>{request.get('zipcode')}</td>
                 <td>{request.get('phoneNumber')}</td>
+                <td>${parseFloat(request.get('lienBalance') || 0).toFixed(2)}</td>
                 <td>
-                  ${parseFloat(request.get('lienBalance') || 0).toFixed(2)}
-                </td>
-                <td>
-                  <button
-                    className="edit-button"
+                  <Button
+                    variant="warning"
+                    size="sm"
                     onClick={() => handleEdit(request.id)}
                   >
                     ✏️ Edit
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       ) : (
-        <p className="no-data">No requests found</p>
+        <p className="text-center">No requests found</p>
       )}
-    </div>
+    </Container>
   );
 };
 
