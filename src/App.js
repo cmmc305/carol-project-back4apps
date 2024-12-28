@@ -4,7 +4,7 @@ import Layout from './components/Layout';
 import Login from './components/Login';
 import CaseRequestForm from './components/CaseRequestForm';
 import ListRequests from './components/ListRequests';
-import RegisterUser from './components/RegisterUser';
+import RegisterUser from './components/Register';
 import './css/App.css';
 
 const App = () => {
