@@ -1,33 +1,32 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
 import Login from './components/Login';
-import MainMenu from './components/MainMenu';
 import CaseRequestForm from './components/CaseRequestForm';
 import ListRequests from './components/ListRequests';
+import RegisterUser from './components/RegisterUser';
+import './css/App.css';
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Página inicial - Login */}
+        {/* Login está fora do Layout */}
         <Route path="/" element={<Login />} />
-
-        {/* Menu principal */}
-        <Route path="/main-menu" element={<MainMenu />} />
-
-        {/* Criar Request */}
-        <Route path="/create-request" element={<CaseRequestForm />} />
-
-        {/* Editar Requests */}
-        <Route path="/create-request/:id?" element={<CaseRequestForm />} />
-
-        {/* Listar Requests */}
-        <Route path="/list-requests" element={<ListRequests />} />
-
         
-
-        {/* Página não encontrada */}
-        <Route path="*" element={<div>404 - Page Not Found</div>} />
+        {/* Rotas com o Layout */}
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <Routes>
+                <Route path="/create-request" element={<CaseRequestForm />} />
+                <Route path="/list-requests" element={<ListRequests />} />
+                <Route path="/register" element={<RegisterUser />} />
+              </Routes>
+            </Layout>
+          }
+        />
       </Routes>
     </Router>
   );
