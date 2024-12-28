@@ -1,21 +1,29 @@
-/* === Global Reset === */
-body {
+/* === Reset Global === */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   font-family: 'Arial', sans-serif;
-  background-color: #f8f9fa;
+  background-color: #f8f9fa; /* Fundo neutro */
+  color: #343a40; /* Cor do texto padrão */
+  line-height: 1.6;
 }
 
-h1, h2, h3 {
-  color: #343a40;
-  font-weight: bold;
+/* === Links Globais === */
+a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s;
 }
 
-p, label {
-  color: #495057;
+a:hover {
+  color: #0056b3;
 }
 
-/* Botões globais */
+/* === Botões Globais === */
 button, .btn {
   font-weight: bold;
   border-radius: 4px;
@@ -23,4 +31,25 @@ button, .btn {
 
 button:hover, .btn:hover {
   filter: brightness(0.9);
+}
+
+/* === Layout Global === */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* === Títulos === */
+h1, h2, h3, h4 {
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #343a40;
+}
+
+/* === Responsividade === */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
 }

@@ -1,48 +1,65 @@
-/* Form Page */
-.form-container {
-    margin-left: 260px;
-    margin-top: 20px;
-    padding: 20px;
-    background: #ffffff;
+/* Container principal */
+.case-request-container {
+    background-color: #f8f9fa;
     border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
   }
   
-  .form-container h1 {
-    color: #007bff;
-    margin-bottom: 20px;
-    text-align: center;
+  /* Título */
+  .case-request-title {
+    font-size: 2rem;
+    color: #343a40;
+    margin-bottom: 30px;
   }
   
-  .form-container .form-group {
-    margin-bottom: 15px;
+  /* Formulário */
+  .case-request-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .form-container .form-control {
-    border-radius: 6px;
+  /* Inputs */
+  .case-request-input {
+    border-radius: 5px;
+    font-size: 1rem;
+    padding: 10px;
   }
   
-  .form-container .submit-btn {
+  .case-request-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+  }
+  
+  /* Textarea */
+  .case-request-textarea {
+    border-radius: 5px;
+    font-size: 1rem;
+    padding: 10px;
+    resize: none;
+  }
+  
+  .case-request-textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+  }
+  
+  /* Botão de envio */
+  .case-request-submit {
     width: 100%;
     background-color: #007bff;
     color: white;
-    padding: 10px;
+    padding: 10px 15px;
+    font-size: 1rem;
     font-weight: bold;
-    border-radius: 6px;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
   }
   
-  .form-container .submit-btn:hover {
+  .case-request-submit:hover {
     background-color: #0056b3;
-  }
-  
-  .form-container .file-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 10px;
-  }
-  
-  .form-container .file-list li {
-    padding: 5px 0;
-    border-bottom: 1px solid #ddd;
   }
   

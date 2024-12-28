@@ -1,48 +1,69 @@
-/* Login Page */
+/* === Login Container === */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f8f9fa;
+  min-height: 100vh;
+  background-color: #f8f9fa; /* Fundo claro e neutro */
 }
 
+/* === Login Box === */
 .login-box {
   width: 100%;
-  max-width: 400px;
-  background: #ffffff;
+  max-width: 400px; /* Define a largura máxima */
+  background-color: #ffffff; /* Fundo branco */
   padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; /* Bordas arredondadas */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destaque */
+  text-align: center;
 }
 
 .login-box h1 {
   font-size: 1.8rem;
-  color: #007bff;
-  text-align: center;
+  font-weight: bold;
+  color: #343a40;
   margin-bottom: 20px;
 }
 
-.login-box .form-control {
-  border-radius: 6px;
-}
-
-.login-box .login-btn {
-  width: 100%;
-  background-color: #007bff;
-  color: white;
-  padding: 10px;
+/* === Form === */
+.form-label {
   font-weight: bold;
-  border-radius: 6px;
+  color: #495057;
 }
 
-.login-box .login-btn:hover {
+.form-control {
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* === Login Button === */
+.login-btn {
+  font-weight: bold;
+  background-color: #007bff;
+  border: none;
+  padding: 10px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
   background-color: #0056b3;
 }
 
-.login-box .error-message {
-  color: #dc3545;
+/* === Alert === */
+.alert {
+  margin-top: 15px;
   font-size: 0.9rem;
-  text-align: center;
-  margin-bottom: 10px;
+}
+
+/* === Spinner === */
+.spinner-border {
+  margin-right: 5px;
 }

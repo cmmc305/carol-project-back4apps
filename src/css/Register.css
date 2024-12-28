@@ -1,44 +1,73 @@
-/* Register Page */
+/* === Register Page === */
 .register-container {
-    margin-left: 260px;
-    margin-top: 20px;
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ocupa toda a altura da janela */
+    background-color: #f8f9fa; /* Fundo neutro */
   }
   
-  .register-container h1 {
+  .register-box {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
+    width: 100%;
+    max-width: 500px; /* Largura máxima */
+  }
+  
+  .register-box h1 {
+    font-size: 1.8rem;
+    color: #343a40;
     text-align: center;
-    color: #007bff;
     margin-bottom: 20px;
   }
   
-  .register-container .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .register-container .form-control {
-    border-radius: 6px;
-  }
-  
-  .register-container .submit-btn {
-    width: 100%;
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
+  .register-box .form-label {
     font-weight: bold;
-    border-radius: 6px;
+    color: #495057;
   }
   
-  .register-container .submit-btn:hover {
+  .register-box .form-control {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+  }
+  
+  .register-box .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 6px rgba(0, 123, 255, 0.25);
+    outline: none;
+  }
+  
+  .register-box .alert {
+    margin-bottom: 20px;
+  }
+  
+  .register-box .btn {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px;
+  }
+  
+  .register-box .btn:disabled {
+    background-color: #d6d8db;
+    cursor: not-allowed;
+  }
+  
+  .register-box .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  
+  .register-box .btn-primary:hover {
     background-color: #0056b3;
   }
   
-  .register-container .error-message {
-    color: #dc3545;
-    font-size: 0.9rem;
-    text-align: center;
-    margin-bottom: 10px;
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .register-box {
+      padding: 20px;
+      max-width: 100%; /* Largura total em telas menores */
+    }
   }
   
