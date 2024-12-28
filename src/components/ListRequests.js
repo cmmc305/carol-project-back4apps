@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Container, Spinner, Button } from 'react-bootstrap';
 import Parse from '../config/parseConfig';
-import './css/App.css';
+import '../css/App.css';
 
 const ListRequests = () => {
   const [requests, setRequests] = useState([]);

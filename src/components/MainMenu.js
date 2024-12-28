@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import './css/App.css';
+import '../css/App.css';
 
 const MainMenu = () => {
   const navigate = useNavigate();
