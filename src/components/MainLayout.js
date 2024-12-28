@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'; // Certifique-se de importar o Outlet
 import Sidebar from './Sidebar'; // Certifique-se de que o Sidebar está no mesmo diretório.
 import { Container, Row, Col } from 'react-bootstrap';
 import '../css/App.css';
+import '../css/MainLayout.css';
 
 const MainLayout = () => {
   return (

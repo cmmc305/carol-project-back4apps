@@ -1,0 +1,44 @@
+/* Register Page */
+.register-container {
+    margin-left: 260px;
+    margin-top: 20px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .register-container h1 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 20px;
+  }
+  
+  .register-container .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .register-container .form-control {
+    border-radius: 6px;
+  }
+  
+  .register-container .submit-btn {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 6px;
+  }
+  
+  .register-container .submit-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .register-container .error-message {
+    color: #dc3545;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  

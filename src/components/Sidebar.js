@@ -4,6 +4,8 @@ import { Nav, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faList, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import Parse from '../config/parseConfig';
+import '../css/App.css';
+import '../css/Sidebar.css';
 
 const Sidebar = () => {
   const navigate = useNavigate();

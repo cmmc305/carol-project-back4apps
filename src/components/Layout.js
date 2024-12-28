@@ -1,6 +1,9 @@
 import React from 'react';
 import SidebarMenu from './SidebarMenu';
 import { Container, Row, Col } from 'react-bootstrap';
+import '../css/App.css';
+import './css/Layout.css'; // Certifique-se de que o caminho do CSS está correto.
+
 
 const Layout = ({ children }) => {
   return (

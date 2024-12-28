@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Table, Container, Spinner, Button, Accordion } from 'react-bootstrap';
 import Parse from '../config/parseConfig';
 import '../css/App.css';
+import './css/ListRequests.css'; // Certifique-se de que o caminho do CSS está correto.
+
 
 const ListRequests = () => {
   const [requests, setRequests] = useState([]);

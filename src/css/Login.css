@@ -1,111 +1,48 @@
-/* Centralizar o formulário na tela */
+/* Login Page */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f8f9fa; /* Cor de fundo clara */
-  padding: 20px; /* Para evitar colagem em telas pequenas */
+  background-color: #f8f9fa;
 }
 
-/* Caixa de login */
 .login-box {
   width: 100%;
-  max-width: 400px; /* Define uma largura máxima */
-  background-color: #ffffff; /* Fundo branco */
+  max-width: 400px;
+  background: #ffffff;
   padding: 30px;
-  border-radius: 8px; /* Bordas arredondadas */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
-  animation: fadeIn 0.5s ease; /* Efeito de entrada */
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Animação */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Título */
 .login-box h1 {
   font-size: 1.8rem;
-  color: #343a40;
+  color: #007bff;
   text-align: center;
   margin-bottom: 20px;
-  font-weight: bold;
 }
 
-/* Labels */
-.login-box label {
-  font-weight: bold;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
-  color: #495057;
-  display: block; /* Garante que o label esteja separado do input */
+.login-box .form-control {
+  border-radius: 6px;
 }
 
-/* Inputs */
-.login-box input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.login-box input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
-  outline: none;
-}
-
-/* Botão de login */
 .login-box .login-btn {
   width: 100%;
   background-color: #007bff;
   color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
+  padding: 10px;
   font-weight: bold;
-  transition: background-color 0.3s;
+  border-radius: 6px;
 }
 
 .login-box .login-btn:hover {
   background-color: #0056b3;
 }
 
-/* Mensagem de erro */
-.error-message {
+.login-box .error-message {
   color: #dc3545;
   font-size: 0.9rem;
   text-align: center;
   margin-bottom: 10px;
-  font-weight: bold;
-}
-
-/* Responsividade */
-@media (max-width: 576px) {
-  .login-box {
-    padding: 20px;
-    box-shadow: none; /* Remove sombra para telas menores */
-  }
-
-  .login-box h1 {
-    font-size: 1.5rem;
-  }
-
-  .login-box .login-btn {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
 }
