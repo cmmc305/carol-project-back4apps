@@ -1,73 +1,113 @@
-/* === Register Page === */
+/* Register.css */
+
+/* 
+  ========
+  CONTAINER GERAL
+  ========
+  Centraliza o conteúdo verticalmente/horizontalmente e preenche a tela inteira.
+*/
 .register-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Ocupa toda a altura da janela */
-    background-color: #f8f9fa; /* Fundo neutro */
+    min-height: 100vh;  /* Ocupa toda a altura da janela */
+    background-color: #f5f5f5; /* Cor de fundo suave */
+    padding: 1rem;
   }
   
+  /* 
+    ========
+    CAIXA DO FORMULÁRIO
+    ========
+    A "caixa" onde fica o formulário de registro.
+  */
   .register-box {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
+    background-color: #fff;
     width: 100%;
-    max-width: 500px; /* Largura máxima */
+    max-width: 400px;       /* Largura máxima do box */
+    padding: 2rem;          /* Espaçamento interno */
+    border-radius: 8px;     /* Cantos arredondados */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
   }
   
+  /* 
+    ========
+    TÍTULO
+    ========
+  */
   .register-box h1 {
-    font-size: 1.8rem;
-    color: #343a40;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
     text-align: center;
-    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
   }
   
+  /* 
+    ========
+    FORMULÁRIO
+    ========
+    (Boa parte do estilo já vem do React-Bootstrap, mas podemos complementar.)
+  */
   .register-box .form-label {
-    font-weight: bold;
-    color: #495057;
+    font-weight: 500;
+    color: #555;
   }
   
   .register-box .form-control {
     border-radius: 4px;
-    border: 1px solid #ced4da;
+    border: 1px solid #ccc;
+    transition: border-color 0.2s;
   }
   
   .register-box .form-control:focus {
     border-color: #007bff;
-    box-shadow: 0px 0px 6px rgba(0, 123, 255, 0.25);
-    outline: none;
+    box-shadow: none;  /* Remove a shadow padrão se quiser algo mais clean */
   }
   
-  .register-box .alert {
-    margin-bottom: 20px;
+  /* 
+    ========
+    BOTÃO
+    ========
+    (usando a classe .d-grid no pai, então o botão já fica full-width)
+  */
+  .register-box button {
+    font-weight: 600;
   }
   
-  .register-box .btn {
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 10px;
+  /* 
+    ========
+    ALERTAS (sucesso e erro)
+    ========
+    Você pode personalizar, mas o React-Bootstrap já traz boa parte do estilo.
+    Aqui é só para adicionar margem extra se quiser.
+  */
+  .alert {
+    margin-bottom: 1rem;
   }
   
-  .register-box .btn:disabled {
-    background-color: #d6d8db;
-    cursor: not-allowed;
-  }
+  /* 
+    ========
+    SPINNER
+    ========
+    Personalize conforme desejar. Normalmente é estilizado automaticamente 
+    pelo Bootstrap.
+  */
   
-  .register-box .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-  }
-  
-  .register-box .btn-primary:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Responsividade */
-  @media (max-width: 768px) {
+  /* 
+    ========
+    RESPONSIVIDADE
+    ========
+    Se quiser algum ajuste extra em telas menores, pode usar media queries:
+  */
+  @media (max-width: 480px) {
     .register-box {
-      padding: 20px;
-      max-width: 100%; /* Largura total em telas menores */
+      padding: 1.5rem;
+      width: 90%;
+    }
+    
+    .register-box h1 {
+      font-size: 1.5rem;
     }
   }
   

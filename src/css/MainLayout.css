@@ -1,80 +1,48 @@
-/* === Main Layout === */
-.d-flex {
-    display: flex;
-    flex-wrap: nowrap;
+/* MainLayout.css */
+
+/* 
+  ========
+  WRAPPER GERAL
+  ========
+  Se desejar unificar o wrapper (em vez de usar a classe do Bootstrap "d-flex"),
+  você pode criar a sua classe e aplicá-la diretamente no div.
+  Exemplo no componente: 
+    <div className="main-layout"> ... </div>
+*/
+.main-layout {
+    display: flex;             /* Sidebar + Main Content lado a lado */
+    width: 100%;
+    min-height: 100vh;         /* Ocupa toda a altura da tela */
+    overflow: hidden;          /* Evita rolagens extras */
   }
   
-  /* === Sidebar Styles === */
-  .bg-light {
-    background-color: #f8f9fa !important; /* Fundo neutro */
+  /* 
+    ========
+    CONTAINER PRINCIPAL 
+    ========
+    Aqui entra o conteúdo que o <Outlet /> renderiza.
+  */
+  .container-main {
+    flex: 1;                   /* Ocupa todo o espaço disponível, empurrando a Sidebar para a esquerda */
+    background-color: #f9f9f9; /* Cor de fundo suave */
+    padding: 2rem;            /* Espaçamento interno */
+    overflow-y: auto;         /* Se o conteúdo for grande, permite rolagem vertical */
   }
   
-  .sidebar {
-    width: 250px;
-    min-height: 100vh;
-    background-color: #007bff; /* Cor de fundo do menu lateral */
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px;
-    position: fixed;
-  }
+  /* 
+    ========
+    RESPONSIVIDADE
+    ========
+    Caso a sidebar fique por cima em telas menores, 
+    você pode ajustá-la para aparecer acima ou abaixo do conteúdo.
+  */
+  @media (max-width: 768px) {
+    .main-layout {
+      flex-direction: column;  /* Sidebar e conteúdo em coluna */
+    }
   
-  .sidebar h1 {
-    font-size: 1.2rem;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .sidebar .nav-link {
-    color: #fff;
-    margin: 10px 0;
-    padding: 10px 15px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 1rem;
-    display: block;
-    transition: background-color 0.3s ease;
-  }
-  
-  .sidebar .nav-link:hover {
-    background-color: #0056b3; /* Cor de hover */
-  }
-  
-  .sidebar .logout-btn {
-    background-color: #dc3545;
-    color: #fff;
-    text-align: center;
-    padding: 10px;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    margin-top: auto;
-    transition: background-color 0.3s ease;
-  }
-  
-  .sidebar .logout-btn:hover {
-    background-color: #a71d2a;
-  }
-  
-  /* === Main Content === */
-  .main-content {
-    margin-left: 250px; /* Espaço para compensar a sidebar */
-    padding: 20px;
-    overflow-y: auto;
-  }
-  
-  .main-content h1 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #343a40;
-    margin-bottom: 20px;
-  }
-  
-  .main-content p {
-    color: #495057;
-    font-size: 1rem;
+    .container-main {
+      padding: 1rem;          /* Reduz o padding em telas menores */
+    }
   }
   

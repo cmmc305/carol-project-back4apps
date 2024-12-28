@@ -1,84 +1,102 @@
-/* === Estilo Geral === */
+/* ListRequests.css */
+
+/* 
+  ========
+  CONTAINER E TÍTULO
+  ========
+*/
 .list-requests-container {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;     /* Cor de fundo */
+    padding: 2rem;             /* Espaçamento interno */
+    border-radius: 8px;        /* Cantos arredondados */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sombra suave */
   }
   
   .list-requests-title {
-    font-size: 1.8rem;
-    color: #343a40;
-    font-weight: bold;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2rem;
   }
   
+  /* 
+    ========
+    SPINNER E MENSAGEM DE CARREGAMENTO
+    ========
+  */
   .list-requests-spinner {
-    margin-top: 20px;
+    margin-top: 2rem;
   }
   
-  /* === Tabela de Requests === */
+  /* 
+    ========
+    TABELA DE LISTAGEM
+    ========
+  */
   .list-requests-table-wrapper {
-    overflow-x: auto; /* Rolagem horizontal em telas pequenas */
+    overflow-x: auto; /* Para evitar quebra de layout em telas pequenas */
+    margin-bottom: 2rem;
   }
   
   .list-requests-table {
-    margin-top: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  
-  .list-requests-table th {
-    background-color: #007bff;
-    color: white;
-    text-align: center;
-  }
-  
-  .list-requests-table td {
-    text-align: center;
-    vertical-align: middle;
-  }
-  
-  .list-requests-table th, .list-requests-table td {
-    padding: 10px;
-  }
-  
-  .list-requests-table tbody tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  /* Botão de Edição */
-  .list-requests-edit-btn {
-    font-size: 0.9rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-radius: 4px;
-  }
-  
-  /* === Accordion para Detalhes === */
-  .list-requests-accordion .accordion-item {
+    width: 100%;
+    margin: 0 auto;
+    background-color: #fff;
     border: 1px solid #ddd;
-    margin-bottom: 10px;
-    border-radius: 4px;
+    border-collapse: collapse;
   }
   
-  .list-requests-accordion .accordion-header {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-    padding: 10px;
-    cursor: pointer;
+  .list-requests-table thead th {
+    background-color: #f8f8f8;
+    font-weight: 500;
+    text-align: left;
+    color: #555;
+    white-space: nowrap; /* Evita quebras em headings muito grandes */
   }
   
-  .list-requests-accordion .accordion-body {
-    background-color: #f8f9fa;
-    padding: 15px;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    border-top: 1px solid #ddd;
+  .list-requests-table tbody tr td {
+    vertical-align: middle; /* Centraliza o conteúdo verticalmente */
+    white-space: nowrap;    /* Evita quebrar conteúdo em colunas muito pequenas */
   }
   
-  .list-requests-accordion .accordion-body p {
-    margin-bottom: 10px;
+  /* Estilo alternado (zebrado) nas linhas, se quiser maior destaque
+     (O Bootstrap Table já faz o striped, mas caso queira personalizar...) */
+  /*
+  .list-requests-table tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+  }
+  */
+  
+  /* 
+    ========
+    BOTÃO DE EDIÇÃO
+    ========
+  */
+  .list-requests-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+  
+  /* 
+    ========
+    RESPONSIVIDADE
+    ========
+  */
+  @media (max-width: 768px) {
+    .list-requests-container {
+      padding: 1.5rem;
+    }
+    
+    .list-requests-title {
+      font-size: 1.5rem;
+    }
+  
+    /* Se quiser permitir quebra de texto para cada coluna */
+    .list-requests-table tbody tr td {
+      white-space: normal; 
+    }
   }
   

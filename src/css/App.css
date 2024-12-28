@@ -1,52 +1,73 @@
-/* === Reset Global === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* App.css */
 
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f8f9fa; /* Fundo claro e neutro */
-  color: #343a40; /* Texto padrão */
-  line-height: 1.6;
-}
-
-/* === Links Globais === */
-a {
-  color: #007bff;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-a:hover {
-  color: #0056b3;
-}
-
-/* === Botões Globais === */
-button, .btn {
-  font-weight: bold;
-  border-radius: 4px;
-}
-
-button:hover, .btn:hover {
-  filter: brightness(0.9);
-}
-
-/* === Responsividade === */
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
+/* ==========
+   RESET BÁSICO
+   ========== */
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-}
+  
+  /* ==========
+     ESTILOS GERAIS
+     ========== */
+  html, body {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9; /* cor de fundo suave */
+    color: #333;              /* cor de texto padrão */
+  }
+  
+  /* Se quiser controlar a largura máxima do layout,
+     você pode definir algo como: */
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  
+  /* ==========
+     APP WRAPPER
+     ========== */
+  /* Caso queira adicionar uma classe que envolva todo o conteúdo do App
+     (por ex.: <div className="app-container">...) */
+  .app-container {
+    min-height: 100vh; /* faz a altura ocupar toda a tela */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  /* Main da aplicação, caso queira separar o conteúdo em um wrapper distinto */
+  .app-main {
+    flex: 1;                 /* faz o conteúdo expandir para ocupar o espaço disponível */
+    padding: 20px;
+  }
+  
+  /* Footer (opcional) */
+  .app-footer {
+    text-align: center;
+    padding: 12px 0;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+  }
+  
+  /* Se precisar de alguma classe para links gerais */
+  a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
 
-/* === Container Principal === */
-.container-main {
-  margin-left: 260px; /* Compensa a largura da sidebar */
-  padding: 20px;
-}
-
-.container-main h1 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-}
+  :root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --background-color: #f9f9f9;
+    --font-color: #333;
+  }
+  

@@ -1,69 +1,105 @@
-/* === Login Container === */
+/* Login.css */
+
+/* 
+  ========
+  CONTAINER GERAL
+  ========
+  Centraliza o conteúdo verticalmente/horizontalmente na tela inteira.
+*/
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f8f9fa; /* Fundo claro e neutro */
+  min-height: 100vh;   /* Ocupa toda a altura da janela */
+  background-color: #f5f5f5; /* Fundo suave */
+  padding: 1rem;
 }
 
-/* === Login Box === */
+/* 
+  ========
+  CAIXA DE LOGIN
+  ========
+  Card onde o formulário é exibido.
+*/
 .login-box {
+  background-color: #fff;
   width: 100%;
-  max-width: 400px; /* Define a largura máxima */
-  background-color: #ffffff; /* Fundo branco */
-  padding: 30px;
-  border-radius: 8px; /* Bordas arredondadas */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destaque */
-  text-align: center;
+  max-width: 400px;        /* Largura máxima do card de login */
+  padding: 2rem;           /* Espaçamento interno */
+  border-radius: 8px;      /* Cantos arredondados */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
+/* 
+  ========
+  TÍTULO
+  ========
+*/
 .login-box h1 {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #343a40;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+  text-align: center;
+  color: #333;
+  font-weight: 600;
 }
 
-/* === Form === */
-.form-label {
-  font-weight: bold;
-  color: #495057;
+/* 
+  ========
+  FORMULÁRIO
+  ========
+  Alguns ajustes além dos estilos fornecidos pelo react-bootstrap.
+*/
+.login-box .form-label {
+  font-weight: 500;
+  color: #555;
 }
 
-.form-control {
+.login-box .form-control {
   border-radius: 4px;
-  padding: 10px;
-  font-size: 1rem;
+  border: 1px solid #ccc;
+  transition: border-color 0.2s;
 }
 
-.form-control:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
-  outline: none;
+.login-box .form-control:focus {
+  border-color: #007bff; /* Azul padrão do Bootstrap */
+  box-shadow: none;      /* Remove a shadow se quiser algo mais clean */
 }
 
-/* === Login Button === */
-.login-btn {
-  font-weight: bold;
-  background-color: #007bff;
-  border: none;
-  padding: 10px;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-.login-btn:hover {
-  background-color: #0056b3;
-}
-
-/* === Alert === */
+/* 
+  ========
+  ALERTAS
+  ========
+  Margem extra para não encostar nos inputs.
+*/
 .alert {
-  margin-top: 15px;
-  font-size: 0.9rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
-/* === Spinner === */
-.spinner-border {
-  margin-right: 5px;
+/* 
+  ========
+  BOTÃO DE LOGIN
+  ========
+  Já recebe estilos básicos do Bootstrap, mas podemos dar nossa cara.
+*/
+.login-btn {
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+/* 
+  ========
+  RESPONSIVIDADE
+  ========
+  Ajusta o box e os elementos em telas menores.
+*/
+@media (max-width: 480px) {
+  .login-box {
+    padding: 1.5rem;
+    width: 90%;
+  }
+
+  .login-box h1 {
+    font-size: 1.5rem;
+  }
 }

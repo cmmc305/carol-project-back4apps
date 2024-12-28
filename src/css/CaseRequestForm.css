@@ -1,65 +1,111 @@
-/* Container principal */
+/* CaseRequestForm.css */
+
+/* 
+  ========
+  CONTAINER E TÍTULO
+  ========
+*/
 .case-request-container {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    background-color: #fff;       /* Fundo branco para destacar do background geral */
+    padding: 2rem;               /* Espaçamento interno */
+    border-radius: 8px;          /* Cantos arredondados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sutil sombra para destacar o card */
   }
   
-  /* Título */
   .case-request-title {
-    font-size: 2rem;
-    color: #343a40;
-    margin-bottom: 30px;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;          /* Tamanho de fonte do título */
+    font-weight: 600;
+    color: #333;                 /* Cor padrão do texto */
+    text-transform: uppercase;   /* Deixar em caixa alta (opcional) */
   }
   
-  /* Formulário */
+  /* 
+    ========
+    FORMULÁRIO
+    ========
+  */
   .case-request-form {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
   }
   
-  /* Inputs */
+  /* Ajustes de espaçamento entre os grupos de formulário (opcional)
+     Se quiser, pode retirar e deixar o spacing padrão do Bootstrap (mb-3).
+  */
+  
+  /* 
+    ========
+    CAMPOS DE INPUT E TEXTAREA
+    ========
+  */
   .case-request-input {
-    border-radius: 5px;
+    border-radius: 4px;          /* Cantos levemente arredondados */
+    border: 1px solid #ccc;      /* Borda simples */
     font-size: 1rem;
-    padding: 10px;
+    transition: all 0.2s ease;
   }
   
   .case-request-input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    border-color: #007bff;       /* Azul padrão do Bootstrap quando focado */
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
   }
   
-  /* Textarea */
   .case-request-textarea {
-    border-radius: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
     font-size: 1rem;
-    padding: 10px;
-    resize: none;
+    transition: all 0.2s ease;
+    resize: vertical;            /* Permite redimensionar apenas verticalmente */
   }
   
   .case-request-textarea:focus {
     border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
   }
   
-  /* Botão de envio */
+  /* 
+    ========
+    BOTÃO DE SUBMISSÃO
+    ========
+  */
   .case-request-submit {
-    width: 100%;
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
     font-size: 1rem;
-    font-weight: bold;
+    font-weight: 600;
+    background-color: #007bff;   /* Azul padrão do Bootstrap */
     border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
   }
   
-  .case-request-submit:hover {
-    background-color: #0056b3;
+  .case-request-submit:hover,
+  .case-request-submit:focus {
+    background-color: #0056b3;   /* Escurece um pouco no hover */
+    outline: none;
+  }
+  
+  /* 
+    ========
+    EXEMPLO DE RESPONSIVIDADE
+    ========
+    (Como você está usando .Row e .Col do Bootstrap, 
+     já tem responsividade básica, mas se quiser customizar, use breakpoints)
+  */
+  @media (max-width: 767px) {
+    .case-request-container {
+      padding: 1rem;
+    }
+  
+    .case-request-title {
+      font-size: 1.5rem;
+    }
+  
+    .case-request-submit {
+      width: 100%; /* Botão ocupa toda a largura em telas pequenas */
+    }
   }
   
