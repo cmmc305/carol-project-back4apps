@@ -1,10 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from '../components/Login';
-import MainLayout from '../components/MainLayout';
-import CaseRequestForm from '../components/CaseRequestForm';
-import ListRequests from '../components/ListRequests';
-import RegisterUser from '../components/Register';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import MainLayout from './components/MainLayout';
+import Login from './components/Login';
+import CaseRequestForm from './components/CaseRequestForm';
+import ListRequests from './components/ListRequests';
+import Register from './components/Register';
+import './css/App.css'; // Certifique-se de que o caminho do CSS está correto.
 
 const App = () => (
   <Router>

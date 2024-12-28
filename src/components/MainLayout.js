@@ -1,6 +1,6 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar'; // Importa o menu fixo (sidebar)
+import Sidebar from './Sidebar'; // Certifique-se de que o Sidebar está no mesmo diretório.
+import '../css/App.css';
 
 const MainLayout = () => {
   return (

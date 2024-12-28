@@ -1,10 +1,8 @@
 import React from 'react';
-import { createBrowserRouter } from 'react-router-dom';
-import MainMenu from '../components/MainMenu';
-import CaseRequestForm from '../components/CaseRequestForm';
-import ListRequests from '../components/ListRequests';
-import Login from '../components/Login';
-import RegisterUser from '../components/Register';
+import { Route } from 'react-router-dom';
+import CaseRequestForm from './components/CaseRequestForm';
+import ListRequests from './components/ListRequests';
+import Register from './components/Register';
 
 const routes = [
   { path: '/', element: <Login /> },

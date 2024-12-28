@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Parse from '../config/parseConfig';
-import './css/App.css';
+import '../css/App.css';
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
