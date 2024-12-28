@@ -31,11 +31,6 @@ const Sidebar = () => {
   // Definindo os links da Sidebar
   const navLinks = [
     {
-      to: '/dashboard',
-      label: 'Dashboard',
-      icon: faHome,
-    },
-    {
       to: '/create-request',
       label: 'Create Request',
       icon: faPlus,
