@@ -1,0 +1,49 @@
+/* src/components/NotFound/NotFound.module.css */
+
+.notFoundContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+    padding: 1rem;
+  }
+  
+  .notFoundBox {
+    background-color: #ffffff;
+    padding: 3rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .title {
+    font-size: 6rem;
+    font-weight: 700;
+    color: #dc3545; /* Cor de destaque para 404 */
+    margin-bottom: 1rem;
+  }
+  
+  .message {
+    font-size: 1.5rem;
+    color: #333333;
+    margin-bottom: 2rem;
+  }
+  
+  .homeLink {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #007bff;
+    color: #ffffff;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .homeLink:hover,
+  .homeLink:focus {
+    background-color: #0056b3;
+    text-decoration: none;
+    color: #ffffff;
+  }
+  

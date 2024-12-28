@@ -10,7 +10,9 @@ COPY package*.json ./
 # Instalar dependências
 RUN npm install
 
-RUN npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
+RUN npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core
+
+RUN npm install styled-components
 
 # Copiar o restante do código do aplicativo
 COPY . .

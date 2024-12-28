@@ -1,0 +1,29 @@
+/* src/components/MainLayout/MainLayout.module.css */
+
+.mainLayout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 250px; /* Largura da Sidebar */
+  padding: 2rem;
+  background-color: #f9f9f9;
+  transition: margin-left 0.3s ease;
+}
+
+/* Responsividade para reduzir o margin quando a Sidebar diminui */
+@media (max-width: 768px) {
+  .mainContent {
+    margin-left: 200px; /* Nova largura da Sidebar */
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .mainContent {
+    margin-left: 60px; /* Largura minimizada da Sidebar */
+    padding: 1rem;
+  }
+}
