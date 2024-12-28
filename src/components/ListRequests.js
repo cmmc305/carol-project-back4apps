@@ -4,7 +4,6 @@ import Parse from '../config/parseConfig';
 import '../css/App.css';
 import '../css/ListRequests.css'; // Certifique-se de que o caminho do CSS está correto.
 
-
 const ListRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,18 +29,18 @@ const ListRequests = () => {
   };
 
   return (
-    <Container className="mt-4">
-      <h1 className="text-center mb-4">List of Requests</h1>
+    <Container className="list-requests-container mt-4">
+      <h1 className="text-center list-requests-title mb-4">List of Requests</h1>
       {loading ? (
         <div className="text-center">
-          <Spinner animation="border" role="status">
+          <Spinner animation="border" role="status" className="list-requests-spinner">
             <span className="visually-hidden">Loading...</span>
           </Spinner>
           <p>Loading requests...</p>
         </div>
       ) : requests.length > 0 ? (
-        <div className="table-responsive">
-          <Table striped bordered hover className="table-sm">
+        <div className="list-requests-table-wrapper">
+          <Table striped bordered hover responsive className="list-requests-table">
             <thead>
               <tr>
                 <th>ID</th>
@@ -64,6 +63,7 @@ const ListRequests = () => {
                     <Button
                       variant="warning"
                       size="sm"
+                      className="list-requests-edit-btn"
                       onClick={() => handleEdit(request.id)}
                     >
                       ✏️ Edit
@@ -73,16 +73,32 @@ const ListRequests = () => {
               ))}
             </tbody>
           </Table>
-          <Accordion className="mt-3">
+          <Accordion className="list-requests-accordion mt-3">
             {requests.map((request, index) => (
-              <Accordion.Item eventKey={index.toString()} key={index}>
-                <Accordion.Header>Details for ID: {request.id}</Accordion.Header>
+              <Accordion.Item
+                eventKey={index.toString()}
+                key={index}
+                className="list-requests-accordion-item"
+              >
+                <Accordion.Header>
+                  Details for ID: {request.id}
+                </Accordion.Header>
                 <Accordion.Body>
-                  <p><strong>Address:</strong> {request.get('address')}</p>
-                  <p><strong>State:</strong> {request.get('state')}</p>
-                  <p><strong>City:</strong> {request.get('city')}</p>
-                  <p><strong>Zipcode:</strong> {request.get('zipcode')}</p>
-                  <p><strong>Phone Number:</strong> {request.get('phoneNumber')}</p>
+                  <p>
+                    <strong>Address:</strong> {request.get('address')}
+                  </p>
+                  <p>
+                    <strong>State:</strong> {request.get('state')}
+                  </p>
+                  <p>
+                    <strong>City:</strong> {request.get('city')}
+                  </p>
+                  <p>
+                    <strong>Zipcode:</strong> {request.get('zipcode')}
+                  </p>
+                  <p>
+                    <strong>Phone Number:</strong> {request.get('phoneNumber')}
+                  </p>
                   <p>
                     <strong>Lien Balance:</strong> $
                     {parseFloat(request.get('lienBalance') || 0).toFixed(2)}

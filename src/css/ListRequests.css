@@ -1,48 +1,58 @@
-/* List Requests */
-.table-container {
-    margin-left: 260px;
+.list-requests-container {
+    background: #fff;
+    border-radius: 8px;
     padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .table-container h1 {
-    text-align: center;
-    color: #007bff;
-    margin-bottom: 20px;
+  .list-requests-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #343a40;
   }
   
-  .table-container .table {
-    background-color: #ffffff;
+  .list-requests-spinner {
+    margin: 20px 0;
+  }
+  
+  .list-requests-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .list-requests-table {
+    width: 100%;
+    border: 1px solid #dee2e6;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   }
   
-  .table-container .table th {
+  .list-requests-table th {
     background-color: #007bff;
     color: white;
-    padding: 10px;
-    text-align: left;
+    text-align: center;
   }
   
-  .table-container .table td {
-    padding: 10px;
+  .list-requests-table td {
+    text-align: center;
+    padding: 8px;
   }
   
-  .table-container .table-hover tbody tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .table-container .edit-button {
-    background-color: #ffc107;
-    border: none;
-    color: #fff;
-    padding: 5px 10px;
+  .list-requests-edit-btn {
     font-size: 0.9rem;
-    border-radius: 5px;
-    cursor: pointer;
+    padding: 5px 10px;
   }
   
-  .table-container .edit-button:hover {
-    background-color: #e0a800;
+  .list-requests-accordion {
+    margin-top: 20px;
+  }
+  
+  .list-requests-accordion-item {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+  }
+  
+  .list-requests-accordion .accordion-header {
+    background-color: #f8f9fa;
+    color: #343a40;
   }
   
