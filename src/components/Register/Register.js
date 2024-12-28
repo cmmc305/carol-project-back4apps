@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
-import Parse from '../config/parseConfig';
+import Parse from '../../config/parseConfig'; // CORRETO
 import styles from './Register.module.css'; // Usando CSS Modules
 
 const RegisterUser = () => {
