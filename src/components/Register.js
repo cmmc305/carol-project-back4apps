@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner, Row, Col } from 'react-bootstrap';
 import Parse from '../config/parseConfig';
 import '../css/App.css';
-import '../css/Regiser.css';
+import '../css/Register.css';
 
 const RegisterUser = () => {
   const [formData, setFormData] = useState({
