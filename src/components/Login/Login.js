@@ -19,7 +19,7 @@ const Login = () => {
     setError('');
     try {
       await Parse.User.logIn(username, password);
-      navigate('/list-requests'); // Redireciona para a página inicial
+      navigate('/app/list-requests'); // Redireciona para a página correta
     } catch (err) {
       if (err.code === 101) {
         setError('Invalid username or password');
