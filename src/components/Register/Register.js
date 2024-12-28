@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import Parse from '../config/parseConfig';
-import '../css/Register.css'; // Certifique-se de importar o CSS correto
+import styles from './Register.module.css'; // Usando CSS Modules
 
 const RegisterUser = () => {
   const [formData, setFormData] = useState({
