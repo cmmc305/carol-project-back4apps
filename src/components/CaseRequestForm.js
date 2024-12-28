@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { NumericFormat } from 'react-number-format';
-import InputMask from 'react-input-mask';
+import React, { useState } from 'react';
 import Parse from '../config/parseConfig';
-import { Container, Form, Button, Row, Col, Spinner } from 'react-bootstrap';
-import reactLogo from '../assets/react-logo.png';
 
 const CaseRequestForm = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const [uccFiles, setUccFiles] = useState([]);
+  const [transactionProofFiles, setTransactionProofFiles] = useState([]);
+  const [einList, setEinList] = useState(['']);
+  const [ssnList, setSsnList] = useState(['']);
   const [formData, setFormData] = useState({
     requesterEmail: '',
     creditorName: '',
@@ -16,160 +13,222 @@ const CaseRequestForm = () => {
     doingBusinessAs: '',
     requestType: '',
     lienBalance: '',
+    additionalEntities: '',
+    defaultDate: '',
     address: '',
     state: '',
     city: '',
     zipcode: '',
-    phoneNumber: '',
+    emailAddress: '',
+    phoneNumber: ''
   });
-  const [uccFiles, setUccFiles] = useState([]);
-  const [transactionProofFiles, setTransactionProofFiles] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchRequestData = async () => {
-      if (id) {
-        setLoading(true);
-        try {
-          const query = new Parse.Query('CaseRequest');
-          const request = await query.get(id);
-
-          setFormData({
-            requesterEmail: request.get('requesterEmail') || '',
-            creditorName: request.get('creditorName') || '',
-            businessName: request.get('businessName') || '',
-            doingBusinessAs: request.get('doingBusinessAs') || '',
-            requestType: request.get('requestType') || '',
-            lienBalance: request.get('lienBalance') || '',
-            address: request.get('address') || '',
-            state: request.get('state') || '',
-            city: request.get('city') || '',
-            zipcode: request.get('zipcode') || '',
-            phoneNumber: request.get('phoneNumber') || '',
-          });
-
-          setUccFiles(request.get('uccFiles') || []);
-          setTransactionProofFiles(request.get('transactionProofFiles') || []);
-        } catch (error) {
-          console.error('Error fetching request:', error);
-          alert('Failed to load request data.');
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchRequestData();
-  }, [id]);
 
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileUpload = (event, setter) => {
-    const files = Array.from(event.target.files);
-    setter(files);
+  const handleEinChange = (index, value) => {
+    const updatedList = [...einList];
+    updatedList[index] = value;
+    setEinList(updatedList);
   };
 
-  const uploadFileToParse = async (file) => {
-    const parseFile = new Parse.File(file.name, file);
-    await parseFile.save();
-    return parseFile.url();
+  const handleSsnChange = (index, value) => {
+    const updatedList = [...ssnList];
+    updatedList[index] = value;
+    setSsnList(updatedList);
+  };
+
+  const addEin = () => setEinList([...einList, '']);
+  const addSsn = () => setSsnList([...ssnList, '']);
+
+  const handleFileUpload = (event, setter) => {
+    const files = Array.from(event.target.files);
+    setter((prevFiles) => [...prevFiles, ...files]);
   };
 
   const handleSubmit = async () => {
     try {
-      setLoading(true);
-
-      const uploadedUccFiles = uccFiles.length
-        ? await Promise.all(uccFiles.map((file) => uploadFileToParse(file)))
-        : [];
-
-      const uploadedTransactionProofFiles = transactionProofFiles.length
-        ? await Promise.all(transactionProofFiles.map((file) => uploadFileToParse(file)))
-        : [];
-
-      let CaseRequest;
-
-      if (id) {
-        const query = new Parse.Query('CaseRequest');
-        CaseRequest = await query.get(id);
-      } else {
-        CaseRequest = new Parse.Object('CaseRequest');
-      }
-
+      const CaseRequest = new Parse.Object('CaseRequest');
       Object.keys(formData).forEach((key) => {
         CaseRequest.set(key, formData[key]);
       });
 
-      CaseRequest.set('uccFiles', uploadedUccFiles);
-      CaseRequest.set('transactionProofFiles', uploadedTransactionProofFiles);
+      CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
+      CaseRequest.set('uccFiles', uccFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
+      CaseRequest.set('transactionProofFiles', transactionProofFiles.map((file) => ({ name: file.name, type: file.type, size: file.size })));
+      CaseRequest.set('einList', einList);
+      CaseRequest.set('ssnList', ssnList);
 
       await CaseRequest.save();
-
-      alert(id ? 'Request updated successfully!' : 'Request created successfully!');
-      navigate('/list-requests');
+      alert('Case Request saved successfully!');
+      setFormData({
+        requesterEmail: '',
+        creditorName: '',
+        businessName: '',
+        doingBusinessAs: '',
+        requestType: '',
+        lienBalance: '',
+        additionalEntities: '',
+        defaultDate: '',
+        address: '',
+        state: '',
+        city: '',
+        zipcode: '',
+        emailAddress: '',
+        phoneNumber: ''
+      });
+      setEinList(['']);
+      setSsnList(['']);
+      setUccFiles([]);
+      setTransactionProofFiles([]);
     } catch (error) {
-      console.error('Error saving request:', error);
-      alert('Failed to save request.');
-    } finally {
-      setLoading(false);
+      console.error('Error saving Case Request:', error);
+      alert('Failed to save Case Request. Please try again.');
     }
   };
 
-  if (loading) {
-    return (
-      <Container className="text-center mt-5">
-        <Spinner animation="border" />
-        <p>Loading...</p>
-      </Container>
-    );
-  }
-
   return (
-    <Container className="form-container mt-4">
-      <Row className="justify-content-center">
-        <Col md={8}>
-          <div className="text-center">
-            <img src={reactLogo} alt="React Logo" className="logo mb-4" />
-            <h1>{id ? 'Update Request' : 'Create Request'}</h1>
-          </div>
-          <Form>
-            {[
-              { id: 'requesterEmail', label: 'Requester Email', type: 'email', value: formData.requesterEmail },
-              { id: 'creditorName', label: 'Creditor Name', type: 'text', value: formData.creditorName },
-              { id: 'businessName', label: 'Business Name', type: 'text', value: formData.businessName },
-              { id: 'state', label: 'State', type: 'text', value: formData.state },
-            ].map(({ id, label, type, value }) => (
-              <Form.Group controlId={id} className="mb-3" key={id}>
-                <Form.Label>{label}</Form.Label>
-                <Form.Control
-                  type={type}
-                  value={value}
-                  onChange={(e) => handleInputChange(id, e.target.value)}
-                />
-              </Form.Group>
-            ))}
-            <Form.Group controlId="uccFiles" className="mb-3">
-              <Form.Label>UCC Files</Form.Label>
-              <Form.Control
-                type="file"
-                multiple
-                onChange={(e) => handleFileUpload(e, setUccFiles)}
-              />
-              <ul>
-                {uccFiles.map((file, index) => (
-                  <li key={index}>{file.name || file.split('/').pop()}</li>
-                ))}
-              </ul>
-            </Form.Group>
-            <Button variant="primary" onClick={handleSubmit}>
-              {id ? 'Save Changes' : 'Create Request'}
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    </Container>
+    <div className="form-container">
+      <h1>Case Request Form</h1>
+
+      <label>
+        Requester Email:
+        <input
+          type="email"
+          value={formData.requesterEmail}
+          onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Request Type:
+        <select
+          value={formData.requestType}
+          onChange={(e) => handleInputChange('requestType', e.target.value)}
+        >
+          <option value="">Select Request Type</option>
+          <option value="Lien">Lien</option>
+          <option value="Garnishment">Garnishment</option>
+          <option value="Release">Release</option>
+        </select>
+      </label>
+
+      <label>
+        Address:
+        <input
+          type="text"
+          value={formData.address}
+          onChange={(e) => handleInputChange('address', e.target.value)}
+        />
+      </label>
+
+      <label>
+        City:
+        <input
+          type="text"
+          value={formData.city}
+          onChange={(e) => handleInputChange('city', e.target.value)}
+        />
+      </label>
+
+      <label>
+        State:
+        <input
+          type="text"
+          value={formData.state}
+          onChange={(e) => handleInputChange('state', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Zip Code:
+        <input
+          type="text"
+          value={formData.zipcode}
+          onChange={(e) => handleInputChange('zipcode', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Email Address:
+        <input
+          type="email"
+          value={formData.emailAddress}
+          onChange={(e) => handleInputChange('emailAddress', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Phone Number:
+        <input
+          type="text"
+          value={formData.phoneNumber}
+          onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Default Date:
+        <input
+          type="date"
+          value={formData.defaultDate}
+          onChange={(e) => handleInputChange('defaultDate', e.target.value)}
+        />
+      </label>
+
+      <label>
+        Additional Entities:
+        <textarea
+          value={formData.additionalEntities}
+          onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
+        ></textarea>
+      </label>
+
+      <label>
+        EIN:
+        {einList.map((ein, index) => (
+          <input
+            key={`ein-${index}`}
+            type="text"
+            value={ein}
+            onChange={(e) => handleEinChange(index, e.target.value)}
+          />
+        ))}
+        <button type="button" className="add-btn" onClick={addEin}>
+          + Add EIN
+        </button>
+      </label>
+
+      <label>
+        SSN:
+        {ssnList.map((ssn, index) => (
+          <input
+            key={`ssn-${index}`}
+            type="text"
+            value={ssn}
+            onChange={(e) => handleSsnChange(index, e.target.value)}
+          />
+        ))}
+        <button type="button" className="add-btn" onClick={addSsn}>
+          + Add SSN
+        </button>
+      </label>
+
+      <label>
+        UCC Files:
+        <input type="file" multiple onChange={(e) => handleFileUpload(e, setUccFiles)} />
+      </label>
+
+      <label>
+        Transaction Proof Files:
+        <input type="file" multiple onChange={(e) => handleFileUpload(e, setTransactionProofFiles)} />
+      </label>
+
+      <button type="button" className="submit-btn" onClick={handleSubmit}>
+        Submit
+      </button>
+    </div>
   );
 };
 
