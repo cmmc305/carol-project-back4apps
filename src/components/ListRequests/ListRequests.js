@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Container, Spinner, Button, Alert } from 'react-bootstrap';
 import Parse from '../../config/parseConfig';
-import styles from './ListRequests.module.css'; // Importa o CSS Module
+import styles from './ListRequests.module.css';
 import { useNavigate } from 'react-router-dom';
 
 const ListRequests = () => {
@@ -47,58 +47,48 @@ const ListRequests = () => {
         </div>
       ) : requests.length > 0 ? (
         <div className={styles.tableWrapper}>
-          <Table striped bordered hover responsive className={styles.table}>
+          <Table
+            striped
+            bordered
+            hover
+            responsive
+            size="sm"
+            className={styles.table}
+          >
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Requester Email</th>
-                <th>Creditor Name</th>
-                <th>Business Name</th>
-                <th>Request Type</th>
-                <th>Address</th>
+                <th>Email</th>
+                <th>Creditor</th>
+                <th>Type</th>
                 <th>City</th>
-                <th>State</th>
-                <th>Zipcode</th>
                 <th>Phone</th>
-                <th>Lien Balance</th>
+                <th>Balance</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {requests.map((request) => {
-                const address = request.get('address') || '-';
-                const city = request.get('city') || '-';
-                const state = request.get('state') || '-';
-                const zipcode = request.get('zipcode') || '-';
-                const phoneNumber = request.get('phoneNumber') || '-';
-                const lienBalance = parseFloat(request.get('lienBalance') || 0).toFixed(2);
-
-                return (
-                  <tr key={request.id}>
-                    <td>{request.id}</td>
-                    <td>{request.get('requesterEmail') || '-'}</td>
-                    <td>{request.get('creditorName') || '-'}</td>
-                    <td>{request.get('businessName') || '-'}</td>
-                    <td>{request.get('requestType') || '-'}</td>
-                    <td>{address}</td>
-                    <td>{city}</td>
-                    <td>{state}</td>
-                    <td>{zipcode}</td>
-                    <td>{phoneNumber}</td>
-                    <td>{`$ ${lienBalance}`}</td>
-                    <td>
-                      <Button
-                        variant="warning"
-                        size="sm"
-                        className={styles.editButton}
-                        onClick={() => handleEdit(request.id)}
-                      >
-                        ✏️ Edit
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
+              {requests.map((request) => (
+                <tr key={request.id}>
+                  <td>{request.id.slice(-6)}</td>
+                  <td>{request.get('requesterEmail') || '-'}</td>
+                  <td>{request.get('creditorName') || '-'}</td>
+                  <td>{request.get('requestType') || '-'}</td>
+                  <td>{request.get('city') || '-'}</td>
+                  <td>{request.get('phoneNumber') || '-'}</td>
+                  <td>{`$${parseFloat(request.get('lienBalance') || 0).toFixed(2)}`}</td>
+                  <td>
+                    <Button
+                      variant="warning"
+                      size="sm"
+                      className={styles.editButton}
+                      onClick={() => handleEdit(request.id)}
+                    >
+                      ✏️ Edit
+                    </Button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </div>
