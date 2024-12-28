@@ -18,7 +18,7 @@ const Login = () => {
     setError('');
     try {
       await Parse.User.logIn(username, password);
-      navigate('/main-menu'); // Redireciona para o Main Menu
+      navigate('/list-requests'); // Redireciona para a página inicial ao lado da sidebar
     } catch (err) {
       if (err.code === 101) {
         setError('Invalid username or password');
