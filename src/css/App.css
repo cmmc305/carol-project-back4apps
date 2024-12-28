@@ -1,184 +1,160 @@
-/* Global Reset */
+/* === Global Reset === */
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f8f9fa; /* Cor neutra de fundo */
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa; /* Fundo neutro */
 }
 
-h1, h2, h3, h4, h5, h6 {
+/* === Títulos e Textos === */
+h1, h2, h3 {
+  color: #343a40;
   font-weight: bold;
   margin-bottom: 20px;
-  color: #343a40; /* Cor primária para títulos */
 }
 
 p, label {
+  color: #495057;
   margin-bottom: 10px;
-  color: #495057; /* Cor para texto secundário */
 }
 
-/* Botões */
-.btn-primary {
+/* === Botões === */
+button, .btn {
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+button:hover, .btn:hover {
+  filter: brightness(0.9);
+}
+
+/* === Sidebar === */
+.sidebar {
+  width: 250px;
   background-color: #007bff;
-  border-color: #007bff;
+  color: #fff;
+  position: fixed;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 15px;
 }
 
-.btn-primary:hover {
+.sidebar .nav-link {
+  color: #fff;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  display: block;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
   background-color: #0056b3;
-  border-color: #004085;
 }
 
-/* Tabelas */
+.sidebar .logout-btn {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sidebar .logout-btn:hover {
+  background-color: #a71d2a;
+}
+
+/* === Main Content === */
+.container {
+  margin-left: 260px; /* Compensa a largura do sidebar */
+  padding: 20px;
+}
+
+.container h1 {
+  font-size: 1.8rem;
+}
+
+/* === Login Page === */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 400px;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.login-box h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-box .form-control {
+  margin-bottom: 15px;
+}
+
+.login-box .btn {
+  width: 100%;
+}
+
+/* === Forms === */
+.form-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-container label {
+  font-weight: bold;
+}
+
+/* === Tables === */
 .table {
   background-color: #fff;
-  border-collapse: separate;
-  border-spacing: 0;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  table-layout: auto; /* Ajusta colunas automaticamente */
-}
-
-.table th, .table td {
-  padding: 10px;
-  text-align: left;
-  white-space: nowrap; /* Evita quebras de linha nos dados */
+  border-radius: 8px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .table th {
   background-color: #007bff;
-  color: #fff;
+  color: white;
+  text-align: left;
+}
+
+.table th, .table td {
+  padding: 10px;
 }
 
 .table-hover tbody tr:hover {
   background-color: #f1f1f1;
 }
 
-/* Container responsivo para tabelas */
-.table-container {
-  overflow-x: auto; /* Permite rolagem horizontal em telas menores */
-}
-
-/* Formulários */
-.form-container {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.form-label {
-  font-weight: bold;
-}
-
-.form-control {
-  border-radius: 5px;
-}
-
-.form-control:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
-}
-
-/* Navbar */
-.navbar {
-  background-color: #007bff;
-}
-
-.nav-link {
-  color: #fff;
-}
-
-.nav-link:hover {
-  color: #dcdcdc;
-}
-
-/* Sidebar Menu */
-.sidebar-menu {
-  height: 100vh; /* Altura total da janela */
-  position: fixed; /* Fixa o menu na lateral */
-  top: 0;
-  left: 0;
-  width: 250px; /* Largura fixa */
-  background-color: #007bff; /* Cor de fundo */
-  color: white;
-  overflow-y: auto; /* Rola o menu se exceder a altura */
-  z-index: 1000;
-  transition: left 0.3s;
-}
-
-.sidebar-menu h3 {
-  text-align: center;
-  font-size: 1.5rem;
-  margin: 20px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.sidebar-menu .nav-link {
-  padding: 10px 20px;
-  color: white;
-  display: block;
-  text-decoration: none;
-  transition: background-color 0.3s;
-}
-
-.sidebar-menu .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Container principal para compensar o menu */
-.container {
-  margin-left: 250px; /* Compensa a largura do menu lateral */
-  padding: 20px;
-}
-
-/* Responsividade para telas menores */
+/* === Responsividade === */
 @media (max-width: 768px) {
-  .sidebar-menu {
-    left: -250px; /* Esconde o menu lateral inicialmente */
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
   }
-  .sidebar-menu.active {
-    left: 0; /* Mostra o menu lateral */
-  }
+
   .container {
-    margin-left: 0; /* Remove o deslocamento em telas menores */
+    margin-left: 0;
   }
-}
-
-/* Botão de menu hambúrguer */
-.hamburger-menu {
-  display: none;
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  z-index: 1100;
-  cursor: pointer;
-}
-
-.hamburger-menu span {
-  display: block;
-  width: 25px;
-  height: 3px;
-  margin: 5px 0;
-  background-color: white;
-}
-
-@media (max-width: 768px) {
-  .hamburger-menu {
-    display: block;
-  }
-}
-
-/* Footer */
-.footer {
-  background: #343a40;
-  color: white;
-  text-align: center;
-  padding: 10px 0;
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  z-index: 1000;
 }
