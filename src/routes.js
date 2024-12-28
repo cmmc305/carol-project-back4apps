@@ -4,7 +4,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import MainLayout from './components/MainLayout/MainLayout';
 import Login from './components/Login/Login';
-import RegisterUser from './components/Register/RegisterUser'; // Importação Corrigida
+import RegisterUser from './components/Register/Register'; // Importação Corrigida
 import CaseRequestForm from './components/CaseRequestForm/CaseRequestForm';
 import ListRequests from './components/ListRequests/ListRequests';
 import NotFound from './components/NotFound/NotFound';
