@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Parse from '../config/parseConfig';
 import { Container, Form, Button, Row, Col, InputGroup } from 'react-bootstrap';
 import '../css/App.css';
-import './css/CaseRequestForm.css'; // Certifique-se de que o caminho do CSS está correto.
+import '../css/CaseRequestForm.css'; // Certifique-se de que o caminho do CSS está correto.
 
 const CaseRequestForm = () => {
   const [uccFiles, setUccFiles] = useState([]);
