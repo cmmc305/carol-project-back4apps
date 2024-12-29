@@ -14,6 +14,8 @@ RUN npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
 
 RUN npm install styled-components
 
+RUN npm install react-currency-input-field
+
 # Copiar o restante do código do aplicativo
 COPY . .
 
