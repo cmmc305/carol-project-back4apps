@@ -41,6 +41,7 @@ const CaseRequestForm = () => {
           const query = new Parse.Query('CaseRequest');
           const caseRequest = await query.get(id);
 
+          // Preenchendo os dados do formulário
           setFormData({
             requesterEmail: caseRequest.get('requesterEmail') || '',
             creditorName: caseRequest.get('creditorName') || '',
@@ -58,11 +59,9 @@ const CaseRequestForm = () => {
             phoneNumber: caseRequest.get('phoneNumber') || '',
           });
 
-          const uccFilesFromParse = caseRequest.get('uccFiles') || [];
-          const transactionProofFilesFromParse = caseRequest.get('transactionProofFiles') || [];
-
-          setUccFiles(uccFilesFromParse.map((file) => file));
-          setTransactionProofFiles(transactionProofFilesFromParse.map((file) => file));
+          // Preenchendo os arquivos
+          setUccFiles(caseRequest.get('uccFiles') || []);
+          setTransactionProofFiles(caseRequest.get('transactionProofFiles') || []);
         } catch (error) {
           console.error('Error fetching Case Request:', error);
           setError('Failed to fetch the Case Request.');
@@ -74,6 +73,7 @@ const CaseRequestForm = () => {
       fetchRequest();
     }
   }, [id]);
+
 
 
 
@@ -450,11 +450,16 @@ const CaseRequestForm = () => {
               />
               {uccFiles.length > 0 && (
                 <div className="mt-2">
-                  {uccFiles.map((file, index) => (
-                    <p key={index} className="mb-0">
-                      {file.name || file._name}
-                    </p>
-                  ))}
+                  <strong>Uploaded Files:</strong>
+                  <ul>
+                    {uccFiles.map((file, index) => (
+                      <li key={index}>
+                        <a href={file.url || file._url} target="_blank" rel="noopener noreferrer">
+                          {file.name || file._name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </Form.Group>
@@ -473,14 +478,20 @@ const CaseRequestForm = () => {
               />
               {transactionProofFiles.length > 0 && (
                 <div className="mt-2">
-                  {transactionProofFiles.map((file, index) => (
-                    <p key={index} className="mb-0">
-                      {file.name || file._name}
-                    </p>
-                  ))}
+                  <strong>Uploaded Files:</strong>
+                  <ul>
+                    {transactionProofFiles.map((file, index) => (
+                      <li key={index}>
+                        <a href={file.url || file._url} target="_blank" rel="noopener noreferrer">
+                          {file.name || file._name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </Form.Group>
+
 
           </Col>
         </Row>
