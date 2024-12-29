@@ -208,262 +208,262 @@ const CaseRequestForm = () => {
               />
             </Form.Group>
           </Col>
+
+
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="doingBusinessAs">
+              <Form.Label>Doing Business As</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter doing business as"
+                value={formData.doingBusinessAs}
+                onChange={(e) => handleInputChange('doingBusinessAs', e.target.value)}
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
         </Row>
 
-        <Col md={6}>
-          <Form.Group className="mb-3" controlId="doingBusinessAs">
-            <Form.Label>Doing Business As</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter doing business as"
-              value={formData.doingBusinessAs}
-              onChange={(e) => handleInputChange('doingBusinessAs', e.target.value)}
-              className={styles.input}
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md={6}>
-          <Form.Group className="mb-3" controlId="address">
-            <Form.Label>Address</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter address"
-              value={formData.address}
-              onChange={(e) => handleInputChange('address', e.target.value)}
-              className={styles.input}
-              required
-            />
-          </Form.Group>
-        </Col>
-        <Col md={6}>
-          <Form.Group className="mb-3" controlId="city">
-            <Form.Label>City</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter city"
-              value={formData.city}
-              onChange={(e) => handleInputChange('city', e.target.value)}
-              className={styles.input}
-              required
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md={6}>
-          <Form.Group className="mb-3" controlId="state">
-            <Form.Label>State</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter state"
-              value={formData.state}
-              onChange={(e) => handleInputChange('state', e.target.value)}
-              className={styles.input}
-              required
-            />
-          </Form.Group>
-        </Col>
-        <Col md={6}>
-          <Form.Group className="mb-3" controlId="zipcode">
-            <Form.Label>Zip Code</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter zip code"
-              value={formData.zipcode}
-              onChange={(e) => handleInputChange('zipcode', e.target.value)}
-              className={styles.input}
-              required
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md={6}>
-          <Form.Group className="mb-3" controlId="emailAddress">
-            <Form.Label>Email Address</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email address"
-              value={formData.emailAddress}
-              onChange={(e) => handleInputChange('emailAddress', e.target.value)}
-              className={styles.input}
-              required
-            />
-          </Form.Group>
-        </Col>
-        <Col md={6}>
-          <Form.Group className="mb-3" controlId="phoneNumber">
-            <Form.Label>Phone Number</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter phone number"
-              value={formData.phoneNumber}
-              onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-              className={styles.input}
-              required
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md={6}>
-          <Form.Group className="mb-3" controlId="lienBalance">
-            <Form.Label>Lien Balance</Form.Label>
-            <CurrencyInput
-              id="lienBalance"
-              name="lienBalance"
-              placeholder="Enter lien balance"
-              prefix="$"
-              decimalsLimit={2}
-              value={formData.lienBalance}
-              onValueChange={(value) => handleInputChange('lienBalance', value)}
-              className={`${styles.input} form-control`}
-              required
-            />
-          </Form.Group>
-        </Col>
-        <Col md={6}>
-          <Form.Group className="mb-3" controlId="defaultDate">
-            <Form.Label>Default Date</Form.Label>
-            <Form.Control
-              type="date"
-              placeholder="Select default date"
-              value={formData.defaultDate}
-              onChange={(e) => handleInputChange('defaultDate', e.target.value)}
-              className={styles.input}
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md={12}>
-          <Form.Group className="mb-3" controlId="additionalEntities">
-            <Form.Label>Additional Entities</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="Enter additional entities"
-              value={formData.additionalEntities}
-              onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
-              className={styles.textarea}
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      {/* EIN List */}
-      <Row>
-        <Col md={12}>
-          <Form.Label>EIN</Form.Label>
-          {einList.map((ein, index) => (
-            <div key={index} className="d-flex mb-2">
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="address">
+              <Form.Label>Address</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter EIN"
-                value={ein}
-                onChange={(e) =>
-                  setEinList(einList.map((item, i) => (i === index ? e.target.value : item)))
-                }
-                className={`${styles.input} me-2`}
+                placeholder="Enter address"
+                value={formData.address}
+                onChange={(e) => handleInputChange('address', e.target.value)}
+                className={styles.input}
+                required
               />
-              <Button
-                variant="danger"
-                onClick={() => handleRemoveFromList(setEinList, einList, index)}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
-          <Button variant="primary" onClick={() => handleAddToList(setEinList, einList)}>
-            Add EIN
-          </Button>
-        </Col>
-      </Row>
-
-      {/* SSN List */}
-      <Row className="mt-3">
-        <Col md={12}>
-          <Form.Label>SSN</Form.Label>
-          {ssnList.map((ssn, index) => (
-            <div key={index} className="d-flex mb-2">
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="city">
+              <Form.Label>City</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter SSN"
-                value={ssn}
-                onChange={(e) =>
-                  setSsnList(ssnList.map((item, i) => (i === index ? e.target.value : item)))
-                }
-                className={`${styles.input} me-2`}
+                placeholder="Enter city"
+                value={formData.city}
+                onChange={(e) => handleInputChange('city', e.target.value)}
+                className={styles.input}
+                required
               />
-              <Button
-                variant="danger"
-                onClick={() => handleRemoveFromList(setSsnList, ssnList, index)}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
-          <Button variant="primary" onClick={() => handleAddToList(setSsnList, ssnList)}>
-            Add SSN
-          </Button>
-        </Col>
-      </Row>
+            </Form.Group>
+          </Col>
+        </Row>
 
-      {/* File Uploads */}
-      <Row className="mt-3">
-        <Col md={6}>
-          <Form.Group controlId="uccFiles" className="mb-3">
-            <Form.Label>UCC Notices Files</Form.Label>
-            <Form.Control
-              type="file"
-              multiple
-              onChange={(e) => setUccFiles(Array.from(e.target.files))}
-              className={styles.input}
-            />
-          </Form.Group>
-        </Col>
-        <Col md={6}>
-          <Form.Group controlId="transactionProofFiles" className="mb-3">
-            <Form.Label>Proof of Transaction</Form.Label>
-            <Form.Control
-              type="file"
-              multiple
-              onChange={(e) => setTransactionProofFiles(Array.from(e.target.files))}
-              className={styles.input}
-            />
-          </Form.Group>
-        </Col>
-      </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="state">
+              <Form.Label>State</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter state"
+                value={formData.state}
+                onChange={(e) => handleInputChange('state', e.target.value)}
+                className={styles.input}
+                required
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="zipcode">
+              <Form.Label>Zip Code</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter zip code"
+                value={formData.zipcode}
+                onChange={(e) => handleInputChange('zipcode', e.target.value)}
+                className={styles.input}
+                required
+              />
+            </Form.Group>
+          </Col>
+        </Row>
 
-      <Button
-        type="submit"
-        variant="primary"
-        className={styles.submitButton}
-        disabled={loading}
-      >
-        {loading ? (
-          <>
-            <Spinner
-              animation="border"
-              size="sm"
-              role="status"
-              aria-hidden="true"
-              className="me-2"
-            />
-            Submitting...
-          </>
-        ) : (
-          'Submit'
-        )}
-      </Button>
-    </Form>
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="emailAddress">
+              <Form.Label>Email Address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email address"
+                value={formData.emailAddress}
+                onChange={(e) => handleInputChange('emailAddress', e.target.value)}
+                className={styles.input}
+                required
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="phoneNumber">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter phone number"
+                value={formData.phoneNumber}
+                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                className={styles.input}
+                required
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="lienBalance">
+              <Form.Label>Lien Balance</Form.Label>
+              <CurrencyInput
+                id="lienBalance"
+                name="lienBalance"
+                placeholder="Enter lien balance"
+                prefix="$"
+                decimalsLimit={2}
+                value={formData.lienBalance}
+                onValueChange={(value) => handleInputChange('lienBalance', value)}
+                className={`${styles.input} form-control`}
+                required
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="defaultDate">
+              <Form.Label>Default Date</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="Select default date"
+                value={formData.defaultDate}
+                onChange={(e) => handleInputChange('defaultDate', e.target.value)}
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={12}>
+            <Form.Group className="mb-3" controlId="additionalEntities">
+              <Form.Label>Additional Entities</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter additional entities"
+                value={formData.additionalEntities}
+                onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
+                className={styles.textarea}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        {/* EIN List */}
+        <Row>
+          <Col md={12}>
+            <Form.Label>EIN</Form.Label>
+            {einList.map((ein, index) => (
+              <div key={index} className="d-flex mb-2">
+                <Form.Control
+                  type="text"
+                  placeholder="Enter EIN"
+                  value={ein}
+                  onChange={(e) =>
+                    setEinList(einList.map((item, i) => (i === index ? e.target.value : item)))
+                  }
+                  className={`${styles.input} me-2`}
+                />
+                <Button
+                  variant="danger"
+                  onClick={() => handleRemoveFromList(setEinList, einList, index)}
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
+            <Button variant="primary" onClick={() => handleAddToList(setEinList, einList)}>
+              Add EIN
+            </Button>
+          </Col>
+        </Row>
+
+        {/* SSN List */}
+        <Row className="mt-3">
+          <Col md={12}>
+            <Form.Label>SSN</Form.Label>
+            {ssnList.map((ssn, index) => (
+              <div key={index} className="d-flex mb-2">
+                <Form.Control
+                  type="text"
+                  placeholder="Enter SSN"
+                  value={ssn}
+                  onChange={(e) =>
+                    setSsnList(ssnList.map((item, i) => (i === index ? e.target.value : item)))
+                  }
+                  className={`${styles.input} me-2`}
+                />
+                <Button
+                  variant="danger"
+                  onClick={() => handleRemoveFromList(setSsnList, ssnList, index)}
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
+            <Button variant="primary" onClick={() => handleAddToList(setSsnList, ssnList)}>
+              Add SSN
+            </Button>
+          </Col>
+        </Row>
+
+        {/* File Uploads */}
+        <Row className="mt-3">
+          <Col md={6}>
+            <Form.Group controlId="uccFiles" className="mb-3">
+              <Form.Label>UCC Notices Files</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                onChange={(e) => setUccFiles(Array.from(e.target.files))}
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="transactionProofFiles" className="mb-3">
+              <Form.Label>Proof of Transaction</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                onChange={(e) => setTransactionProofFiles(Array.from(e.target.files))}
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Button
+          type="submit"
+          variant="primary"
+          className={styles.submitButton}
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Spinner
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+                className="me-2"
+              />
+              Submitting...
+            </>
+          ) : (
+            'Submit'
+          )}
+        </Button>
+      </Form>
     </Container >
   );
 };
