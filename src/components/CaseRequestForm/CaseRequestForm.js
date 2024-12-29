@@ -40,7 +40,7 @@ const CaseRequestForm = () => {
         try {
           const query = new Parse.Query('CaseRequest');
           const caseRequest = await query.get(id);
-  
+
           setFormData({
             requesterEmail: caseRequest.get('requesterEmail') || '',
             creditorName: caseRequest.get('creditorName') || '',
@@ -57,22 +57,12 @@ const CaseRequestForm = () => {
             emailAddress: caseRequest.get('emailAddress') || '',
             phoneNumber: caseRequest.get('phoneNumber') || '',
           });
-  
-          // Carregar arquivos
-          setUccFiles((caseRequest.get('uccFiles') || []).map((file) => ({
-            name: file._name,
-            url: file._url,
-            type: file._type,
-          })));
-          setTransactionProofFiles((caseRequest.get('transactionProofFiles') || []).map((file) => ({
-            name: file._name,
-            url: file._url,
-            type: file._type,
-          })));
-  
-          // Carregar listas EIN e SSN
-          setEinList(caseRequest.get('einList') || ['']);
-          setSsnList(caseRequest.get('ssnList') || ['']);
+
+          const uccFilesFromParse = caseRequest.get('uccFiles') || [];
+          const transactionProofFilesFromParse = caseRequest.get('transactionProofFiles') || [];
+
+          setUccFiles(uccFilesFromParse.map((file) => file));
+          setTransactionProofFiles(transactionProofFilesFromParse.map((file) => file));
         } catch (error) {
           console.error('Error fetching Case Request:', error);
           setError('Failed to fetch the Case Request.');
@@ -80,10 +70,12 @@ const CaseRequestForm = () => {
           setLoading(false);
         }
       };
-  
+
       fetchRequest();
     }
   }, [id]);
+
+
 
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
@@ -108,16 +100,16 @@ const CaseRequestForm = () => {
       const CaseRequest = id
         ? await new Parse.Query('CaseRequest').get(id)
         : new Parse.Object('CaseRequest');
-  
+
       // Salvar dados do formulário
       Object.keys(formData).forEach((key) => {
         CaseRequest.set(key, formData[key]);
       });
-  
+
       CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
       CaseRequest.set('einList', einList);
       CaseRequest.set('ssnList', ssnList);
-  
+
       // Salvar arquivos como Parse.File
       const uccFilesToSave = await Promise.all(
         uccFiles.map((file) => {
@@ -131,13 +123,13 @@ const CaseRequestForm = () => {
           return parseFile.save(); // Salvar no Parse
         })
       );
-  
+
       // Adicionar arquivos ao registro
       CaseRequest.set('uccFiles', uccFilesToSave);
       CaseRequest.set('transactionProofFiles', transactionProofFilesToSave);
-  
+
       await CaseRequest.save();
-  
+
       setSuccess('Case Request saved successfully!');
       if (!id) {
         setFormData({
@@ -456,8 +448,20 @@ const CaseRequestForm = () => {
                 onChange={(e) => setUccFiles(Array.from(e.target.files))}
                 className={styles.input}
               />
+              {uccFiles.length > 0 && (
+                <div className="mt-2">
+                  {uccFiles.map((file, index) => (
+                    <p key={index} className="mb-0">
+                      {file.name || file._name}
+                    </p>
+                  ))}
+                </div>
+              )}
             </Form.Group>
+
           </Col>
+        </Row>
+        <Row className="mt-3">
           <Col md={6}>
             <Form.Group controlId="transactionProofFiles" className="mb-3">
               <Form.Label>Proof of Transaction</Form.Label>
@@ -467,9 +471,20 @@ const CaseRequestForm = () => {
                 onChange={(e) => setTransactionProofFiles(Array.from(e.target.files))}
                 className={styles.input}
               />
+              {transactionProofFiles.length > 0 && (
+                <div className="mt-2">
+                  {transactionProofFiles.map((file, index) => (
+                    <p key={index} className="mb-0">
+                      {file.name || file._name}
+                    </p>
+                  ))}
+                </div>
+              )}
             </Form.Group>
+
           </Col>
         </Row>
+
 
         <Button
           type="submit"
