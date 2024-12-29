@@ -1,11 +1,15 @@
 // src/components/CaseRequestForm/CaseRequestForm.js
 
-import React, { useState } from 'react';
+// src/components/CaseRequestForm/CaseRequestForm.js
+
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Parse from '../../config/parseConfig';
 import { Container, Form, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import styles from './CaseRequestForm.module.css'; // Importa o CSS Module
+import styles from './CaseRequestForm.module.css';
 
 const CaseRequestForm = () => {
+  const { id } = useParams(); // Captura o ID da URL
   const [uccFiles, setUccFiles] = useState([]);
   const [transactionProofFiles, setTransactionProofFiles] = useState([]);
   const [einList, setEinList] = useState(['']);
@@ -30,6 +34,49 @@ const CaseRequestForm = () => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Carregar dados do registro existente, se o ID for fornecido
+  useEffect(() => {
+    if (id) {
+      const fetchRequest = async () => {
+        setLoading(true);
+        try {
+          const query = new Parse.Query('CaseRequest');
+          const caseRequest = await query.get(id);
+
+          // Preenche os campos com os dados existentes
+          setFormData({
+            requesterEmail: caseRequest.get('requesterEmail') || '',
+            creditorName: caseRequest.get('creditorName') || '',
+            businessName: caseRequest.get('businessName') || '',
+            doingBusinessAs: caseRequest.get('doingBusinessAs') || '',
+            requestType: caseRequest.get('requestType') || '',
+            lienBalance: caseRequest.get('lienBalance') || '',
+            additionalEntities: caseRequest.get('additionalEntities') || '',
+            defaultDate: caseRequest.get('defaultDate') || '',
+            address: caseRequest.get('address') || '',
+            state: caseRequest.get('state') || '',
+            city: caseRequest.get('city') || '',
+            zipcode: caseRequest.get('zipcode') || '',
+            emailAddress: caseRequest.get('emailAddress') || '',
+            phoneNumber: caseRequest.get('phoneNumber') || '',
+          });
+
+          setUccFiles(caseRequest.get('uccFiles') || []);
+          setTransactionProofFiles(caseRequest.get('transactionProofFiles') || []);
+          setEinList(caseRequest.get('einList') || ['']);
+          setSsnList(caseRequest.get('ssnList') || ['']);
+        } catch (error) {
+          console.error('Error fetching Case Request:', error);
+          setError('Failed to fetch the Case Request.');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchRequest();
+    }
+  }, [id]);
+
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
@@ -40,7 +87,10 @@ const CaseRequestForm = () => {
     setError('');
     setSuccess('');
     try {
-      const CaseRequest = new Parse.Object('CaseRequest');
+      const CaseRequest = id
+        ? await new Parse.Query('CaseRequest').get(id)
+        : new Parse.Object('CaseRequest');
+
       Object.keys(formData).forEach((key) => {
         CaseRequest.set(key, formData[key]);
       });
@@ -67,26 +117,29 @@ const CaseRequestForm = () => {
 
       await CaseRequest.save();
       setSuccess('Case Request saved successfully!');
-      setFormData({
-        requesterEmail: '',
-        creditorName: '',
-        businessName: '',
-        doingBusinessAs: '',
-        requestType: '',
-        lienBalance: '',
-        additionalEntities: '',
-        defaultDate: '',
-        address: '',
-        state: '',
-        city: '',
-        zipcode: '',
-        emailAddress: '',
-        phoneNumber: '',
-      });
-      setEinList(['']);
-      setSsnList(['']);
-      setUccFiles([]);
-      setTransactionProofFiles([]);
+      if (!id) {
+        // Reseta os campos apenas se for uma nova solicitação
+        setFormData({
+          requesterEmail: '',
+          creditorName: '',
+          businessName: '',
+          doingBusinessAs: '',
+          requestType: '',
+          lienBalance: '',
+          additionalEntities: '',
+          defaultDate: '',
+          address: '',
+          state: '',
+          city: '',
+          zipcode: '',
+          emailAddress: '',
+          phoneNumber: '',
+        });
+        setUccFiles([]);
+        setTransactionProofFiles([]);
+        setEinList(['']);
+        setSsnList(['']);
+      }
     } catch (error) {
       console.error('Error saving Case Request:', error);
       setError('Failed to save Case Request. Please try again.');
