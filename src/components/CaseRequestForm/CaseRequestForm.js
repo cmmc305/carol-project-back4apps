@@ -41,7 +41,6 @@ const CaseRequestForm = () => {
           const query = new Parse.Query('CaseRequest');
           const caseRequest = await query.get(id);
   
-          // Preenchendo os campos do formulário com os dados do registro
           setFormData({
             requesterEmail: caseRequest.get('requesterEmail') || '',
             creditorName: caseRequest.get('creditorName') || '',
@@ -59,27 +58,19 @@ const CaseRequestForm = () => {
             phoneNumber: caseRequest.get('phoneNumber') || '',
           });
   
-          // Configurando os arquivos (UCC e Prova de Transação)
-          const uccFiles = caseRequest.get('uccFiles') || [];
-          const transactionProofFiles = caseRequest.get('transactionProofFiles') || [];
+          // Carregar arquivos
+          setUccFiles((caseRequest.get('uccFiles') || []).map((file) => ({
+            name: file._name,
+            url: file._url,
+            type: file._type,
+          })));
+          setTransactionProofFiles((caseRequest.get('transactionProofFiles') || []).map((file) => ({
+            name: file._name,
+            url: file._url,
+            type: file._type,
+          })));
   
-          setUccFiles(
-            uccFiles.map((file) => ({
-              name: file.name,
-              url: file.url,
-              type: file.type || '',
-            }))
-          );
-  
-          setTransactionProofFiles(
-            transactionProofFiles.map((file) => ({
-              name: file.name,
-              url: file.url,
-              type: file.type || '',
-            }))
-          );
-  
-          // Configurando listas EIN e SSN
+          // Carregar listas EIN e SSN
           setEinList(caseRequest.get('einList') || ['']);
           setSsnList(caseRequest.get('ssnList') || ['']);
         } catch (error) {
@@ -117,18 +108,36 @@ const CaseRequestForm = () => {
       const CaseRequest = id
         ? await new Parse.Query('CaseRequest').get(id)
         : new Parse.Object('CaseRequest');
-
+  
+      // Salvar dados do formulário
       Object.keys(formData).forEach((key) => {
         CaseRequest.set(key, formData[key]);
       });
-
+  
       CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
-      CaseRequest.set('uccFiles', uccFiles);
-      CaseRequest.set('transactionProofFiles', transactionProofFiles);
       CaseRequest.set('einList', einList);
       CaseRequest.set('ssnList', ssnList);
-
+  
+      // Salvar arquivos como Parse.File
+      const uccFilesToSave = await Promise.all(
+        uccFiles.map((file) => {
+          const parseFile = new Parse.File(file.name, file);
+          return parseFile.save(); // Salvar no Parse
+        })
+      );
+      const transactionProofFilesToSave = await Promise.all(
+        transactionProofFiles.map((file) => {
+          const parseFile = new Parse.File(file.name, file);
+          return parseFile.save(); // Salvar no Parse
+        })
+      );
+  
+      // Adicionar arquivos ao registro
+      CaseRequest.set('uccFiles', uccFilesToSave);
+      CaseRequest.set('transactionProofFiles', transactionProofFilesToSave);
+  
       await CaseRequest.save();
+  
       setSuccess('Case Request saved successfully!');
       if (!id) {
         setFormData({
