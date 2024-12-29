@@ -110,7 +110,7 @@
   }
 
   .navLink {
-    justify-content: start;
+    justify-content: initial;
     padding: 0.5rem;
   }
 

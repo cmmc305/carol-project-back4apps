@@ -40,7 +40,8 @@ const CaseRequestForm = () => {
         try {
           const query = new Parse.Query('CaseRequest');
           const caseRequest = await query.get(id);
-
+  
+          // Preenchendo os campos do formulário com os dados do registro
           setFormData({
             requesterEmail: caseRequest.get('requesterEmail') || '',
             creditorName: caseRequest.get('creditorName') || '',
@@ -57,9 +58,28 @@ const CaseRequestForm = () => {
             emailAddress: caseRequest.get('emailAddress') || '',
             phoneNumber: caseRequest.get('phoneNumber') || '',
           });
-
-          setUccFiles(caseRequest.get('uccFiles') || []);
-          setTransactionProofFiles(caseRequest.get('transactionProofFiles') || []);
+  
+          // Configurando os arquivos (UCC e Prova de Transação)
+          const uccFiles = caseRequest.get('uccFiles') || [];
+          const transactionProofFiles = caseRequest.get('transactionProofFiles') || [];
+  
+          setUccFiles(
+            uccFiles.map((file) => ({
+              name: file.name,
+              url: file.url,
+              type: file.type || '',
+            }))
+          );
+  
+          setTransactionProofFiles(
+            transactionProofFiles.map((file) => ({
+              name: file.name,
+              url: file.url,
+              type: file.type || '',
+            }))
+          );
+  
+          // Configurando listas EIN e SSN
           setEinList(caseRequest.get('einList') || ['']);
           setSsnList(caseRequest.get('ssnList') || ['']);
         } catch (error) {
@@ -69,7 +89,7 @@ const CaseRequestForm = () => {
           setLoading(false);
         }
       };
-
+  
       fetchRequest();
     }
   }, [id]);
