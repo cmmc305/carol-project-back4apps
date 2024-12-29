@@ -41,7 +41,7 @@ const CaseRequestForm = () => {
           const query = new Parse.Query('CaseRequest');
           const caseRequest = await query.get(id);
 
-          // Preenchendo os dados do formulário
+          // Preencher campos do formulário
           setFormData({
             requesterEmail: caseRequest.get('requesterEmail') || '',
             creditorName: caseRequest.get('creditorName') || '',
@@ -59,9 +59,13 @@ const CaseRequestForm = () => {
             phoneNumber: caseRequest.get('phoneNumber') || '',
           });
 
-          // Preenchendo os arquivos
+          // Preencher arquivos
           setUccFiles(caseRequest.get('uccFiles') || []);
           setTransactionProofFiles(caseRequest.get('transactionProofFiles') || []);
+
+          // Preencher listas EIN e SSN
+          setEinList(caseRequest.get('einList') || ['']);
+          setSsnList(caseRequest.get('ssnList') || ['']);
         } catch (error) {
           console.error('Error fetching Case Request:', error);
           setError('Failed to fetch the Case Request.');
@@ -454,8 +458,8 @@ const CaseRequestForm = () => {
                   <ul>
                     {uccFiles.map((file, index) => (
                       <li key={index}>
-                        <a href={file.url || file._url} target="_blank" rel="noopener noreferrer">
-                          {file.name || file._name}
+                        <a href={file.url} target="_blank" rel="noopener noreferrer">
+                          {file.name}
                         </a>
                       </li>
                     ))}
@@ -463,10 +467,8 @@ const CaseRequestForm = () => {
                 </div>
               )}
             </Form.Group>
-
           </Col>
-        </Row>
-        <Row className="mt-3">
+
           <Col md={6}>
             <Form.Group controlId="transactionProofFiles" className="mb-3">
               <Form.Label>Proof of Transaction</Form.Label>
@@ -482,8 +484,8 @@ const CaseRequestForm = () => {
                   <ul>
                     {transactionProofFiles.map((file, index) => (
                       <li key={index}>
-                        <a href={file.url || file._url} target="_blank" rel="noopener noreferrer">
-                          {file.name || file._name}
+                        <a href={file.url} target="_blank" rel="noopener noreferrer">
+                          {file.name}
                         </a>
                       </li>
                     ))}
@@ -491,8 +493,6 @@ const CaseRequestForm = () => {
                 </div>
               )}
             </Form.Group>
-
-
           </Col>
         </Row>
 
