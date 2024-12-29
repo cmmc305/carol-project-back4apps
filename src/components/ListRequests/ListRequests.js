@@ -29,7 +29,7 @@ const ListRequests = () => {
   }, []);
 
   const handleEdit = (requestId) => {
-    navigate(`/create-request/${requestId}`);
+    navigate(`/app/create-request/${requestId}`); // Adicione o prefixo "/app" para corresponder à rota configurada
   };
 
   return (

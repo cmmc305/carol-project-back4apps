@@ -18,6 +18,7 @@ const AppRoutes = () => (
     <Route path="/app" element={<MainLayout />}>
       <Route path="register" element={<RegisterUser />} />
       <Route path="create-request" element={<CaseRequestForm />} />
+      <Route path="create-request/:id" element={<CaseRequestForm />} /> {/* Adicionada rota com parâmetro dinâmico */}
       <Route path="list-requests" element={<ListRequests />} />
       {/* Rota 404 para rotas protegidas */}
       <Route path="*" element={<NotFound />} />
@@ -29,3 +30,4 @@ const AppRoutes = () => (
 );
 
 export default AppRoutes;
+
