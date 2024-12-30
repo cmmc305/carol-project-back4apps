@@ -95,12 +95,12 @@ const CaseRequestForm = () => {
 
         // Converte de Parse.File para { name, url } (para exibir em lista)
         const convertedUccFiles = uccParseFiles.map((parseFile) => ({
-          name: parseFile.name(),
-          url: parseFile.url(),
+          name: parseFile.name,
+          url: parseFile.url,
         }));
         const convertedTransactionProofFiles = transactionParseFiles.map((parseFile) => ({
-          name: parseFile.name(),
-          url: parseFile.url(),
+          name: parseFile.name,
+          url: parseFile.url,
         }));
 
         // LOG para ver as listas convertidas:
