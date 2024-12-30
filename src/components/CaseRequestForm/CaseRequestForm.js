@@ -40,7 +40,7 @@ const CaseRequestForm = () => {
         try {
           const query = new Parse.Query('CaseRequest');
           const caseRequest = await query.get(id);
-
+  
           // Preencher campos do formulário
           setFormData({
             requesterEmail: caseRequest.get('requesterEmail') || '',
@@ -58,11 +58,25 @@ const CaseRequestForm = () => {
             emailAddress: caseRequest.get('emailAddress') || '',
             phoneNumber: caseRequest.get('phoneNumber') || '',
           });
-
-          // Preencher arquivos
-          setUccFiles(caseRequest.get('uccFiles') || []);
-          setTransactionProofFiles(caseRequest.get('transactionProofFiles') || []);
-
+  
+          // Carregar arquivos do Parse
+          const uccParseFiles = caseRequest.get('uccFiles') || [];
+          const transactionParseFiles = caseRequest.get('transactionProofFiles') || [];
+  
+          // Converter de Parse.File para { name, url }
+          const convertedUccFiles = uccParseFiles.map((parseFile) => ({
+            name: parseFile.name(),
+            url: parseFile.url(),
+          }));
+          const convertedTransactionProofFiles = transactionParseFiles.map((parseFile) => ({
+            name: parseFile.name(),
+            url: parseFile.url(),
+          }));
+  
+          // Definir no state para exibir na listagem
+          setUccFiles(convertedUccFiles);
+          setTransactionProofFiles(convertedTransactionProofFiles);
+  
           // Preencher listas EIN e SSN
           setEinList(caseRequest.get('einList') || ['']);
           setSsnList(caseRequest.get('ssnList') || ['']);
@@ -73,10 +87,11 @@ const CaseRequestForm = () => {
           setLoading(false);
         }
       };
-
+  
       fetchRequest();
     }
   }, [id]);
+  
 
 
 
@@ -100,41 +115,68 @@ const CaseRequestForm = () => {
     setLoading(true);
     setError('');
     setSuccess('');
+  
     try {
+      // Se estamos editando (id existe), busca o CaseRequest; senão cria um novo
       const CaseRequest = id
         ? await new Parse.Query('CaseRequest').get(id)
         : new Parse.Object('CaseRequest');
-
-      // Salvar dados do formulário
+  
+      // Salvar campos de texto do formulário
       Object.keys(formData).forEach((key) => {
         CaseRequest.set(key, formData[key]);
       });
-
       CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
       CaseRequest.set('einList', einList);
       CaseRequest.set('ssnList', ssnList);
-
-      // Salvar arquivos como Parse.File
-      const uccFilesToSave = await Promise.all(
-        uccFiles.map((file) => {
-          const parseFile = new Parse.File(file.name, file);
-          return parseFile.save(); // Salvar no Parse
-        })
-      );
-      const transactionProofFilesToSave = await Promise.all(
-        transactionProofFiles.map((file) => {
-          const parseFile = new Parse.File(file.name, file);
-          return parseFile.save(); // Salvar no Parse
-        })
-      );
-
-      // Adicionar arquivos ao registro
-      CaseRequest.set('uccFiles', uccFilesToSave);
-      CaseRequest.set('transactionProofFiles', transactionProofFilesToSave);
-
+  
+      // Carregar do Parse os arquivos antigos (se já existir o registro)
+      const oldUccParseFiles = CaseRequest.get('uccFiles') || [];
+      const oldTransactionParseFiles = CaseRequest.get('transactionProofFiles') || [];
+  
+      // Filtrar o que for "File" (novos uploads) vs. objetos já convertidos (que só têm { name, url })
+      // Assim evitamos tentar re-salvar algo que já está no Parse
+      const newUccFileObjects = uccFiles.filter((item) => item instanceof File);
+      const newTransactionFileObjects = transactionProofFiles.filter((item) => item instanceof File);
+  
+      // Converter novos arquivos para Parse.File
+      let newUccParseFiles = [];
+      if (newUccFileObjects.length > 0) {
+        newUccParseFiles = await Promise.all(
+          newUccFileObjects.map((file) => {
+            const parseFile = new Parse.File(file.name, file);
+            return parseFile.save(); // Salvar efetivamente no Parse
+          })
+        );
+      }
+  
+      let newTransactionProofParseFiles = [];
+      if (newTransactionFileObjects.length > 0) {
+        newTransactionProofParseFiles = await Promise.all(
+          newTransactionFileObjects.map((file) => {
+            const parseFile = new Parse.File(file.name, file);
+            return parseFile.save();
+          })
+        );
+      }
+  
+      // Se tem novos arquivos, adicionamos no array antigo; se não tiver, mantemos como está
+      if (newUccParseFiles.length > 0) {
+        // Concatena antigos + novos
+        CaseRequest.set('uccFiles', [...oldUccParseFiles, ...newUccParseFiles]);
+      }
+      if (newTransactionProofParseFiles.length > 0) {
+        CaseRequest.set('transactionProofFiles', [
+          ...oldTransactionParseFiles,
+          ...newTransactionProofParseFiles,
+        ]);
+      }
+  
       await CaseRequest.save();
-
+  
       setSuccess('Case Request saved successfully!');
+  
+      // Se é um registro novo (sem id prévio), limpamos o formulário
       if (!id) {
         setFormData({
           requesterEmail: '',
@@ -164,6 +206,7 @@ const CaseRequestForm = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <Container className={styles.caseRequestContainer}>
@@ -495,7 +538,6 @@ const CaseRequestForm = () => {
             </Form.Group>
           </Col>
         </Row>
-
 
         <Button
           type="submit"
