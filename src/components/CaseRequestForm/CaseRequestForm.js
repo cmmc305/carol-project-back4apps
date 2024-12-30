@@ -98,19 +98,25 @@ const CaseRequestForm = () => {
         const uccParseFiles = caseRequest.get('uccFiles') || [];
         const transactionParseFiles = caseRequest.get('transactionProofFiles') || [];
 
+        console.log('Original uccParseFiles:', uccParseFiles);
+        console.log('Original transactionParseFiles:', transactionParseFiles);
+
         // Converte de Parse.File para { name, url } (para exibir em lista)
         const convertedUccFiles = uccParseFiles.map((parseFile) => ({
-          name: parseFile.name(),
-          url: parseFile.url(),
+          name: parseFile.name, // Correção: acessar como propriedade
+          url: parseFile.url,   // Correção: acessar como propriedade
         }));
         const convertedTransactionProofFiles = transactionParseFiles.map((parseFile) => ({
-          name: parseFile.name(),
-          url: parseFile.url(),
+          name: parseFile.name, // Correção: acessar como propriedade
+          url: parseFile.url,   // Correção: acessar como propriedade
         }));
 
         // LOG para ver as listas convertidas:
         console.log('convertedUccFiles =>', convertedUccFiles);
-        console.log('convertedTransactionProofFiles =>', convertedTransactionProofFiles);
+        console.log(
+          'convertedTransactionProofFiles =>',
+          convertedTransactionProofFiles
+        );
 
         // Setar no state para exibição
         setSavedUccFiles(convertedUccFiles);
@@ -205,7 +211,7 @@ const CaseRequestForm = () => {
 
       // LOG para ver quais arquivos antigos estão no banco
       console.log('oldUccParseFiles =>', oldUccParseFiles);
-      console.log('oldTransactionParseFiles =>', oldTransactionParseFiles);
+      console.log('oldTransactionProofFiles =>', oldTransactionParseFiles);
 
       // LOG para ver quais arquivos novos foram selecionados (type File)
       console.log('newUccFiles =>', newUccFiles);
@@ -267,14 +273,20 @@ const CaseRequestForm = () => {
       const uccParseFiles = updatedCaseRequest.get('uccFiles') || [];
       const transactionParseFiles = updatedCaseRequest.get('transactionProofFiles') || [];
 
+      console.log('Updated uccParseFiles:', uccParseFiles);
+      console.log('Updated transactionParseFiles:', transactionParseFiles);
+
       const convertedUccFiles = uccParseFiles.map((parseFile) => ({
-        name: parseFile.name(),
-        url: parseFile.url(),
+        name: parseFile.name, // Correção: acessar como propriedade
+        url: parseFile.url,   // Correção: acessar como propriedade
       }));
       const convertedTransactionProofFiles = transactionParseFiles.map((parseFile) => ({
-        name: parseFile.name(),
-        url: parseFile.url(),
+        name: parseFile.name, // Correção: acessar como propriedade
+        url: parseFile.url,   // Correção: acessar como propriedade
       }));
+
+      console.log('convertedUccFiles after update =>', convertedUccFiles);
+      console.log('convertedTransactionProofFiles after update =>', convertedTransactionProofFiles);
 
       setSavedUccFiles(convertedUccFiles);
       setSavedTransactionProofFiles(convertedTransactionProofFiles);
