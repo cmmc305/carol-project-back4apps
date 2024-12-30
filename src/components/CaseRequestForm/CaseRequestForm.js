@@ -60,6 +60,13 @@ const CaseRequestForm = () => {
         const query = new Parse.Query('CaseRequest');
         const caseRequest = await query.get(id);
 
+        // LOG para ver o objeto bruto:
+        console.log('CaseRequest raw =>', caseRequest);
+
+        // LOG para ver como os campos de arquivo estão no objeto:
+        console.log('uccFiles =>', caseRequest.get('uccFiles'));
+        console.log('transactionProofFiles =>', caseRequest.get('transactionProofFiles'));
+
         // Preenche campos de texto
         setFormData({
           requesterEmail: caseRequest.get('requesterEmail') || '',
@@ -95,6 +102,13 @@ const CaseRequestForm = () => {
           name: parseFile.name(),
           url: parseFile.url(),
         }));
+
+        // LOG para ver as listas convertidas:
+        console.log('convertedUccFiles =>', convertedUccFiles);
+        console.log(
+          'convertedTransactionProofFiles =>',
+          convertedTransactionProofFiles
+        );
 
         // Setar no state para exibição
         setSavedUccFiles(convertedUccFiles);
@@ -157,6 +171,14 @@ const CaseRequestForm = () => {
       const oldUccParseFiles = CaseRequest.get('uccFiles') || [];
       const oldTransactionParseFiles = CaseRequest.get('transactionProofFiles') || [];
 
+      // LOG para ver quais arquivos antigos estão no banco
+      console.log('oldUccParseFiles =>', oldUccParseFiles);
+      console.log('oldTransactionParseFiles =>', oldTransactionParseFiles);
+
+      // LOG para ver quais arquivos novos foram selecionados (type File)
+      console.log('newUccFiles =>', newUccFiles);
+      console.log('newTransactionProofFiles =>', newTransactionProofFiles);
+
       // Converter novos arquivos (File) em Parse.File
       let newUccParseFiles = [];
       if (newUccFiles.length > 0) {
@@ -177,6 +199,10 @@ const CaseRequestForm = () => {
           })
         );
       }
+
+      // LOG para ver o que foi convertido em Parse.File
+      console.log('newUccParseFiles =>', newUccParseFiles);
+      console.log('newTransactionProofParseFiles =>', newTransactionProofParseFiles);
 
       // Se houver novos arquivos, concatena com os antigos
       if (newUccParseFiles.length > 0) {
