@@ -639,13 +639,17 @@ const CaseRequestForm = () => {
                 <div className="mt-2">
                   <strong>Uploaded Files:</strong>
                   <ul>
-                    {savedUccFiles.map((file) => (
-                      <li key={file.url}>
-                        <a href={file.url} target="_blank" rel="noopener noreferrer">
-                          {file.name}
-                        </a>
-                      </li>
-                    ))}
+                    {savedUccFiles.map((file) => {
+                      // Adiciona log para depuração
+                      console.log('Rendering UCC File:', file);
+                      return (
+                        <li key={file.url}>
+                          <a href={file.url} target="_blank" rel="noopener noreferrer">
+                            {file.name || 'Unnamed File'}
+                          </a>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}
@@ -666,13 +670,17 @@ const CaseRequestForm = () => {
                 <div className="mt-2">
                   <strong>Uploaded Files:</strong>
                   <ul>
-                    {savedTransactionProofFiles.map((file) => (
-                      <li key={file.url}>
-                        <a href={file.url} target="_blank" rel="noopener noreferrer">
-                          {file.name}
-                        </a>
-                      </li>
-                    ))}
+                    {savedTransactionProofFiles.map((file) => {
+                      // Adiciona log para depuração
+                      console.log('Rendering Transaction Proof File:', file);
+                      return (
+                        <li key={file.url}>
+                          <a href={file.url} target="_blank" rel="noopener noreferrer">
+                            {file.name || 'Unnamed File'}
+                          </a>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}
