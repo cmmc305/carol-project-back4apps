@@ -1,9 +1,9 @@
 // src/components/CaseRequestForm/CaseRequestForm.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Parse from '../../config/parseConfig';
-import { Container, Form, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col, Alert, Spinner, ProgressBar } from 'react-bootstrap';
 import styles from './CaseRequestForm.module.css';
 import CurrencyInput from 'react-currency-input-field';
 
@@ -47,6 +47,11 @@ const CaseRequestForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  // Refs para inputs de arquivo para limpeza
+  const uccFileInputRef = useRef(null);
+  const transactionProofFileInputRef = useRef(null);
 
   // ===========================================================================
   // useEffect - Busca o registro do Parse ao editar (id existente)
@@ -95,20 +100,17 @@ const CaseRequestForm = () => {
 
         // Converte de Parse.File para { name, url } (para exibir em lista)
         const convertedUccFiles = uccParseFiles.map((parseFile) => ({
-          name: parseFile.name,
-          url: parseFile.url,
+          name: parseFile.name(),
+          url: parseFile.url(),
         }));
         const convertedTransactionProofFiles = transactionParseFiles.map((parseFile) => ({
-          name: parseFile.name,
-          url: parseFile.url,
+          name: parseFile.name(),
+          url: parseFile.url(),
         }));
 
         // LOG para ver as listas convertidas:
         console.log('convertedUccFiles =>', convertedUccFiles);
-        console.log(
-          'convertedTransactionProofFiles =>',
-          convertedTransactionProofFiles
-        );
+        console.log('convertedTransactionProofFiles =>', convertedTransactionProofFiles);
 
         // Setar no state para exibição
         setSavedUccFiles(convertedUccFiles);
@@ -119,7 +121,7 @@ const CaseRequestForm = () => {
         setNewTransactionProofFiles([]);
       } catch (error) {
         console.error('Error fetching Case Request:', error);
-        setError('Failed to fetch the Case Request.');
+        setError('Falha ao buscar o Case Request.');
       } finally {
         setLoading(false);
       }
@@ -146,6 +148,26 @@ const CaseRequestForm = () => {
   };
 
   // ===========================================================================
+  // Validação de arquivos
+  // ===========================================================================
+  const validateFiles = (files) => {
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    for (let file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        setError(`Tipo de arquivo não permitido: ${file.name}`);
+        return false;
+      }
+      if (file.size > maxSize) {
+        setError(`Arquivo muito grande (máx 5MB): ${file.name}`);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // ===========================================================================
   // handleSubmit - Salvar / editar
   // ===========================================================================
   const handleSubmit = async (e) => {
@@ -153,6 +175,16 @@ const CaseRequestForm = () => {
     setLoading(true);
     setError('');
     setSuccess('');
+    setUploadProgress(0);
+
+    // Validação dos arquivos
+    if (
+      (newUccFiles.length > 0 && !validateFiles(newUccFiles)) ||
+      (newTransactionProofFiles.length > 0 && !validateFiles(newTransactionProofFiles))
+    ) {
+      setLoading(false);
+      return;
+    }
 
     try {
       const CaseRequest = id
@@ -179,13 +211,18 @@ const CaseRequestForm = () => {
       console.log('newUccFiles =>', newUccFiles);
       console.log('newTransactionProofFiles =>', newTransactionProofFiles);
 
-      // Converter novos arquivos (File) em Parse.File
+      // Converter novos arquivos (File) em Parse.File com progresso
       let newUccParseFiles = [];
       if (newUccFiles.length > 0) {
         newUccParseFiles = await Promise.all(
           newUccFiles.map(async (file) => {
             const parseFile = new Parse.File(file.name, file);
-            return parseFile.save();
+            await parseFile.save({
+              onProgress: (progress) => {
+                setUploadProgress((prev) => Math.max(prev, Math.round((progress.loaded / progress.total) * 100)));
+              },
+            });
+            return parseFile;
           })
         );
       }
@@ -195,7 +232,12 @@ const CaseRequestForm = () => {
         newTransactionProofParseFiles = await Promise.all(
           newTransactionProofFiles.map(async (file) => {
             const parseFile = new Parse.File(file.name, file);
-            return parseFile.save();
+            await parseFile.save({
+              onProgress: (progress) => {
+                setUploadProgress((prev) => Math.max(prev, Math.round((progress.loaded / progress.total) * 100)));
+              },
+            });
+            return parseFile;
           })
         );
       }
@@ -218,7 +260,36 @@ const CaseRequestForm = () => {
       // Salva no Parse
       await CaseRequest.save();
 
-      setSuccess('Case Request saved successfully!');
+      setSuccess('Case Request salvo com sucesso!');
+
+      // Atualizar as listas de arquivos salvos com os novos arquivos
+      const updatedCaseRequest = await new Parse.Query('CaseRequest').get(CaseRequest.id);
+      const uccParseFiles = updatedCaseRequest.get('uccFiles') || [];
+      const transactionParseFiles = updatedCaseRequest.get('transactionProofFiles') || [];
+
+      const convertedUccFiles = uccParseFiles.map((parseFile) => ({
+        name: parseFile.name(),
+        url: parseFile.url(),
+      }));
+      const convertedTransactionProofFiles = transactionParseFiles.map((parseFile) => ({
+        name: parseFile.name(),
+        url: parseFile.url(),
+      }));
+
+      setSavedUccFiles(convertedUccFiles);
+      setSavedTransactionProofFiles(convertedTransactionProofFiles);
+
+      // Limpar os novos arquivos após o salvamento
+      setNewUccFiles([]);
+      setNewTransactionProofFiles([]);
+
+      // Limpar os inputs de arquivo
+      if (uccFileInputRef.current) {
+        uccFileInputRef.current.value = '';
+      }
+      if (transactionProofFileInputRef.current) {
+        transactionProofFileInputRef.current.value = '';
+      }
 
       // Se for novo registro, limpa tudo
       if (!id) {
@@ -242,17 +313,15 @@ const CaseRequestForm = () => {
         setSsnList(['']);
         setSavedUccFiles([]);
         setSavedTransactionProofFiles([]);
-        setNewUccFiles([]);
-        setNewTransactionProofFiles([]);
       }
     } catch (error) {
       console.error('Error saving Case Request:', error);
-      setError('Failed to save Case Request. Please try again.');
+      setError('Falha ao salvar o Case Request. Por favor, tente novamente.');
     } finally {
       setLoading(false);
+      setUploadProgress(0);
     }
   };
-
 
   return (
     <Container className={styles.caseRequestContainer}>
@@ -261,6 +330,16 @@ const CaseRequestForm = () => {
         {/* Exibição de alertas de erro ou sucesso */}
         {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
         {success && <Alert variant="success" className={styles.alert}>{success}</Alert>}
+
+        {/* Indicador de progresso */}
+        {loading && (
+          <div className="mb-3">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            {uploadProgress > 0 && <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-2" />}
+          </div>
+        )}
 
         {/* Campos principais */}
         <Row>
@@ -322,7 +401,6 @@ const CaseRequestForm = () => {
               />
             </Form.Group>
           </Col>
-
 
           <Col md={6}>
             <Form.Group className="mb-3" controlId="doingBusinessAs">
@@ -490,6 +568,7 @@ const CaseRequestForm = () => {
                 <Button
                   variant="danger"
                   onClick={() => handleRemoveFromList(setEinList, einList, index)}
+                  disabled={einList.length === 1}
                 >
                   Remove
                 </Button>
@@ -519,6 +598,7 @@ const CaseRequestForm = () => {
                 <Button
                   variant="danger"
                   onClick={() => handleRemoveFromList(setSsnList, ssnList, index)}
+                  disabled={ssnList.length === 1}
                 >
                   Remove
                 </Button>
@@ -540,14 +620,15 @@ const CaseRequestForm = () => {
                 multiple
                 onChange={(e) => setNewUccFiles(Array.from(e.target.files))}
                 className={styles.input}
+                ref={uccFileInputRef}
               />
               {/* Exibe os arquivos SALVOS (já no banco) */}
               {savedUccFiles.length > 0 && (
                 <div className="mt-2">
                   <strong>Uploaded Files:</strong>
                   <ul>
-                    {savedUccFiles.map((file, index) => (
-                      <li key={index}>
+                    {savedUccFiles.map((file) => (
+                      <li key={file.url}>
                         <a href={file.url} target="_blank" rel="noopener noreferrer">
                           {file.name}
                         </a>
@@ -567,13 +648,14 @@ const CaseRequestForm = () => {
                 multiple
                 onChange={(e) => setNewTransactionProofFiles(Array.from(e.target.files))}
                 className={styles.input}
+                ref={transactionProofFileInputRef}
               />
               {savedTransactionProofFiles.length > 0 && (
                 <div className="mt-2">
                   <strong>Uploaded Files:</strong>
                   <ul>
-                    {savedTransactionProofFiles.map((file, index) => (
-                      <li key={index}>
+                    {savedTransactionProofFiles.map((file) => (
+                      <li key={file.url}>
                         <a href={file.url} target="_blank" rel="noopener noreferrer">
                           {file.name}
                         </a>
