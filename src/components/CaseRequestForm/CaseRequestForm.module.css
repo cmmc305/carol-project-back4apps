@@ -12,12 +12,14 @@
   font-weight: 600;
   color: #333333;
   margin-bottom: 1.5rem;
+  text-align: center; /* Centraliza o título */
 }
 
 .form {
-  /* Adicione estilos adicionais se necessário */
+  /* Estilos adicionais se necessário */
 }
 
+/* Estilos para os campos de input */
 .input {
   border-radius: 4px;
   border: 1px solid #ced4da;
@@ -29,6 +31,7 @@
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
+/* Estilos para os campos de textarea */
 .textarea {
   border-radius: 4px;
   border: 1px solid #ced4da;
@@ -40,6 +43,7 @@
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
+/* Estilos para o botão de submissão */
 .submitButton {
   width: 100%;
   padding: 0.75rem;
@@ -56,6 +60,80 @@
   outline: none;
 }
 
+/* Estilos para alertas */
 .alert {
   margin-bottom: 1rem;
+}
+
+/* Novas Classes para Melhor Estruturação */
+
+/* Container para cada seção de upload */
+.uploadSection {
+  margin-bottom: 2rem; /* Espaçamento entre seções */
+}
+
+/* Estilos para os títulos das seções de upload */
+.uploadSectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #555555;
+  margin-bottom: 0.75rem;
+}
+
+/* Lista de arquivos */
+.fileList {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 0.5rem;
+}
+
+/* Estilos para cada item de arquivo */
+.fileItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  background-color: #f8f8f8;
+}
+
+/* Estilos para o nome do arquivo */
+.fileName {
+  flex-grow: 1;
+  margin-right: 1rem;
+  color: #333333;
+  text-decoration: none;
+}
+
+/* Botão de excluir */
+.deleteButton {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.deleteButton:hover {
+  background-color: #c82333;
+}
+
+.deleteButton:disabled {
+  background-color: #a71d2a;
+  cursor: not-allowed;
+}
+
+/* Estilos para os arquivos novos */
+.newFileList {
+  margin-top: 0.5rem;
+}
+
+/* Texto quando não há arquivos */
+.noFilesText {
+  color: #777777;
+  font-style: italic;
 }

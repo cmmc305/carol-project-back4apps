@@ -363,7 +363,7 @@ const CaseRequestForm = () => {
 
   return (
     <Container className={styles.caseRequestContainer}>
-      <h1 className={`text-center ${styles.title}`}>Case Request Form</h1>
+      <h1 className={`${styles.title}`}>Case Request Form</h1>
       <Form className={styles.form} onSubmit={handleSubmit}>
         {/* Exibição de alertas de erro ou sucesso */}
         {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
@@ -697,150 +697,37 @@ const CaseRequestForm = () => {
         </Row>
 
         {/* Arquivos UCC Notices */}
-        <Row>
-          <Col md={12}>
-            <Form.Group controlId="uccFiles" className="mb-3">
-              <Form.Label>Upload UCC Notices Files</Form.Label>
-              <Form.Control
-                type="file"
-                multiple
-                onChange={(e) =>
-                  setNewUccFiles([
-                    ...newUccFiles,
-                    ...Array.from(e.target.files),
-                  ])
-                }
-                className={styles.input}
-                ref={uccFileInputRef}
-              />
-              {/* Exibir arquivos novos enviados */}
-              {newUccFiles.length > 0 && (
-                <div className="mt-2">
-                  <strong>New UCC Files:</strong>
-                  <ul>
-                    {newUccFiles.map((file, index) => (
-                      <li key={index} className="d-flex align-items-center">
-                        <span>{file.name}</span>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          className="ms-2"
-                          onClick={() =>
-                            setNewUccFiles(
-                              newUccFiles.filter((_, i) => i !== index)
-                            )
-                          }
-                        >
-                          🗑️
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </Form.Group>
-
-            {/* Exibir arquivos UCC Notices Salvos */}
-            <Form.Group controlId="uploadedUccFiles" className="mb-3">
-              <Form.Label>Uploaded UCC Notices</Form.Label>
-              {savedUccFiles.length > 0 ? (
-                <ul>
-                  {savedUccFiles.map((file, index) => (
-                    <li key={index} className="d-flex align-items-center">
-                      <a
-                        href={file.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {file.name}
-                      </a>
+        <div className={styles.uploadSection}>
+          <Form.Group controlId="uccFiles" className="mb-3">
+            <Form.Label className={styles.uploadSectionTitle}>Upload UCC Notices Files</Form.Label>
+            <Form.Control
+              type="file"
+              multiple
+              onChange={(e) =>
+                setNewUccFiles([
+                  ...newUccFiles,
+                  ...Array.from(e.target.files),
+                ])
+              }
+              className={styles.input}
+              ref={uccFileInputRef}
+            />
+            {/* Exibir arquivos novos enviados */}
+            {newUccFiles.length > 0 && (
+              <div className={styles.newFileList}>
+                <strong>New UCC Files:</strong>
+                <ul className={styles.fileList}>
+                  {newUccFiles.map((file, index) => (
+                    <li key={index} className={styles.fileItem}>
+                      <span className={styles.fileName}>{file.name}</span>
                       <Button
                         variant="danger"
                         size="sm"
-                        className="ms-2"
-                        onClick={() => handleDeleteFile('uccFiles', file)}
-                      >
-                        🗑️
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No UCC Notices uploaded.</p>
-              )}
-            </Form.Group>
-          </Col>
-        </Row>
-
-        {/* Arquivos Proof of Transaction */}
-        <Row>
-          <Col md={12}>
-            <Form.Group controlId="transactionProofFiles" className="mb-3">
-              <Form.Label>Upload Proof of Transaction Files</Form.Label>
-              <Form.Control
-                type="file"
-                multiple
-                onChange={(e) =>
-                  setNewTransactionProofFiles([
-                    ...newTransactionProofFiles,
-                    ...Array.from(e.target.files),
-                  ])
-                }
-                className={styles.input}
-                ref={transactionProofFileInputRef}
-              />
-              {/* Exibir arquivos novos enviados */}
-              {newTransactionProofFiles.length > 0 && (
-                <div className="mt-2">
-                  <strong>New Proof of Transaction Files:</strong>
-                  <ul>
-                    {newTransactionProofFiles.map((file, index) => (
-                      <li key={index} className="d-flex align-items-center">
-                        <span>{file.name}</span>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          className="ms-2"
-                          onClick={() =>
-                            setNewTransactionProofFiles(
-                              newTransactionProofFiles.filter(
-                                (_, i) => i !== index
-                              )
-                            )
-                          }
-                        >
-                          🗑️
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </Form.Group>
-
-            {/* Exibir arquivos Proof of Transaction Salvos */}
-            <Form.Group
-              controlId="uploadedTransactionProofFiles"
-              className="mb-3"
-            >
-              <Form.Label>Uploaded Proof of Transaction</Form.Label>
-              {savedTransactionProofFiles.length > 0 ? (
-                <ul>
-                  {savedTransactionProofFiles.map((file, index) => (
-                    <li key={index} className="d-flex align-items-center">
-                      <a
-                        href={file.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {file.name}
-                      </a>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        className="ms-2"
+                        className={styles.deleteButton}
                         onClick={() =>
-                          handleDeleteFile('transactionProofFiles', file)
+                          setNewUccFiles(
+                            newUccFiles.filter((_, i) => i !== index)
+                          )
                         }
                       >
                         🗑️
@@ -848,14 +735,125 @@ const CaseRequestForm = () => {
                     </li>
                   ))}
                 </ul>
-              ) : (
-                <p>No Proof of Transaction files uploaded.</p>
-              )}
-            </Form.Group>
-          </Col>
-        </Row>
+              </div>
+            )}
+          </Form.Group>
 
-        <Button type="submit" variant="primary" disabled={loading}>
+          {/* Exibir arquivos UCC Notices Salvos */}
+          <Form.Group controlId="uploadedUccFiles" className="mb-3">
+            <Form.Label className={styles.uploadSectionTitle}>Uploaded UCC Notices</Form.Label>
+            {savedUccFiles.length > 0 ? (
+              <ul className={styles.fileList}>
+                {savedUccFiles.map((file, index) => (
+                  <li key={index} className={styles.fileItem}>
+                    <a
+                      href={file.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.fileName}
+                    >
+                      {file.name}
+                    </a>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className={styles.deleteButton}
+                      onClick={() => handleDeleteFile('uccFiles', file)}
+                    >
+                      🗑️
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.noFilesText}>No UCC Notices uploaded.</p>
+            )}
+          </Form.Group>
+        </div>
+
+        {/* Arquivos Proof of Transaction */}
+        <div className={styles.uploadSection}>
+          <Form.Group controlId="transactionProofFiles" className="mb-3">
+            <Form.Label className={styles.uploadSectionTitle}>Upload Proof of Transaction Files</Form.Label>
+            <Form.Control
+              type="file"
+              multiple
+              onChange={(e) =>
+                setNewTransactionProofFiles([
+                  ...newTransactionProofFiles,
+                  ...Array.from(e.target.files),
+                ])
+              }
+              className={styles.input}
+              ref={transactionProofFileInputRef}
+            />
+            {/* Exibir arquivos novos enviados */}
+            {newTransactionProofFiles.length > 0 && (
+              <div className={styles.newFileList}>
+                <strong>New Proof of Transaction Files:</strong>
+                <ul className={styles.fileList}>
+                  {newTransactionProofFiles.map((file, index) => (
+                    <li key={index} className={styles.fileItem}>
+                      <span className={styles.fileName}>{file.name}</span>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className={styles.deleteButton}
+                        onClick={() =>
+                          setNewTransactionProofFiles(
+                            newTransactionProofFiles.filter(
+                              (_, i) => i !== index
+                            )
+                          )
+                        }
+                      >
+                        🗑️
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </Form.Group>
+
+          {/* Exibir arquivos Proof of Transaction Salvos */}
+          <Form.Group
+            controlId="uploadedTransactionProofFiles"
+            className="mb-3"
+          >
+            <Form.Label className={styles.uploadSectionTitle}>Uploaded Proof of Transaction</Form.Label>
+            {savedTransactionProofFiles.length > 0 ? (
+              <ul className={styles.fileList}>
+                {savedTransactionProofFiles.map((file, index) => (
+                  <li key={index} className={styles.fileItem}>
+                    <a
+                      href={file.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.fileName}
+                    >
+                      {file.name}
+                    </a>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className={styles.deleteButton}
+                      onClick={() =>
+                        handleDeleteFile('transactionProofFiles', file)
+                      }
+                    >
+                      🗑️
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.noFilesText}>No Proof of Transaction files uploaded.</p>
+            )}
+          </Form.Group>
+        </div>
+
+        <Button type="submit" variant="primary" disabled={loading} className={styles.submitButton}>
           {loading ? 'Submitting...' : 'Submit'}
         </Button>
       </Form>
