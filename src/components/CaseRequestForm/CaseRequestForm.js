@@ -667,79 +667,57 @@ const CaseRequestForm = () => {
 
         {/* Arquivos UCC Notices */}
         <Form.Group controlId="uccFiles" className="mb-3">
-          <Form.Label>UCC Notices Files</Form.Label>
-          <Form.Control
-            type="file"
-            multiple
-            onChange={(e) => setNewUccFiles([...newUccFiles, ...Array.from(e.target.files)])}
-            className={styles.input}
-            ref={uccFileInputRef}
-          />
-          {/* Exibir arquivos enviados */}
-          {savedUccFiles.length > 0 && (
-            <div className="mt-2">
-              <strong>Uploaded Files:</strong>
-              <ul>
-                {savedUccFiles.map((file, index) => (
-                  <li key={index} className="d-flex align-items-center">
-                    {file.url ? (
-                      <a href={file.url} target="_blank" rel="noopener noreferrer" className="me-2">
-                        {file.name}
-                      </a>
-                    ) : (
-                      <span className="me-2">{file.name}</span>
-                    )}
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDeleteFile('uccFiles', index)}
-                    >
-                      🗑️
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </Form.Group>
+      <Form.Label>UCC Notices Files</Form.Label>
+      <Form.Control
+        type="file"
+        multiple
+        onChange={(e) => setNewUccFiles(Array.from(e.target.files))}
+        className={styles.input}
+      />
+      <div className="uploaded-files mt-2">
+        {uccFiles.map((file, index) => (
+          <div key={index} className="d-flex align-items-center mb-2">
+            <span className="file-name me-2">
+              {file.name || 'Unknown file name'}
+            </span>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => handleRemoveUploadedFile('uccFiles', index)}
+            >
+              🗑️
+            </Button>
+          </div>
+        ))}
+      </div>
+    </Form.Group>
 
         {/* Arquivos Proof of Transaction */}
         <Form.Group controlId="transactionProofFiles" className="mb-3">
-          <Form.Label>Proof of Transaction</Form.Label>
-          <Form.Control
-            type="file"
-            multiple
-            onChange={(e) => setNewTransactionProofFiles([...newTransactionProofFiles, ...Array.from(e.target.files)])}
-            className={styles.input}
-            ref={transactionProofFileInputRef}
-          />
-          {/* Exibir arquivos enviados */}
-          {savedTransactionProofFiles.length > 0 && (
-            <div className="mt-2">
-              <strong>Uploaded Files:</strong>
-              <ul>
-                {savedTransactionProofFiles.map((file, index) => (
-                  <li key={index} className="d-flex align-items-center">
-                    {file.url ? (
-                      <a href={file.url} target="_blank" rel="noopener noreferrer" className="me-2">
-                        {file.name}
-                      </a>
-                    ) : (
-                      <span className="me-2">{file.name}</span>
-                    )}
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDeleteFile('transactionProofFiles', index)}
-                    >
-                      🗑️
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </Form.Group>
+      <Form.Label>Proof of Transaction</Form.Label>
+      <Form.Control
+        type="file"
+        multiple
+        onChange={(e) => setNewTransactionProofFiles(Array.from(e.target.files))}
+        className={styles.input}
+      />
+      <div className="uploaded-files mt-2">
+        {transactionProofFiles.map((file, index) => (
+          <div key={index} className="d-flex align-items-center mb-2">
+            <span className="file-name me-2">
+              {file.name || 'Unknown file name'}
+            </span>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => handleRemoveUploadedFile('transactionProofFiles', index)}
+            >
+              🗑️
+            </Button>
+          </div>
+        ))}
+      </div>
+    </Form.Group>
 
         <Button
           type="submit"
