@@ -70,6 +70,7 @@
 /* Container para cada seção de upload */
 .uploadSection {
   margin-bottom: 2rem; /* Espaçamento entre seções */
+  margin-top: 2rem; /* Espaçamento entre seções */
 }
 
 /* Estilos para os títulos das seções de upload */
