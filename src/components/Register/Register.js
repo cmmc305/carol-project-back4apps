@@ -42,7 +42,7 @@ const RegisterUser = () => {
   return (
     <div className="register-container">
       <div className="register-box">
-        <h1>Register User</h1>
+      <h1 className={`text-center ${styles.title}`}>Register User</h1>
         {error && <Alert variant="danger">{error}</Alert>}
         {success && <Alert variant="success">{success}</Alert>}
         <Form
