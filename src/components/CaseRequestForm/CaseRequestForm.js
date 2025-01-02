@@ -58,6 +58,9 @@ const CaseRequestForm = () => {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Estado para validação do formulário
+  const [validated, setValidated] = useState(false);
+
   // Refs para inputs de arquivo para limpeza
   const uccFileInputRef = useRef(null);
   const transactionProofFileInputRef = useRef(null);
@@ -169,10 +172,20 @@ const CaseRequestForm = () => {
   // ===========================================================================
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    // Verifica a validade do formulário
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+      setValidated(true);
+      setError('Por favor, corrija os erros no formulário.');
+      return;
+    }
+
     setLoading(true);
     setError('');
     setSuccess('');
     setUploadProgress(0);
+    setValidated(false); // Resetar a validação para permitir mensagens corretas
 
     // Validação dos arquivos
     if (
@@ -222,7 +235,7 @@ const CaseRequestForm = () => {
       };
 
       const newUccParseFilesUploaded = newUccFiles.length > 0 ? await convertToParseFiles(newUccFiles) : [];
-      const newTransactionParseFilesUploaded =
+      const newTransactionProofFilesUploaded =
         newTransactionProofFiles.length > 0
           ? await convertToParseFiles(newTransactionProofFiles)
           : [];
@@ -231,7 +244,7 @@ const CaseRequestForm = () => {
       const allUccFiles = [...oldUccParseFiles, ...newUccParseFilesUploaded];
       const allTransactionProofFiles = [
         ...oldTransactionParseFiles,
-        ...newTransactionParseFilesUploaded,
+        ...newTransactionProofFilesUploaded,
       ];
 
       // Atualizar no Parse
@@ -364,7 +377,12 @@ const CaseRequestForm = () => {
   return (
     <Container className={styles.caseRequestContainer}>
       <h1 className={`${styles.title}`}>Case Request Form</h1>
-      <Form className={styles.form} onSubmit={handleSubmit}>
+      <Form
+        className={styles.form}
+        onSubmit={handleSubmit}
+        noValidate
+        validated={validated}
+      >
         {/* Exibição de alertas de erro ou sucesso */}
         {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
         {success && <Alert variant="success" className={styles.alert}>{success}</Alert>}
@@ -399,7 +417,11 @@ const CaseRequestForm = () => {
                 }
                 className={styles.input}
                 required
+                isInvalid={validated && !/\S+@\S+\.\S+/.test(formData.requesterEmail)}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira um e-mail válido.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -410,12 +432,16 @@ const CaseRequestForm = () => {
                 onChange={(e) => handleInputChange('requestType', e.target.value)}
                 className={styles.input}
                 required
+                isInvalid={validated && formData.requestType === ''}
               >
                 <option value="">Select Request Type</option>
                 <option value="Lien">Lien</option>
                 <option value="Garnishment">Garnishment</option>
                 <option value="Release">Release</option>
               </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                Por favor, selecione o tipo de solicitação.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
@@ -433,7 +459,11 @@ const CaseRequestForm = () => {
                 }
                 className={styles.input}
                 required
+                isInvalid={validated && formData.businessName.trim() === ''}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira o nome do negócio.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -448,7 +478,11 @@ const CaseRequestForm = () => {
                 }
                 className={styles.input}
                 required
+                isInvalid={validated && formData.creditorName.trim() === ''}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira o nome do credor.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
 
@@ -481,7 +515,11 @@ const CaseRequestForm = () => {
                 }
                 className={styles.input}
                 required
+                isInvalid={validated && formData.address.trim() === ''}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira o endereço.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -494,7 +532,11 @@ const CaseRequestForm = () => {
                 onChange={(e) => handleInputChange('city', e.target.value)}
                 className={styles.input}
                 required
+                isInvalid={validated && formData.city.trim() === ''}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira a cidade.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
@@ -512,7 +554,11 @@ const CaseRequestForm = () => {
                 }
                 className={styles.input}
                 required
+                isInvalid={validated && formData.state.trim() === ''}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira o estado.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -527,7 +573,11 @@ const CaseRequestForm = () => {
                 }
                 className={styles.input}
                 required
+                isInvalid={validated && formData.zipcode.trim() === ''}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira o código postal.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
@@ -545,7 +595,11 @@ const CaseRequestForm = () => {
                 }
                 className={styles.input}
                 required
+                isInvalid={validated && !/\S+@\S+\.\S+/.test(formData.emailAddress)}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira um e-mail válido.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -560,7 +614,11 @@ const CaseRequestForm = () => {
                 }
                 className={styles.input}
                 required
+                isInvalid={validated && formData.phoneNumber.trim() === ''}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira o número de telefone.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
@@ -581,7 +639,11 @@ const CaseRequestForm = () => {
                 }
                 className={`${styles.input} form-control`}
                 required
+                isInvalid={validated && (formData.lienBalance === '' || isNaN(parseFloat(formData.lienBalance)))}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, insira um saldo de ônus válido.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -595,7 +657,12 @@ const CaseRequestForm = () => {
                   handleInputChange('defaultDate', e.target.value)
                 }
                 className={styles.input}
+                required
+                isInvalid={validated && formData.defaultDate === ''}
               />
+              <Form.Control.Feedback type="invalid">
+                Por favor, selecione a data de inadimplência.
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
@@ -636,6 +703,8 @@ const CaseRequestForm = () => {
                     )
                   }
                   className={`${styles.input} me-2`}
+                  required
+                  isInvalid={validated && ein.trim() === ''}
                 />
                 <Button
                   variant="danger"
@@ -646,6 +715,9 @@ const CaseRequestForm = () => {
                 >
                   Remove
                 </Button>
+                <Form.Control.Feedback type="invalid">
+                  Por favor, insira um EIN válido.
+                </Form.Control.Feedback>
               </div>
             ))}
             <Button
@@ -675,6 +747,8 @@ const CaseRequestForm = () => {
                     )
                   }
                   className={`${styles.input} me-2`}
+                  required
+                  isInvalid={validated && ssn.trim() === ''}
                 />
                 <Button
                   variant="danger"
@@ -685,6 +759,9 @@ const CaseRequestForm = () => {
                 >
                   Remove
                 </Button>
+                <Form.Control.Feedback type="invalid">
+                  Por favor, insira um SSN válido.
+                </Form.Control.Feedback>
               </div>
             ))}
             <Button
