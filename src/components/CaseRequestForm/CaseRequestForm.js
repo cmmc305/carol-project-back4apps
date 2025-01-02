@@ -665,59 +665,62 @@ const CaseRequestForm = () => {
           </Col>
         </Row>
 
-        {/* Arquivos UCC Notices */}
-        <Form.Group controlId="uccFiles" className="mb-3">
-      <Form.Label>UCC Notices Files</Form.Label>
-      <Form.Control
-        type="file"
-        multiple
-        onChange={(e) => setNewUccFiles(Array.from(e.target.files))}
-        className={styles.input}
-      />
-      <div className="uploaded-files mt-2">
-        {uccFiles.map((file, index) => (
-          <div key={index} className="d-flex align-items-center mb-2">
-            <span className="file-name me-2">
-              {file.name || 'Unknown file name'}
-            </span>
-            <Button
-              variant="danger"
-              size="sm"
-              onClick={() => handleRemoveUploadedFile('uccFiles', index)}
-            >
-              🗑️
-            </Button>
-          </div>
-        ))}
-      </div>
-    </Form.Group>
-
-        {/* Arquivos Proof of Transaction */}
-        <Form.Group controlId="transactionProofFiles" className="mb-3">
-      <Form.Label>Proof of Transaction</Form.Label>
-      <Form.Control
-        type="file"
-        multiple
-        onChange={(e) => setNewTransactionProofFiles(Array.from(e.target.files))}
-        className={styles.input}
-      />
-      <div className="uploaded-files mt-2">
-        {transactionProofFiles.map((file, index) => (
-          <div key={index} className="d-flex align-items-center mb-2">
-            <span className="file-name me-2">
-              {file.name || 'Unknown file name'}
-            </span>
-            <Button
-              variant="danger"
-              size="sm"
-              onClick={() => handleRemoveUploadedFile('transactionProofFiles', index)}
-            >
-              🗑️
-            </Button>
-          </div>
-        ))}
-      </div>
-    </Form.Group>
+        <Row className="mt-3">
+          <Col md={6}>
+            <Form.Group controlId="uccFiles" className="mb-3">
+              <Form.Label>UCC Notices Files</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                onChange={(e) => setNewUccFiles(Array.from(e.target.files))}
+                className={styles.input}
+              />
+              <div className="uploaded-files mt-2">
+                {(uccFiles || []).map((file, index) => (
+                  <div key={index} className="d-flex align-items-center mb-2">
+                    <span className="file-name me-2">
+                      {file.name || 'Unknown file name'}
+                    </span>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleRemoveUploadedFile('uccFiles', index)}
+                    >
+                      🗑️
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="transactionProofFiles" className="mb-3">
+              <Form.Label>Proof of Transaction</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                onChange={(e) => setNewTransactionProofFiles(Array.from(e.target.files))}
+                className={styles.input}
+              />
+              <div className="uploaded-files mt-2">
+                {(transactionProofFiles || []).map((file, index) => (
+                  <div key={index} className="d-flex align-items-center mb-2">
+                    <span className="file-name me-2">
+                      {file.name || 'Unknown file name'}
+                    </span>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleRemoveUploadedFile('transactionProofFiles', index)}
+                    >
+                      🗑️
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </Form.Group>
+          </Col>
+        </Row>
 
         <Button
           type="submit"
