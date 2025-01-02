@@ -103,20 +103,17 @@ const CaseRequestForm = () => {
 
         // Converte de Parse.File para { name, url } (para exibir em lista)
         const convertedUccFiles = uccParseFiles.map((parseFile) => ({
-          name: parseFile.name, // Correção: acessar como propriedade
-          url: parseFile.url,   // Correção: acessar como propriedade
+          name: parseFile.name || parseFile.get('name'), // Correção: acessar como propriedade
+          url: parseFile.url || parseFile.get('url'),   // Correção: acessar como propriedade
         }));
         const convertedTransactionProofFiles = transactionParseFiles.map((parseFile) => ({
-          name: parseFile.name, // Correção: acessar como propriedade
-          url: parseFile.url,   // Correção: acessar como propriedade
+          name: parseFile.name || parseFile.get('name'), // Correção: acessar como propriedade
+          url: parseFile.url || parseFile.get('url'),   // Correção: acessar como propriedade
         }));
 
         // LOG para ver as listas convertidas:
         console.log('convertedUccFiles =>', convertedUccFiles);
-        console.log(
-          'convertedTransactionProofFiles =>',
-          convertedTransactionProofFiles
-        );
+        console.log('convertedTransactionProofFiles =>', convertedTransactionProofFiles);
 
         // Setar no state para exibição
         setSavedUccFiles(convertedUccFiles);
@@ -209,87 +206,71 @@ const CaseRequestForm = () => {
       const oldUccParseFiles = CaseRequest.get('uccFiles') || [];
       const oldTransactionParseFiles = CaseRequest.get('transactionProofFiles') || [];
 
-      // LOG para ver quais arquivos antigos estão no banco
+      // LOG para visualizar os arquivos antigos no banco
       console.log('oldUccParseFiles =>', oldUccParseFiles);
       console.log('oldTransactionProofFiles =>', oldTransactionParseFiles);
 
-      // LOG para ver quais arquivos novos foram selecionados (type File)
-      console.log('newUccFiles =>', newUccFiles);
-      console.log('newTransactionProofFiles =>', newTransactionProofFiles);
-
       // Converter novos arquivos (File) em Parse.File com progresso
-      let newUccParseFiles = [];
-      if (newUccFiles.length > 0) {
-        newUccParseFiles = await Promise.all(
-          newUccFiles.map(async (file) => {
+      const convertToParseFiles = async (files) => {
+        return await Promise.all(
+          files.map(async (file) => {
             const parseFile = new Parse.File(file.name, file);
-            await parseFile.save({
-              onProgress: (progress) => {
-                setUploadProgress((prev) => Math.max(prev, Math.round((progress.loaded / progress.total) * 100)));
+            await parseFile.save(null, {
+              progress: (progress) => {
+                setUploadProgress((prev) =>
+                  Math.max(prev, Math.round(progress * 100))
+                );
               },
             });
-            return parseFile;
+            return {
+              __type: 'File',
+              name: parseFile.name(),
+              url: parseFile.url(),
+            };
           })
         );
-      }
+      };
 
-      let newTransactionProofParseFiles = [];
-      if (newTransactionProofFiles.length > 0) {
-        newTransactionProofParseFiles = await Promise.all(
-          newTransactionProofFiles.map(async (file) => {
-            const parseFile = new Parse.File(file.name, file);
-            await parseFile.save({
-              onProgress: (progress) => {
-                setUploadProgress((prev) => Math.max(prev, Math.round((progress.loaded / progress.total) * 100)));
-              },
-            });
-            return parseFile;
-          })
-        );
-      }
+      const newUccParseFilesUploaded = newUccFiles.length > 0 ? await convertToParseFiles(newUccFiles) : [];
+      const newTransactionParseFilesUploaded =
+        newTransactionProofFiles.length > 0 ? await convertToParseFiles(newTransactionProofFiles) : [];
 
-      // LOG para ver o que foi convertido em Parse.File
-      console.log('newUccParseFiles =>', newUccParseFiles);
-      console.log('newTransactionProofParseFiles =>', newTransactionProofParseFiles);
+      // Combinar arquivos antigos e novos
+      const allUccFiles = [...oldUccParseFiles, ...newUccParseFilesUploaded];
+      const allTransactionProofFiles = [...oldTransactionParseFiles, ...newTransactionParseFilesUploaded];
 
-      // Se houver novos arquivos, concatena com os antigos
-      if (newUccParseFiles.length > 0) {
-        CaseRequest.set('uccFiles', [...oldUccParseFiles, ...newUccParseFiles]);
-      }
-      if (newTransactionProofParseFiles.length > 0) {
-        CaseRequest.set('transactionProofFiles', [
-          ...oldTransactionParseFiles,
-          ...newTransactionProofParseFiles,
-        ]);
-      }
+      // Atualizar no Parse
+      CaseRequest.set('uccFiles', allUccFiles);
+      CaseRequest.set('transactionProofFiles', allTransactionProofFiles);
 
-      // Salva no Parse
       await CaseRequest.save();
-
-      setSuccess('Case Request salvo com sucesso!');
+      setSuccess('Case Request saved successfully!');
+      if (!id) {
+        resetForm();
+      }
 
       // Atualizar as listas de arquivos salvos com os novos arquivos
       const updatedCaseRequest = await new Parse.Query('CaseRequest').get(CaseRequest.id);
-      const uccParseFiles = updatedCaseRequest.get('uccFiles') || [];
-      const transactionParseFiles = updatedCaseRequest.get('transactionProofFiles') || [];
+      const updatedUccParseFiles = updatedCaseRequest.get('uccFiles') || [];
+      const updatedTransactionParseFiles = updatedCaseRequest.get('transactionProofFiles') || [];
 
-      console.log('Updated uccParseFiles:', uccParseFiles);
-      console.log('Updated transactionParseFiles:', transactionParseFiles);
+      console.log('Updated uccParseFiles:', updatedUccParseFiles);
+      console.log('Updated transactionParseFiles:', updatedTransactionParseFiles);
 
-      const convertedUccFiles = uccParseFiles.map((parseFile) => ({
-        name: parseFile.name, // Correção: acessar como propriedade
-        url: parseFile.url,   // Correção: acessar como propriedade
+      const convertedUpdatedUccFiles = updatedUccParseFiles.map((parseFile) => ({
+        name: parseFile.name || parseFile.get('name'), // Correção: acessar como propriedade
+        url: parseFile.url || parseFile.get('url'),   // Correção: acessar como propriedade
       }));
-      const convertedTransactionProofFiles = transactionParseFiles.map((parseFile) => ({
-        name: parseFile.name, // Correção: acessar como propriedade
-        url: parseFile.url,   // Correção: acessar como propriedade
+      const convertedUpdatedTransactionProofFiles = updatedTransactionParseFiles.map((parseFile) => ({
+        name: parseFile.name || parseFile.get('name'), // Correção: acessar como propriedade
+        url: parseFile.url || parseFile.get('url'),   // Correção: acessar como propriedade
       }));
 
-      console.log('convertedUccFiles after update =>', convertedUccFiles);
-      console.log('convertedTransactionProofFiles after update =>', convertedTransactionProofFiles);
+      console.log('convertedUccFiles after update =>', convertedUpdatedUccFiles);
+      console.log('convertedTransactionProofFiles after update =>', convertedUpdatedTransactionProofFiles);
 
-      setSavedUccFiles(convertedUccFiles);
-      setSavedTransactionProofFiles(convertedTransactionProofFiles);
+      setSavedUccFiles(convertedUpdatedUccFiles);
+      setSavedTransactionProofFiles(convertedUpdatedTransactionProofFiles);
 
       // Limpar os novos arquivos após o salvamento
       setNewUccFiles([]);
@@ -328,10 +309,72 @@ const CaseRequestForm = () => {
       }
     } catch (error) {
       console.error('Error saving Case Request:', error);
-      setError('Falha ao salvar o Case Request. Por favor, tente novamente.');
+      setError('Failed to save Case Request. Please try again.');
     } finally {
       setLoading(false);
       setUploadProgress(0);
+    }
+  };
+
+  // ===========================================================================
+  // handleDeleteFile - Remove file from saved lists
+  // ===========================================================================
+  const handleDeleteFile = async (fileType, index) => {
+    try {
+      let updatedFiles = [];
+      if (fileType === 'uccFiles') {
+        updatedFiles = [...savedUccFiles];
+        updatedFiles.splice(index, 1);
+        setSavedUccFiles(updatedFiles);
+
+        // Opcional: Remover o arquivo do Parse se necessário
+        // Isso depende dos requisitos da sua aplicação
+      } else if (fileType === 'transactionProofFiles') {
+        updatedFiles = [...savedTransactionProofFiles];
+        updatedFiles.splice(index, 1);
+        setSavedTransactionProofFiles(updatedFiles);
+
+        // Opcional: Remover o arquivo do Parse se necessário
+      }
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      setError('Failed to delete the file. Please try again.');
+    }
+  };
+
+  // ===========================================================================
+  // resetForm - Reset form data
+  // ===========================================================================
+  const resetForm = () => {
+    setFormData({
+      requesterEmail: '',
+      creditorName: '',
+      businessName: '',
+      doingBusinessAs: '',
+      requestType: '',
+      lienBalance: '',
+      additionalEntities: '',
+      defaultDate: '',
+      address: '',
+      state: '',
+      city: '',
+      zipcode: '',
+      emailAddress: '',
+      phoneNumber: '',
+    });
+    setEinList(['']);
+    setSsnList(['']);
+    setSavedUccFiles([]);
+    setSavedTransactionProofFiles([]);
+    setNewUccFiles([]);
+    setNewTransactionProofFiles([]);
+
+    // Clear file inputs
+    if (uccFileInputRef.current) {
+      uccFileInputRef.current.value = '';
+    }
+    if (transactionProofFileInputRef.current) {
+      transactionProofFileInputRef.current.value = '';
     }
   };
 
@@ -622,71 +665,81 @@ const CaseRequestForm = () => {
           </Col>
         </Row>
 
-        {/* File Uploads */}
-        <Row className="mt-3">
-          <Col md={6}>
-            <Form.Group controlId="newUccFiles" className="mb-3">
-              <Form.Label>UCC Notices Files</Form.Label>
-              <Form.Control
-                type="file"
-                multiple
-                onChange={(e) => setNewUccFiles(Array.from(e.target.files))}
-                className={styles.input}
-                ref={uccFileInputRef}
-              />
-              {/* Exibe os arquivos SALVOS (já no banco) */}
-              {savedUccFiles.length > 0 && (
-                <div className="mt-2">
-                  <strong>Uploaded Files:</strong>
-                  <ul>
-                    {savedUccFiles.map((file) => {
-                      // Adiciona log para depuração
-                      console.log('Rendering UCC File:', file);
-                      return (
-                        <li key={file.url}>
-                          <a href={file.url} target="_blank" rel="noopener noreferrer">
-                            {file.name || 'Unnamed File'}
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
-            </Form.Group>
-          </Col>
+        {/* Arquivos UCC Notices */}
+        <Form.Group controlId="uccFiles" className="mb-3">
+          <Form.Label>UCC Notices Files</Form.Label>
+          <Form.Control
+            type="file"
+            multiple
+            onChange={(e) => setNewUccFiles([...newUccFiles, ...Array.from(e.target.files)])}
+            className={styles.input}
+            ref={uccFileInputRef}
+          />
+          {/* Exibir arquivos enviados */}
+          {savedUccFiles.length > 0 && (
+            <div className="mt-2">
+              <strong>Uploaded Files:</strong>
+              <ul>
+                {savedUccFiles.map((file, index) => (
+                  <li key={index} className="d-flex align-items-center">
+                    {file.url ? (
+                      <a href={file.url} target="_blank" rel="noopener noreferrer" className="me-2">
+                        {file.name}
+                      </a>
+                    ) : (
+                      <span className="me-2">{file.name}</span>
+                    )}
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDeleteFile('uccFiles', index)}
+                    >
+                      🗑️
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Form.Group>
 
-          <Col md={6}>
-            <Form.Group controlId="newTransactionProofFiles" className="mb-3">
-              <Form.Label>Proof of Transaction</Form.Label>
-              <Form.Control
-                type="file"
-                multiple
-                onChange={(e) => setNewTransactionProofFiles(Array.from(e.target.files))}
-                className={styles.input}
-                ref={transactionProofFileInputRef}
-              />
-              {savedTransactionProofFiles.length > 0 && (
-                <div className="mt-2">
-                  <strong>Uploaded Files:</strong>
-                  <ul>
-                    {savedTransactionProofFiles.map((file) => {
-                      // Adiciona log para depuração
-                      console.log('Rendering Transaction Proof File:', file);
-                      return (
-                        <li key={file.url}>
-                          <a href={file.url} target="_blank" rel="noopener noreferrer">
-                            {file.name || 'Unnamed File'}
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
-            </Form.Group>
-          </Col>
-        </Row>
+        {/* Arquivos Proof of Transaction */}
+        <Form.Group controlId="transactionProofFiles" className="mb-3">
+          <Form.Label>Proof of Transaction</Form.Label>
+          <Form.Control
+            type="file"
+            multiple
+            onChange={(e) => setNewTransactionProofFiles([...newTransactionProofFiles, ...Array.from(e.target.files)])}
+            className={styles.input}
+            ref={transactionProofFileInputRef}
+          />
+          {/* Exibir arquivos enviados */}
+          {savedTransactionProofFiles.length > 0 && (
+            <div className="mt-2">
+              <strong>Uploaded Files:</strong>
+              <ul>
+                {savedTransactionProofFiles.map((file, index) => (
+                  <li key={index} className="d-flex align-items-center">
+                    {file.url ? (
+                      <a href={file.url} target="_blank" rel="noopener noreferrer" className="me-2">
+                        {file.name}
+                      </a>
+                    ) : (
+                      <span className="me-2">{file.name}</span>
+                    )}
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDeleteFile('transactionProofFiles', index)}
+                    >
+                      🗑️
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Form.Group>
 
         <Button
           type="submit"
