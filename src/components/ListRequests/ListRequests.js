@@ -11,9 +11,9 @@ const ListRequests = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [deletingId, setDeletingId] = useState(null); // ID da solicitação sendo deletada
-  const [showConfirm, setShowConfirm] = useState(false); // Controle para modal de confirmação
-  const [selectedRequest, setSelectedRequest] = useState(null); // Solicitação selecionada para deletar
+  const [deletingId, setDeletingId] = useState(null); // ID of the request being deleted
+  const [showConfirm, setShowConfirm] = useState(false); // Control for confirmation modal
+  const [selectedRequest, setSelectedRequest] = useState(null); // Selected request to delete
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const ListRequests = () => {
         setRequests(results);
       } catch (err) {
         console.error('Error fetching requests:', err);
-        setError('Falha ao buscar as solicitações. Por favor, tente novamente mais tarde.');
+        setError('Failed to fetch requests. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -34,7 +34,7 @@ const ListRequests = () => {
   }, []);
 
   const handleEdit = (requestId) => {
-    navigate(`/app/create-request/${requestId}`); // Navega para a página de edição
+    navigate(`/app/create-request/${requestId}`); // Navigate to edit page
   };
 
   const handleDelete = (request) => {
@@ -54,15 +54,15 @@ const ListRequests = () => {
       const caseRequest = await query.get(requestId);
       await caseRequest.destroy();
 
-      // Atualizar o estado local removendo a solicitação deletada
+      // Update local state by removing the deleted request
       setRequests((prevRequests) =>
         prevRequests.filter((req) => req.id !== requestId)
       );
 
-      setSuccess('Solicitação excluída com sucesso.');
+      setSuccess('Request successfully deleted.');
     } catch (err) {
       console.error('Error deleting request:', err);
-      setError('Falha ao excluir a solicitação. Por favor, tente novamente.');
+      setError('Failed to delete the request. Please try again.');
     } finally {
       setDeletingId(null);
       setShowConfirm(false);
@@ -77,19 +77,19 @@ const ListRequests = () => {
 
   return (
     <Container className={styles.listRequestsContainer}>
-      <h1 className={`text-center ${styles.title}`}>Lista de Solicitações</h1>
+      <h1 className={`text-center ${styles.title}`}>List of Requests</h1>
 
-      {/* Alertas de erro ou sucesso */}
+      {/* Error or Success Alerts */}
       {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
       {success && <Alert variant="success" className={styles.alert}>{success}</Alert>}
 
-      {/* Indicador de carregamento */}
+      {/* Loading Indicator */}
       {loading ? (
         <div className={`text-center ${styles.loading}`}>
           <Spinner animation="border" role="status" className={styles.spinner}>
             <span className="visually-hidden">Loading...</span>
           </Spinner>
-          <p>Carregando solicitações...</p>
+          <p>Loading requests...</p>
         </div>
       ) : requests.length > 0 ? (
         <div className={styles.tableWrapper}>
@@ -105,12 +105,12 @@ const ListRequests = () => {
               <tr>
                 <th>ID</th>
                 <th>Email</th>
-                <th>Credor</th>
-                <th>Tipo</th>
-                <th>Cidade</th>
-                <th>Telefone</th>
-                <th>Saldo</th>
-                <th>Ações</th>
+                <th>Creditor</th>
+                <th>Type</th>
+                <th>City</th>
+                <th>Phone</th>
+                <th>Balance</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -122,7 +122,7 @@ const ListRequests = () => {
                   <td>{request.get('requestType') || '-'}</td>
                   <td>{request.get('city') || '-'}</td>
                   <td>{request.get('phoneNumber') || '-'}</td>
-                  <td>{`R$${parseFloat(request.get('lienBalance') || 0).toFixed(2)}`}</td>
+                  <td>{`$${parseFloat(request.get('lienBalance') || 0).toFixed(2)}`}</td>
                   <td>
                     <Button
                       variant="warning"
@@ -159,25 +159,25 @@ const ListRequests = () => {
           </Table>
         </div>
       ) : (
-        <p className={`text-center ${styles.noData}`}>Nenhuma solicitação encontrada.</p>
+        <p className={`text-center ${styles.noData}`}>No requests found.</p>
       )}
 
-      {/* Modal de confirmação de exclusão */}
+      {/* Confirmation Modal for Deletion */}
       <Modal show={showConfirm} onHide={cancelDelete} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Confirmar Exclusão</Modal.Title>
+          <Modal.Title>Confirm Deletion</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedRequest && (
             <p>
-              Tem certeza de que deseja excluir a solicitação de{' '}
+              Are you sure you want to delete the request from{' '}
               <strong>{selectedRequest.get('requesterEmail')}</strong>?
             </p>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={cancelDelete}>
-            Cancelar
+            Cancel
           </Button>
           <Button
             variant="danger"
@@ -193,10 +193,10 @@ const ListRequests = () => {
                   role="status"
                   aria-hidden="true"
                 />{' '}
-                Excluindo...
+                Deleting...
               </>
             ) : (
-              'Excluir'
+              'Delete'
             )}
           </Button>
         </Modal.Footer>
