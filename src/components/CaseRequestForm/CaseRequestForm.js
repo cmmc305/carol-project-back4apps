@@ -3,7 +3,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Parse from '../../config/parseConfig';
-import { Container, Form, Button, Row, Col, Alert, Spinner, ProgressBar } from 'react-bootstrap';
+import {
+  Container,
+  Form,
+  Button,
+  Row,
+  Col,
+  Alert,
+  Spinner,
+  ProgressBar,
+} from 'react-bootstrap';
 import styles from './CaseRequestForm.module.css';
 import CurrencyInput from 'react-currency-input-field';
 
@@ -53,20 +62,18 @@ const CaseRequestForm = () => {
   const uccFileInputRef = useRef(null);
   const transactionProofFileInputRef = useRef(null);
 
-
-
   // ===========================================================================
   // useEffect - Busca o registro do Parse ao editar (id existente)
   // ===========================================================================
   useEffect(() => {
     if (!id) return; // Se não tem id, é criação de novo, não carrega nada
-  
+
     const fetchRequest = async () => {
       setLoading(true);
       try {
         const query = new Parse.Query('CaseRequest');
         const caseRequest = await query.get(id);
-  
+
         // Preenche campos de texto
         setFormData({
           requesterEmail: caseRequest.get('requesterEmail') || '',
@@ -84,40 +91,41 @@ const CaseRequestForm = () => {
           emailAddress: caseRequest.get('emailAddress') || '',
           phoneNumber: caseRequest.get('phoneNumber') || '',
         });
-  
+
         // Preenche listas EIN / SSN
         setEinList(caseRequest.get('einList') || ['']);
         setSsnList(caseRequest.get('ssnList') || ['']);
-  
+
         // Converte arquivos salvos para exibição
-        setSavedUccFiles(
-          (caseRequest.get('uccFiles') || []).map((file) => ({
-            name: file.name,
-            url: file.url,
-          }))
-        );
-  
-        setSavedTransactionProofFiles(
-          (caseRequest.get('transactionProofFiles') || []).map((file) => ({
-            name: file.name,
-            url: file.url,
-          }))
-        );
-  
+        const uccParseFiles = caseRequest.get('uccFiles') || [];
+        const transactionParseFiles = caseRequest.get('transactionProofFiles') || [];
+
+        const convertedUccFiles = uccParseFiles.map((file) => ({
+          name: file.name() || file.get('name'), // Corrigido para acessar corretamente
+          url: file.url() || file.get('url'),
+        }));
+
+        const convertedTransactionProofFiles = transactionParseFiles.map((file) => ({
+          name: file.name() || file.get('name'), // Corrigido para acessar corretamente
+          url: file.url() || file.get('url'),
+        }));
+
+        setSavedUccFiles(convertedUccFiles);
+        setSavedTransactionProofFiles(convertedTransactionProofFiles);
+
         // Limpa quaisquer arquivos novos pendentes de upload
         setNewUccFiles([]);
         setNewTransactionProofFiles([]);
       } catch (error) {
         console.error('Error fetching Case Request:', error);
-        setError('Failed to fetch Case Request.');
+        setError('Falha ao buscar o Case Request.');
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchRequest();
   }, [id]);
-  
 
   // ===========================================================================
   // Helpers de formulário
@@ -192,10 +200,6 @@ const CaseRequestForm = () => {
       const oldUccParseFiles = CaseRequest.get('uccFiles') || [];
       const oldTransactionParseFiles = CaseRequest.get('transactionProofFiles') || [];
 
-      // LOG para visualizar os arquivos antigos no banco
-      console.log('oldUccParseFiles =>', oldUccParseFiles);
-      console.log('oldTransactionProofFiles =>', oldTransactionParseFiles);
-
       // Converter novos arquivos (File) em Parse.File com progresso
       const convertToParseFiles = async (files) => {
         return await Promise.all(
@@ -219,11 +223,16 @@ const CaseRequestForm = () => {
 
       const newUccParseFilesUploaded = newUccFiles.length > 0 ? await convertToParseFiles(newUccFiles) : [];
       const newTransactionParseFilesUploaded =
-        newTransactionProofFiles.length > 0 ? await convertToParseFiles(newTransactionProofFiles) : [];
+        newTransactionProofFiles.length > 0
+          ? await convertToParseFiles(newTransactionProofFiles)
+          : [];
 
       // Combinar arquivos antigos e novos
       const allUccFiles = [...oldUccParseFiles, ...newUccParseFilesUploaded];
-      const allTransactionProofFiles = [...oldTransactionParseFiles, ...newTransactionParseFilesUploaded];
+      const allTransactionProofFiles = [
+        ...oldTransactionParseFiles,
+        ...newTransactionParseFilesUploaded,
+      ];
 
       // Atualizar no Parse
       CaseRequest.set('uccFiles', allUccFiles);
@@ -240,20 +249,14 @@ const CaseRequestForm = () => {
       const updatedUccParseFiles = updatedCaseRequest.get('uccFiles') || [];
       const updatedTransactionParseFiles = updatedCaseRequest.get('transactionProofFiles') || [];
 
-      console.log('Updated uccParseFiles:', updatedUccParseFiles);
-      console.log('Updated transactionParseFiles:', updatedTransactionParseFiles);
-
-      const convertedUpdatedUccFiles = updatedUccParseFiles.map((parseFile) => ({
-        name: parseFile.name || parseFile.get('name'), // Correção: acessar como propriedade
-        url: parseFile.url || parseFile.get('url'),   // Correção: acessar como propriedade
+      const convertedUpdatedUccFiles = updatedUccParseFiles.map((file) => ({
+        name: file.name() || file.get('name'), // Corrigido para acessar corretamente
+        url: file.url() || file.get('url'),
       }));
-      const convertedUpdatedTransactionProofFiles = updatedTransactionParseFiles.map((parseFile) => ({
-        name: parseFile.name || parseFile.get('name'), // Correção: acessar como propriedade
-        url: parseFile.url || parseFile.get('url'),   // Correção: acessar como propriedade
+      const convertedUpdatedTransactionProofFiles = updatedTransactionParseFiles.map((file) => ({
+        name: file.name() || file.get('name'), // Corrigido para acessar corretamente
+        url: file.url() || file.get('url'),
       }));
-
-      console.log('convertedUccFiles after update =>', convertedUpdatedUccFiles);
-      console.log('convertedTransactionProofFiles after update =>', convertedUpdatedTransactionProofFiles);
 
       setSavedUccFiles(convertedUpdatedUccFiles);
       setSavedTransactionProofFiles(convertedUpdatedTransactionProofFiles);
@@ -272,26 +275,7 @@ const CaseRequestForm = () => {
 
       // Se for novo registro, limpa tudo
       if (!id) {
-        setFormData({
-          requesterEmail: '',
-          creditorName: '',
-          businessName: '',
-          doingBusinessAs: '',
-          requestType: '',
-          lienBalance: '',
-          additionalEntities: '',
-          defaultDate: '',
-          address: '',
-          state: '',
-          city: '',
-          zipcode: '',
-          emailAddress: '',
-          phoneNumber: '',
-        });
-        setEinList(['']);
-        setSsnList(['']);
-        setSavedUccFiles([]);
-        setSavedTransactionProofFiles([]);
+        resetForm();
       }
     } catch (error) {
       console.error('Error saving Case Request:', error);
@@ -310,20 +294,29 @@ const CaseRequestForm = () => {
       if (fileType === 'uccFiles') {
         setSavedUccFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
       } else if (fileType === 'transactionProofFiles') {
-        setSavedTransactionProofFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+        setSavedTransactionProofFiles((prevFiles) =>
+          prevFiles.filter((f) => f.name !== file.name)
+        );
       }
-  
+
       // Opcional: Remover do Parse
       if (id) {
         const query = new Parse.Query('CaseRequest');
         const caseRequest = await query.get(id);
-  
+
         const updatedFiles =
           fileType === 'uccFiles'
             ? savedUccFiles.filter((f) => f.name !== file.name)
             : savedTransactionProofFiles.filter((f) => f.name !== file.name);
-  
-        caseRequest.set(fileType, updatedFiles.map((f) => ({ __type: 'File', name: f.name, url: f.url })));
+
+        caseRequest.set(
+          fileType,
+          updatedFiles.map((f) => ({
+            __type: 'File',
+            name: f.name,
+            url: f.url,
+          }))
+        );
         await caseRequest.save();
       }
     } catch (error) {
@@ -382,7 +375,13 @@ const CaseRequestForm = () => {
             <Spinner animation="border" role="status">
               <span className="visually-hidden">Loading...</span>
             </Spinner>
-            {uploadProgress > 0 && <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-2" />}
+            {uploadProgress > 0 && (
+              <ProgressBar
+                now={uploadProgress}
+                label={`${uploadProgress}%`}
+                className="mt-2"
+              />
+            )}
           </div>
         )}
 
@@ -395,7 +394,9 @@ const CaseRequestForm = () => {
                 type="email"
                 placeholder="Enter requester email"
                 value={formData.requesterEmail}
-                onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('requesterEmail', e.target.value)
+                }
                 className={styles.input}
                 required
               />
@@ -427,7 +428,9 @@ const CaseRequestForm = () => {
                 type="text"
                 placeholder="Enter business name"
                 value={formData.businessName}
-                onChange={(e) => handleInputChange('businessName', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('businessName', e.target.value)
+                }
                 className={styles.input}
                 required
               />
@@ -440,7 +443,9 @@ const CaseRequestForm = () => {
                 type="text"
                 placeholder="Enter creditor name"
                 value={formData.creditorName}
-                onChange={(e) => handleInputChange('creditorName', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('creditorName', e.target.value)
+                }
                 className={styles.input}
                 required
               />
@@ -454,7 +459,9 @@ const CaseRequestForm = () => {
                 type="text"
                 placeholder="Enter doing business as"
                 value={formData.doingBusinessAs}
-                onChange={(e) => handleInputChange('doingBusinessAs', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('doingBusinessAs', e.target.value)
+                }
                 className={styles.input}
               />
             </Form.Group>
@@ -469,7 +476,9 @@ const CaseRequestForm = () => {
                 type="text"
                 placeholder="Enter address"
                 value={formData.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('address', e.target.value)
+                }
                 className={styles.input}
                 required
               />
@@ -498,7 +507,9 @@ const CaseRequestForm = () => {
                 type="text"
                 placeholder="Enter state"
                 value={formData.state}
-                onChange={(e) => handleInputChange('state', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('state', e.target.value)
+                }
                 className={styles.input}
                 required
               />
@@ -511,7 +522,9 @@ const CaseRequestForm = () => {
                 type="text"
                 placeholder="Enter zip code"
                 value={formData.zipcode}
-                onChange={(e) => handleInputChange('zipcode', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('zipcode', e.target.value)
+                }
                 className={styles.input}
                 required
               />
@@ -527,7 +540,9 @@ const CaseRequestForm = () => {
                 type="email"
                 placeholder="Enter email address"
                 value={formData.emailAddress}
-                onChange={(e) => handleInputChange('emailAddress', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('emailAddress', e.target.value)
+                }
                 className={styles.input}
                 required
               />
@@ -540,7 +555,9 @@ const CaseRequestForm = () => {
                 type="text"
                 placeholder="Enter phone number"
                 value={formData.phoneNumber}
-                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('phoneNumber', e.target.value)
+                }
                 className={styles.input}
                 required
               />
@@ -559,7 +576,9 @@ const CaseRequestForm = () => {
                 prefix="$"
                 decimalsLimit={2}
                 value={formData.lienBalance}
-                onValueChange={(value) => handleInputChange('lienBalance', value)}
+                onValueChange={(value) =>
+                  handleInputChange('lienBalance', value)
+                }
                 className={`${styles.input} form-control`}
                 required
               />
@@ -572,7 +591,9 @@ const CaseRequestForm = () => {
                 type="date"
                 placeholder="Select default date"
                 value={formData.defaultDate}
-                onChange={(e) => handleInputChange('defaultDate', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('defaultDate', e.target.value)
+                }
                 className={styles.input}
               />
             </Form.Group>
@@ -588,7 +609,9 @@ const CaseRequestForm = () => {
                 rows={3}
                 placeholder="Enter additional entities"
                 value={formData.additionalEntities}
-                onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('additionalEntities', e.target.value)
+                }
                 className={styles.textarea}
               />
             </Form.Group>
@@ -606,20 +629,29 @@ const CaseRequestForm = () => {
                   placeholder="Enter EIN"
                   value={ein}
                   onChange={(e) =>
-                    setEinList(einList.map((item, i) => (i === index ? e.target.value : item)))
+                    setEinList(
+                      einList.map((item, i) =>
+                        i === index ? e.target.value : item
+                      )
+                    )
                   }
                   className={`${styles.input} me-2`}
                 />
                 <Button
                   variant="danger"
-                  onClick={() => handleRemoveFromList(setEinList, einList, index)}
+                  onClick={() =>
+                    handleRemoveFromList(setEinList, einList, index)
+                  }
                   disabled={einList.length === 1}
                 >
                   Remove
                 </Button>
               </div>
             ))}
-            <Button variant="primary" onClick={() => handleAddToList(setEinList, einList)}>
+            <Button
+              variant="primary"
+              onClick={() => handleAddToList(setEinList, einList)}
+            >
               Add EIN
             </Button>
           </Col>
@@ -636,86 +668,194 @@ const CaseRequestForm = () => {
                   placeholder="Enter SSN"
                   value={ssn}
                   onChange={(e) =>
-                    setSsnList(ssnList.map((item, i) => (i === index ? e.target.value : item)))
+                    setSsnList(
+                      ssnList.map((item, i) =>
+                        i === index ? e.target.value : item
+                      )
+                    )
                   }
                   className={`${styles.input} me-2`}
                 />
                 <Button
                   variant="danger"
-                  onClick={() => handleRemoveFromList(setSsnList, ssnList, index)}
+                  onClick={() =>
+                    handleRemoveFromList(setSsnList, ssnList, index)
+                  }
                   disabled={ssnList.length === 1}
                 >
                   Remove
                 </Button>
               </div>
             ))}
-            <Button variant="primary" onClick={() => handleAddToList(setSsnList, ssnList)}>
+            <Button
+              variant="primary"
+              onClick={() => handleAddToList(setSsnList, ssnList)}
+            >
               Add SSN
             </Button>
           </Col>
         </Row>
 
-        {/* Exibir arquivos UCC Notices */}
+        {/* Arquivos UCC Notices */}
         <Row>
           <Col md={12}>
-            <Form.Label>Uploaded UCC Notices</Form.Label>
-            {savedUccFiles.length > 0 ? (
-              <ul>
-                {savedUccFiles.map((file, index) => (
-                  <li key={index} className="d-flex align-items-center">
-                    <a href={file.url} target="_blank" rel="noopener noreferrer">
-                      {file.name}
-                    </a>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      className="ms-2"
-                      onClick={() => handleDeleteFile('uccFiles', file)}
-                    >
-                      🗑️
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No files uploaded.</p>
-            )}
+            <Form.Group controlId="uccFiles" className="mb-3">
+              <Form.Label>Upload UCC Notices Files</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                onChange={(e) =>
+                  setNewUccFiles([
+                    ...newUccFiles,
+                    ...Array.from(e.target.files),
+                  ])
+                }
+                className={styles.input}
+                ref={uccFileInputRef}
+              />
+              {/* Exibir arquivos novos enviados */}
+              {newUccFiles.length > 0 && (
+                <div className="mt-2">
+                  <strong>New UCC Files:</strong>
+                  <ul>
+                    {newUccFiles.map((file, index) => (
+                      <li key={index} className="d-flex align-items-center">
+                        <span>{file.name}</span>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className="ms-2"
+                          onClick={() =>
+                            setNewUccFiles(
+                              newUccFiles.filter((_, i) => i !== index)
+                            )
+                          }
+                        >
+                          🗑️
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </Form.Group>
+
+            {/* Exibir arquivos UCC Notices Salvos */}
+            <Form.Group controlId="uploadedUccFiles" className="mb-3">
+              <Form.Label>Uploaded UCC Notices</Form.Label>
+              {savedUccFiles.length > 0 ? (
+                <ul>
+                  {savedUccFiles.map((file, index) => (
+                    <li key={index} className="d-flex align-items-center">
+                      <a
+                        href={file.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {file.name}
+                      </a>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className="ms-2"
+                        onClick={() => handleDeleteFile('uccFiles', file)}
+                      >
+                        🗑️
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No UCC Notices uploaded.</p>
+              )}
+            </Form.Group>
           </Col>
         </Row>
 
-        {/* Exibir arquivos Proof of Transaction */}
+        {/* Arquivos Proof of Transaction */}
         <Row>
           <Col md={12}>
-            <Form.Label>Uploaded Proof of Transaction</Form.Label>
-            {savedTransactionProofFiles.length > 0 ? (
-              <ul>
-                {savedTransactionProofFiles.map((file, index) => (
-                  <li key={index} className="d-flex align-items-center">
-                    <a href={file.url} target="_blank" rel="noopener noreferrer">
-                      {file.name}
-                    </a>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      className="ms-2"
-                      onClick={() => handleDeleteFile('transactionProofFiles', file)}
-                    >
-                      🗑️
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No files uploaded.</p>
-            )}
+            <Form.Group controlId="transactionProofFiles" className="mb-3">
+              <Form.Label>Upload Proof of Transaction Files</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                onChange={(e) =>
+                  setNewTransactionProofFiles([
+                    ...newTransactionProofFiles,
+                    ...Array.from(e.target.files),
+                  ])
+                }
+                className={styles.input}
+                ref={transactionProofFileInputRef}
+              />
+              {/* Exibir arquivos novos enviados */}
+              {newTransactionProofFiles.length > 0 && (
+                <div className="mt-2">
+                  <strong>New Proof of Transaction Files:</strong>
+                  <ul>
+                    {newTransactionProofFiles.map((file, index) => (
+                      <li key={index} className="d-flex align-items-center">
+                        <span>{file.name}</span>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className="ms-2"
+                          onClick={() =>
+                            setNewTransactionProofFiles(
+                              newTransactionProofFiles.filter(
+                                (_, i) => i !== index
+                              )
+                            )
+                          }
+                        >
+                          🗑️
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </Form.Group>
+
+            {/* Exibir arquivos Proof of Transaction Salvos */}
+            <Form.Group
+              controlId="uploadedTransactionProofFiles"
+              className="mb-3"
+            >
+              <Form.Label>Uploaded Proof of Transaction</Form.Label>
+              {savedTransactionProofFiles.length > 0 ? (
+                <ul>
+                  {savedTransactionProofFiles.map((file, index) => (
+                    <li key={index} className="d-flex align-items-center">
+                      <a
+                        href={file.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {file.name}
+                      </a>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className="ms-2"
+                        onClick={() =>
+                          handleDeleteFile('transactionProofFiles', file)
+                        }
+                      >
+                        🗑️
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No Proof of Transaction files uploaded.</p>
+              )}
+            </Form.Group>
           </Col>
         </Row>
 
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={loading}
-        >
+        <Button type="submit" variant="primary" disabled={loading}>
           {loading ? 'Submitting...' : 'Submit'}
         </Button>
       </Form>
