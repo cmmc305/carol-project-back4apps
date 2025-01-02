@@ -121,7 +121,7 @@ const CaseRequestForm = () => {
         setNewTransactionProofFiles([]);
       } catch (error) {
         console.error('Error fetching Case Request:', error);
-        setError('Falha ao buscar o Case Request.');
+        setError('Failed to fetch the Case Request.');
       } finally {
         setLoading(false);
       }
@@ -156,11 +156,11 @@ const CaseRequestForm = () => {
 
     for (let file of files) {
       if (!allowedTypes.includes(file.type)) {
-        setError(`Tipo de arquivo não permitido: ${file.name}`);
+        setError(`File type not allowed: ${file.name}`);
         return false;
       }
       if (file.size > maxSize) {
-        setError(`Arquivo muito grande (máx 5MB): ${file.name}`);
+        setError(`File too large (max 5MB): ${file.name}`);
         return false;
       }
     }
@@ -177,7 +177,7 @@ const CaseRequestForm = () => {
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidated(true);
-      setError('Por favor, corrija os erros no formulário.');
+      setError('Please correct the errors in the form.');
       return;
     }
 
@@ -420,7 +420,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && !/\S+@\S+\.\S+/.test(formData.requesterEmail)}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira um e-mail válido.
+                Please enter a valid email address.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -440,7 +440,7 @@ const CaseRequestForm = () => {
                 <option value="Release">Release</option>
               </Form.Select>
               <Form.Control.Feedback type="invalid">
-                Por favor, selecione o tipo de solicitação.
+                Please select the request type.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -462,7 +462,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && formData.businessName.trim() === ''}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira o nome do negócio.
+                Please enter the business name.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -481,7 +481,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && formData.creditorName.trim() === ''}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira o nome do credor.
+                Please enter the creditor name.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -518,7 +518,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && formData.address.trim() === ''}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira o endereço.
+                Please enter the address.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -535,7 +535,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && formData.city.trim() === ''}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira a cidade.
+                Please enter the city.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -557,7 +557,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && formData.state.trim() === ''}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira o estado.
+                Please enter the state.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -576,7 +576,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && formData.zipcode.trim() === ''}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira o código postal.
+                Please enter the zip code.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -598,7 +598,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && !/\S+@\S+\.\S+/.test(formData.emailAddress)}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira um e-mail válido.
+                Please enter a valid email address.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -617,7 +617,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && formData.phoneNumber.trim() === ''}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira o número de telefone.
+              Please enter the phone number.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -642,7 +642,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && (formData.lienBalance === '' || isNaN(parseFloat(formData.lienBalance)))}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, insira um saldo de ônus válido.
+              Please enter a valid lien balance.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -661,7 +661,7 @@ const CaseRequestForm = () => {
                 isInvalid={validated && formData.defaultDate === ''}
               />
               <Form.Control.Feedback type="invalid">
-                Por favor, selecione a data de inadimplência.
+              Please select the default date.
               </Form.Control.Feedback>
             </Form.Group>
           </Col>
@@ -716,7 +716,7 @@ const CaseRequestForm = () => {
                   Remove
                 </Button>
                 <Form.Control.Feedback type="invalid">
-                  Por favor, insira um EIN válido.
+                Please enter a valid EIN.
                 </Form.Control.Feedback>
               </div>
             ))}
@@ -760,7 +760,7 @@ const CaseRequestForm = () => {
                   Remove
                 </Button>
                 <Form.Control.Feedback type="invalid">
-                  Por favor, insira um SSN válido.
+                Please enter a valid SSN.
                 </Form.Control.Feedback>
               </div>
             ))}
