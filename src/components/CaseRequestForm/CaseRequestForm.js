@@ -24,11 +24,19 @@ const CaseRequestForm = () => {
   // =====================================
   // 1) Arquivos ANTIGOS (já salvos no Parse) => exibição ( { name, url } ):
   const [savedUccFiles, setSavedUccFiles] = useState([]);
-  const [savedTransactionProofFiles, setSavedTransactionProofFiles] = useState([]);
+  const [savedAgreementFiles, setSavedAgreementFiles] = useState([]);
+  const [savedBankStatementsFiles, setSavedBankStatementsFiles] = useState([]);
+  const [savedUploadBankGarnishmentFiles, setSavedUploadBankGarnishmentFiles] = useState([]);
+  const [savedUploadJudgmentFiles, setSavedUploadJudgmentFiles] = useState([]);
+  const [savedUccReleaseFiles, setSavedUccReleaseFiles] = useState([]);
 
   // 2) Arquivos NOVOS (input type="file") => upload:
   const [newUccFiles, setNewUccFiles] = useState([]);
-  const [newTransactionProofFiles, setNewTransactionProofFiles] = useState([]);
+  const [newAgreementFiles, setNewAgreementFiles] = useState([]);
+  const [newBankStatementsFiles, setNewBankStatementsFiles] = useState([]);
+  const [newUploadBankGarnishmentFiles, setNewUploadBankGarnishmentFiles] = useState([]);
+  const [newUploadJudgmentFiles, setNewUploadJudgmentFiles] = useState([]);
+  const [newUccReleaseFiles, setNewUccReleaseFiles] = useState([]);
 
   // Dados do formulário
   const [formData, setFormData] = useState({
@@ -39,7 +47,7 @@ const CaseRequestForm = () => {
     ssn: '',                // Campo único SSN
     businessName: '',
     doingBusinessAs: '',
-    requestType: '',
+    requestType: '',        // Adicionar 'Release' nas opções
     defaultAmount: '',
     additionalEntities: '',
     defaultDate: '',
@@ -59,7 +67,11 @@ const CaseRequestForm = () => {
 
   // Refs para inputs de arquivo para limpeza
   const uccFileInputRef = useRef(null);
-  const transactionProofFileInputRef = useRef(null);
+  const agreementFileInputRef = useRef(null);
+  const bankStatementsFileInputRef = useRef(null);
+  const uploadBankGarnishmentFileInputRef = useRef(null);
+  const uploadJudgmentFileInputRef = useRef(null);
+  const uccReleaseFileInputRef = useRef(null);
 
   // ===========================================================================
   // useEffect - Busca o registro do Parse ao editar (id existente)
@@ -96,24 +108,56 @@ const CaseRequestForm = () => {
 
         // Converte arquivos salvos para exibição
         const uccParseFiles = caseRequest.get('uccFiles') || [];
-        const transactionParseFiles = caseRequest.get('transactionProofFiles') || [];
+        const agreementParseFiles = caseRequest.get('agreementFiles') || [];
+        const bankStatementsParseFiles = caseRequest.get('bankStatementsFiles') || [];
+        const uploadBankGarnishmentParseFiles = caseRequest.get('uploadBankGarnishmentFiles') || [];
+        const uploadJudgmentParseFiles = caseRequest.get('uploadJudgmentFiles') || [];
+        const uccReleaseParseFiles = caseRequest.get('uccReleaseFiles') || [];
 
         const convertedUccFiles = uccParseFiles.map((file) => ({
           name: file.name() || file.get('name'), // Corrigido para acessar corretamente
           url: file.url() || file.get('url'),
         }));
 
-        const convertedTransactionProofFiles = transactionParseFiles.map((file) => ({
-          name: file.name() || file.get('name'), // Corrigido para acessar corretamente
+        const convertedAgreementFiles = agreementParseFiles.map((file) => ({
+          name: file.name() || file.get('name'),
+          url: file.url() || file.get('url'),
+        }));
+
+        const convertedBankStatementsFiles = bankStatementsParseFiles.map((file) => ({
+          name: file.name() || file.get('name'),
+          url: file.url() || file.get('url'),
+        }));
+
+        const convertedUploadBankGarnishmentFiles = uploadBankGarnishmentParseFiles.map((file) => ({
+          name: file.name() || file.get('name'),
+          url: file.url() || file.get('url'),
+        }));
+
+        const convertedUploadJudgmentFiles = uploadJudgmentParseFiles.map((file) => ({
+          name: file.name() || file.get('name'),
+          url: file.url() || file.get('url'),
+        }));
+
+        const convertedUccReleaseFiles = uccReleaseParseFiles.map((file) => ({
+          name: file.name() || file.get('name'),
           url: file.url() || file.get('url'),
         }));
 
         setSavedUccFiles(convertedUccFiles);
-        setSavedTransactionProofFiles(convertedTransactionProofFiles);
+        setSavedAgreementFiles(convertedAgreementFiles);
+        setSavedBankStatementsFiles(convertedBankStatementsFiles);
+        setSavedUploadBankGarnishmentFiles(convertedUploadBankGarnishmentFiles);
+        setSavedUploadJudgmentFiles(convertedUploadJudgmentFiles);
+        setSavedUccReleaseFiles(convertedUccReleaseFiles);
 
         // Limpa quaisquer arquivos novos pendentes de upload
         setNewUccFiles([]);
-        setNewTransactionProofFiles([]);
+        setNewAgreementFiles([]);
+        setNewBankStatementsFiles([]);
+        setNewUploadBankGarnishmentFiles([]);
+        setNewUploadJudgmentFiles([]);
+        setNewUccReleaseFiles([]);
       } catch (error) {
         console.error('Error fetching Case Request:', error);
         setError('Failed to fetch the Case Request.');
@@ -165,7 +209,11 @@ const CaseRequestForm = () => {
     // Validação dos arquivos
     if (
       (newUccFiles.length > 0 && !validateFiles(newUccFiles)) ||
-      (newTransactionProofFiles.length > 0 && !validateFiles(newTransactionProofFiles))
+      (newAgreementFiles.length > 0 && !validateFiles(newAgreementFiles)) ||
+      (newBankStatementsFiles.length > 0 && !validateFiles(newBankStatementsFiles)) ||
+      (newUploadBankGarnishmentFiles.length > 0 && !validateFiles(newUploadBankGarnishmentFiles)) ||
+      (newUploadJudgmentFiles.length > 0 && !validateFiles(newUploadJudgmentFiles)) ||
+      (newUccReleaseFiles.length > 0 && !validateFiles(newUccReleaseFiles)) 
     ) {
       setLoading(false);
       return;
@@ -184,7 +232,11 @@ const CaseRequestForm = () => {
 
       // Carregar do Parse arrays antigos (se houver)
       const oldUccParseFiles = CaseRequest.get('uccFiles') || [];
-      const oldTransactionParseFiles = CaseRequest.get('transactionProofFiles') || [];
+      const oldAgreementParseFiles = CaseRequest.get('agreementFiles') || [];
+      const oldBankStatementsParseFiles = CaseRequest.get('bankStatementsFiles') || [];
+      const oldUploadBankGarnishmentParseFiles = CaseRequest.get('uploadBankGarnishmentFiles') || [];
+      const oldUploadJudgmentParseFiles = CaseRequest.get('uploadJudgmentFiles') || [];
+      const oldUccReleaseParseFiles = CaseRequest.get('uccReleaseFiles') || [];
 
       // Converter novos arquivos (File) em Parse.File com progresso
       const convertToParseFiles = async (files) => {
@@ -208,21 +260,27 @@ const CaseRequestForm = () => {
       };
 
       const newUccParseFilesUploaded = newUccFiles.length > 0 ? await convertToParseFiles(newUccFiles) : [];
-      const newTransactionProofFilesUploaded =
-        newTransactionProofFiles.length > 0
-          ? await convertToParseFiles(newTransactionProofFiles)
-          : [];
+      const newAgreementParseFilesUploaded = newAgreementFiles.length > 0 ? await convertToParseFiles(newAgreementFiles) : [];
+      const newBankStatementsFilesUploaded = newBankStatementsFiles.length > 0 ? await convertToParseFiles(newBankStatementsFiles) : [];
+      const newUploadBankGarnishmentFilesUploaded = newUploadBankGarnishmentFiles.length > 0 ? await convertToParseFiles(newUploadBankGarnishmentFiles) : [];
+      const newUploadJudgmentFilesUploaded = newUploadJudgmentFiles.length > 0 ? await convertToParseFiles(newUploadJudgmentFiles) : [];
+      const newUccReleaseFilesUploaded = newUccReleaseFiles.length > 0 ? await convertToParseFiles(newUccReleaseFiles) : [];
 
       // Combinar arquivos antigos e novos
       const allUccFiles = [...oldUccParseFiles, ...newUccParseFilesUploaded];
-      const allTransactionProofFiles = [
-        ...oldTransactionParseFiles,
-        ...newTransactionProofFilesUploaded,
-      ];
+      const allAgreementFiles = [...oldAgreementParseFiles, ...newAgreementParseFilesUploaded];
+      const allBankStatementsFiles = [...oldBankStatementsParseFiles, ...newBankStatementsFilesUploaded];
+      const allUploadBankGarnishmentFiles = [...oldUploadBankGarnishmentParseFiles, ...newUploadBankGarnishmentFilesUploaded];
+      const allUploadJudgmentFiles = [...oldUploadJudgmentParseFiles, ...newUploadJudgmentFilesUploaded];
+      const allUccReleaseFiles = [...oldUccReleaseParseFiles, ...newUccReleaseFilesUploaded];
 
       // Atualizar no Parse
       CaseRequest.set('uccFiles', allUccFiles);
-      CaseRequest.set('transactionProofFiles', allTransactionProofFiles);
+      CaseRequest.set('agreementFiles', allAgreementFiles);
+      CaseRequest.set('bankStatementsFiles', allBankStatementsFiles);
+      CaseRequest.set('uploadBankGarnishmentFiles', allUploadBankGarnishmentFiles);
+      CaseRequest.set('uploadJudgmentFiles', allUploadJudgmentFiles);
+      CaseRequest.set('uccReleaseFiles', allUccReleaseFiles);
 
       await CaseRequest.save();
       setSuccess('Case Request salvo com sucesso!');
@@ -233,30 +291,70 @@ const CaseRequestForm = () => {
       // Atualizar as listas de arquivos salvos com os novos arquivos
       const updatedCaseRequest = await new Parse.Query('CaseRequest').get(CaseRequest.id);
       const updatedUccParseFiles = updatedCaseRequest.get('uccFiles') || [];
-      const updatedTransactionProofFiles = updatedCaseRequest.get('transactionProofFiles') || [];
+      const updatedAgreementFiles = updatedCaseRequest.get('agreementFiles') || [];
+      const updatedBankStatementsFiles = updatedCaseRequest.get('bankStatementsFiles') || [];
+      const updatedUploadBankGarnishmentFiles = updatedCaseRequest.get('uploadBankGarnishmentFiles') || [];
+      const updatedUploadJudgmentFiles = updatedCaseRequest.get('uploadJudgmentFiles') || [];
+      const updatedUccReleaseFiles = updatedCaseRequest.get('uccReleaseFiles') || [];
 
       const convertedUpdatedUccFiles = updatedUccParseFiles.map((file) => ({
-        name: file.name() || file.get('name'), // Corrigido para acessar corretamente
+        name: file.name() || file.get('name'),
         url: file.url() || file.get('url'),
       }));
-      const convertedUpdatedTransactionProofFiles = updatedTransactionProofFiles.map((file) => ({
-        name: file.name() || file.get('name'), // Corrigido para acessar corretamente
+      const convertedUpdatedAgreementFiles = updatedAgreementFiles.map((file) => ({
+        name: file.name() || file.get('name'),
+        url: file.url() || file.get('url'),
+      }));
+      const convertedUpdatedBankStatementsFiles = updatedBankStatementsFiles.map((file) => ({
+        name: file.name() || file.get('name'),
+        url: file.url() || file.get('url'),
+      }));
+      const convertedUpdatedUploadBankGarnishmentFiles = updatedUploadBankGarnishmentFiles.map((file) => ({
+        name: file.name() || file.get('name'),
+        url: file.url() || file.get('url'),
+      }));
+      const convertedUpdatedUploadJudgmentFiles = updatedUploadJudgmentFiles.map((file) => ({
+        name: file.name() || file.get('name'),
+        url: file.url() || file.get('url'),
+      }));
+      const convertedUpdatedUccReleaseFiles = updatedUccReleaseFiles.map((file) => ({
+        name: file.name() || file.get('name'),
         url: file.url() || file.get('url'),
       }));
 
       setSavedUccFiles(convertedUpdatedUccFiles);
-      setSavedTransactionProofFiles(convertedUpdatedTransactionProofFiles);
+      setSavedAgreementFiles(convertedUpdatedAgreementFiles);
+      setSavedBankStatementsFiles(convertedUpdatedBankStatementsFiles);
+      setSavedUploadBankGarnishmentFiles(convertedUpdatedUploadBankGarnishmentFiles);
+      setSavedUploadJudgmentFiles(convertedUpdatedUploadJudgmentFiles);
+      setSavedUccReleaseFiles(convertedUpdatedUccReleaseFiles);
 
       // Limpar os novos arquivos após o salvamento
       setNewUccFiles([]);
-      setNewTransactionProofFiles([]);
+      setNewAgreementFiles([]);
+      setNewBankStatementsFiles([]);
+      setNewUploadBankGarnishmentFiles([]);
+      setNewUploadJudgmentFiles([]);
+      setNewUccReleaseFiles([]);
 
       // Limpar os inputs de arquivo
       if (uccFileInputRef.current) {
         uccFileInputRef.current.value = '';
       }
-      if (transactionProofFileInputRef.current) {
-        transactionProofFileInputRef.current.value = '';
+      if (agreementFileInputRef.current) {
+        agreementFileInputRef.current.value = '';
+      }
+      if (bankStatementsFileInputRef.current) {
+        bankStatementsFileInputRef.current.value = '';
+      }
+      if (uploadBankGarnishmentFileInputRef.current) {
+        uploadBankGarnishmentFileInputRef.current.value = '';
+      }
+      if (uploadJudgmentFileInputRef.current) {
+        uploadJudgmentFileInputRef.current.value = '';
+      }
+      if (uccReleaseFileInputRef.current) {
+        uccReleaseFileInputRef.current.value = '';
       }
 
       // Se for novo registro, limpa tudo
@@ -279,10 +377,16 @@ const CaseRequestForm = () => {
     try {
       if (fileType === 'uccFiles') {
         setSavedUccFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
-      } else if (fileType === 'transactionProofFiles') {
-        setSavedTransactionProofFiles((prevFiles) =>
-          prevFiles.filter((f) => f.name !== file.name)
-        );
+      } else if (fileType === 'agreementFiles') {
+        setSavedAgreementFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+      } else if (fileType === 'bankStatementsFiles') {
+        setSavedBankStatementsFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+      } else if (fileType === 'uploadBankGarnishmentFiles') {
+        setSavedUploadBankGarnishmentFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+      } else if (fileType === 'uploadJudgmentFiles') {
+        setSavedUploadJudgmentFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+      } else if (fileType === 'uccReleaseFiles') {
+        setSavedUccReleaseFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
       }
 
       // Opcional: Remover do Parse
@@ -293,7 +397,17 @@ const CaseRequestForm = () => {
         const updatedFiles =
           fileType === 'uccFiles'
             ? savedUccFiles.filter((f) => f.name !== file.name)
-            : savedTransactionProofFiles.filter((f) => f.name !== file.name);
+            : fileType === 'agreementFiles'
+              ? savedAgreementFiles.filter((f) => f.name !== file.name)
+              : fileType === 'bankStatementsFiles'
+                ? savedBankStatementsFiles.filter((f) => f.name !== file.name)
+                : fileType === 'uploadBankGarnishmentFiles'
+                  ? savedUploadBankGarnishmentFiles.filter((f) => f.name !== file.name)
+                  : fileType === 'uploadJudgmentFiles'
+                    ? savedUploadJudgmentFiles.filter((f) => f.name !== file.name)
+                    : fileType === 'uccReleaseFiles'
+                      ? savedUccReleaseFiles.filter((f) => f.name !== file.name)
+                      : [];
 
         caseRequest.set(
           fileType,
@@ -335,16 +449,438 @@ const CaseRequestForm = () => {
       phoneNumber: '',
     });
     setSavedUccFiles([]);
-    setSavedTransactionProofFiles([]);
+    setSavedAgreementFiles([]);
+    setSavedBankStatementsFiles([]);
+    setSavedUploadBankGarnishmentFiles([]);
+    setSavedUploadJudgmentFiles([]);
+    setSavedUccReleaseFiles([]);
     setNewUccFiles([]);
-    setNewTransactionProofFiles([]);
+    setNewAgreementFiles([]);
+    setNewBankStatementsFiles([]);
+    setNewUploadBankGarnishmentFiles([]);
+    setNewUploadJudgmentFiles([]);
+    setNewUccReleaseFiles([]);
 
     // Clear file inputs
     if (uccFileInputRef.current) {
       uccFileInputRef.current.value = '';
     }
-    if (transactionProofFileInputRef.current) {
-      transactionProofFileInputRef.current.value = '';
+    if (agreementFileInputRef.current) {
+      agreementFileInputRef.current.value = '';
+    }
+    if (bankStatementsFileInputRef.current) {
+      bankStatementsFileInputRef.current.value = '';
+    }
+    if (uploadBankGarnishmentFileInputRef.current) {
+      uploadBankGarnishmentFileInputRef.current.value = '';
+    }
+    if (uploadJudgmentFileInputRef.current) {
+      uploadJudgmentFileInputRef.current.value = '';
+    }
+    if (uccReleaseFileInputRef.current) {
+      uccReleaseFileInputRef.current.value = '';
+    }
+  };
+
+  // ===========================================================================
+  // Renderização Condicional dos Campos de Upload com base no Request Type
+  // ===========================================================================
+  const renderUploadSections = () => {
+    const { requestType } = formData;
+
+    switch (requestType) {
+      case 'Lien':
+        return (
+          <>
+            {/* Upload UCC */}
+            <div className={styles.uploadSection}>
+              <Form.Group controlId="uccFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Upload UCC</Form.Label>
+                <Form.Control
+                  type="file"
+                  multiple
+                  onChange={(e) =>
+                    setNewUccFiles([
+                      ...newUccFiles,
+                      ...Array.from(e.target.files),
+                    ])
+                  }
+                  className={styles.input}
+                  ref={uccFileInputRef}
+                />
+                {/* Exibir arquivos novos enviados */}
+                {newUccFiles.length > 0 && (
+                  <div className={styles.newFileList}>
+                    <strong>New UCC Files:</strong>
+                    <ul className={styles.fileList}>
+                      {newUccFiles.map((file, index) => (
+                        <li key={index} className={styles.fileItem}>
+                          <span className={styles.fileName}>{file.name}</span>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className={styles.deleteButton}
+                            onClick={() =>
+                              setNewUccFiles(
+                                newUccFiles.filter((_, i) => i !== index)
+                              )
+                            }
+                          >
+                            🗑️
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </Form.Group>
+
+              {/* Exibir arquivos UCC Salvos */}
+              <Form.Group controlId="uploadedUccFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Uploaded UCC</Form.Label>
+                {savedUccFiles.length > 0 ? (
+                  <ul className={styles.fileList}>
+                    {savedUccFiles.map((file, index) => (
+                      <li key={index} className={styles.fileItem}>
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.fileName}
+                        >
+                          {file.name}
+                        </a>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className={styles.deleteButton}
+                          onClick={() => handleDeleteFile('uccFiles', file)}
+                        >
+                          🗑️
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.noFilesText}>No UCC uploaded.</p>
+                )}
+              </Form.Group>
+            </div>
+
+            {/* Upload Bank Statements */}
+            <div className={styles.uploadSection}>
+              <Form.Group controlId="bankStatementsFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Upload Bank Statements</Form.Label>
+                <Form.Control
+                  type="file"
+                  multiple
+                  onChange={(e) =>
+                    setNewBankStatementsFiles([
+                      ...newBankStatementsFiles,
+                      ...Array.from(e.target.files),
+                    ])
+                  }
+                  className={styles.input}
+                  ref={bankStatementsFileInputRef}
+                />
+                {/* Exibir arquivos novos enviados */}
+                {newBankStatementsFiles.length > 0 && (
+                  <div className={styles.newFileList}>
+                    <strong>New Bank Statements Files:</strong>
+                    <ul className={styles.fileList}>
+                      {newBankStatementsFiles.map((file, index) => (
+                        <li key={index} className={styles.fileItem}>
+                          <span className={styles.fileName}>{file.name}</span>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className={styles.deleteButton}
+                            onClick={() =>
+                              setNewBankStatementsFiles(
+                                newBankStatementsFiles.filter((_, i) => i !== index)
+                              )
+                            }
+                          >
+                            🗑️
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </Form.Group>
+
+              {/* Exibir arquivos Bank Statements Salvos */}
+              <Form.Group controlId="uploadedBankStatementsFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Uploaded Bank Statements</Form.Label>
+                {savedBankStatementsFiles.length > 0 ? (
+                  <ul className={styles.fileList}>
+                    {savedBankStatementsFiles.map((file, index) => (
+                      <li key={index} className={styles.fileItem}>
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.fileName}
+                        >
+                          {file.name}
+                        </a>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className={styles.deleteButton}
+                          onClick={() => handleDeleteFile('bankStatementsFiles', file)}
+                        >
+                          🗑️
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.noFilesText}>No Bank Statements uploaded.</p>
+                )}
+              </Form.Group>
+            </div>
+          </>
+        );
+
+      case 'Garnishment':
+        return (
+          <>
+            {/* Upload Bank Garnishment */}
+            <div className={styles.uploadSection}>
+              <Form.Group controlId="uploadBankGarnishmentFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Upload Bank Garnishment</Form.Label>
+                <Form.Control
+                  type="file"
+                  multiple
+                  onChange={(e) =>
+                    setNewUploadBankGarnishmentFiles([
+                      ...newUploadBankGarnishmentFiles,
+                      ...Array.from(e.target.files),
+                    ])
+                  }
+                  className={styles.input}
+                  ref={uploadBankGarnishmentFileInputRef}
+                />
+                {/* Exibir arquivos novos enviados */}
+                {newUploadBankGarnishmentFiles.length > 0 && (
+                  <div className={styles.newFileList}>
+                    <strong>New Bank Garnishment Files:</strong>
+                    <ul className={styles.fileList}>
+                      {newUploadBankGarnishmentFiles.map((file, index) => (
+                        <li key={index} className={styles.fileItem}>
+                          <span className={styles.fileName}>{file.name}</span>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className={styles.deleteButton}
+                            onClick={() =>
+                              setNewUploadBankGarnishmentFiles(
+                                newUploadBankGarnishmentFiles.filter((_, i) => i !== index)
+                              )
+                            }
+                          >
+                            🗑️
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </Form.Group>
+
+              {/* Exibir arquivos Bank Garnishment Salvos */}
+              <Form.Group controlId="uploadedUploadBankGarnishmentFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Uploaded Bank Garnishment</Form.Label>
+                {savedUploadBankGarnishmentFiles.length > 0 ? (
+                  <ul className={styles.fileList}>
+                    {savedUploadBankGarnishmentFiles.map((file, index) => (
+                      <li key={index} className={styles.fileItem}>
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.fileName}
+                        >
+                          {file.name}
+                        </a>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className={styles.deleteButton}
+                          onClick={() => handleDeleteFile('uploadBankGarnishmentFiles', file)}
+                        >
+                          🗑️
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.noFilesText}>No Bank Garnishment uploaded.</p>
+                )}
+              </Form.Group>
+            </div>
+
+            {/* Upload Judgment */}
+            <div className={styles.uploadSection}>
+              <Form.Group controlId="uploadJudgmentFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Upload Judgment</Form.Label>
+                <Form.Control
+                  type="file"
+                  multiple
+                  onChange={(e) =>
+                    setNewUploadJudgmentFiles([
+                      ...newUploadJudgmentFiles,
+                      ...Array.from(e.target.files),
+                    ])
+                  }
+                  className={styles.input}
+                  ref={uploadJudgmentFileInputRef}
+                />
+                {/* Exibir arquivos novos enviados */}
+                {newUploadJudgmentFiles.length > 0 && (
+                  <div className={styles.newFileList}>
+                    <strong>New Judgment Files:</strong>
+                    <ul className={styles.fileList}>
+                      {newUploadJudgmentFiles.map((file, index) => (
+                        <li key={index} className={styles.fileItem}>
+                          <span className={styles.fileName}>{file.name}</span>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className={styles.deleteButton}
+                            onClick={() =>
+                              setNewUploadJudgmentFiles(
+                                newUploadJudgmentFiles.filter((_, i) => i !== index)
+                              )
+                            }
+                          >
+                            🗑️
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </Form.Group>
+
+              {/* Exibir arquivos Judgment Salvos */}
+              <Form.Group controlId="uploadedUploadJudgmentFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Uploaded Judgment</Form.Label>
+                {savedUploadJudgmentFiles.length > 0 ? (
+                  <ul className={styles.fileList}>
+                    {savedUploadJudgmentFiles.map((file, index) => (
+                      <li key={index} className={styles.fileItem}>
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.fileName}
+                        >
+                          {file.name}
+                        </a>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className={styles.deleteButton}
+                          onClick={() => handleDeleteFile('uploadJudgmentFiles', file)}
+                        >
+                          🗑️
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.noFilesText}>No Judgments uploaded.</p>
+                )}
+              </Form.Group>
+            </div>
+          </>
+        );
+
+      case 'Release':
+        return (
+          <>
+            {/* Upload UCC Release */}
+            <div className={styles.uploadSection}>
+              <Form.Group controlId="uccReleaseFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Upload UCC Release</Form.Label>
+                <Form.Control
+                  type="file"
+                  multiple
+                  onChange={(e) =>
+                    setNewUccReleaseFiles([
+                      ...newUccReleaseFiles,
+                      ...Array.from(e.target.files),
+                    ])
+                  }
+                  className={styles.input}
+                  ref={uccReleaseFileInputRef}
+                />
+                {/* Exibir arquivos novos enviados */}
+                {newUccReleaseFiles.length > 0 && (
+                  <div className={styles.newFileList}>
+                    <strong>New UCC Release Files:</strong>
+                    <ul className={styles.fileList}>
+                      {newUccReleaseFiles.map((file, index) => (
+                        <li key={index} className={styles.fileItem}>
+                          <span className={styles.fileName}>{file.name}</span>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className={styles.deleteButton}
+                            onClick={() =>
+                              setNewUccReleaseFiles(
+                                newUccReleaseFiles.filter((_, i) => i !== index)
+                              )
+                            }
+                          >
+                            🗑️
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </Form.Group>
+
+              {/* Exibir arquivos UCC Release Salvos */}
+              <Form.Group controlId="uploadedUccReleaseFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Uploaded UCC Release</Form.Label>
+                {savedUccReleaseFiles.length > 0 ? (
+                  <ul className={styles.fileList}>
+                    {savedUccReleaseFiles.map((file, index) => (
+                      <li key={index} className={styles.fileItem}>
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.fileName}
+                        >
+                          {file.name}
+                        </a>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className={styles.deleteButton}
+                          onClick={() => handleDeleteFile('uccReleaseFiles', file)}
+                        >
+                          🗑️
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.noFilesText}>No UCC Release uploaded.</p>
+                )}
+              </Form.Group>
+            </div>
+          </>
+        );
+
+      default:
+        return null;
     }
   };
 
@@ -402,6 +938,7 @@ const CaseRequestForm = () => {
                 <option value="">Select Request Type</option>
                 <option value="Lien">Lien</option>
                 <option value="Garnishment">Garnishment</option>
+                <option value="Release">Release</option> {/* Nova opção */}
               </Form.Select>
             </Form.Group>
           </Col>
@@ -626,28 +1163,31 @@ const CaseRequestForm = () => {
           </Col>
         </Row>
 
-        {/* Arquivos UCC Notices */}
+        {/* Renderizar Uploads Condicionais */}
+        {renderUploadSections()}
+
+        {/* Upload Agreement (sempre visível) */}
         <div className={styles.uploadSection}>
-          <Form.Group controlId="uccFiles" className="mb-3">
-            <Form.Label className={styles.uploadSectionTitle}>Upload UCC Notices Files</Form.Label>
+          <Form.Group controlId="agreementFiles" className="mb-3">
+            <Form.Label className={styles.uploadSectionTitle}>Upload Agreement</Form.Label>
             <Form.Control
               type="file"
               multiple
               onChange={(e) =>
-                setNewUccFiles([
-                  ...newUccFiles,
+                setNewAgreementFiles([
+                  ...newAgreementFiles,
                   ...Array.from(e.target.files),
                 ])
               }
               className={styles.input}
-              ref={uccFileInputRef}
+              ref={agreementFileInputRef}
             />
             {/* Exibir arquivos novos enviados */}
-            {newUccFiles.length > 0 && (
+            {newAgreementFiles.length > 0 && (
               <div className={styles.newFileList}>
-                <strong>New UCC Files:</strong>
+                <strong>New Agreement Files:</strong>
                 <ul className={styles.fileList}>
-                  {newUccFiles.map((file, index) => (
+                  {newAgreementFiles.map((file, index) => (
                     <li key={index} className={styles.fileItem}>
                       <span className={styles.fileName}>{file.name}</span>
                       <Button
@@ -655,8 +1195,8 @@ const CaseRequestForm = () => {
                         size="sm"
                         className={styles.deleteButton}
                         onClick={() =>
-                          setNewUccFiles(
-                            newUccFiles.filter((_, i) => i !== index)
+                          setNewAgreementFiles(
+                            newAgreementFiles.filter((_, i) => i !== index)
                           )
                         }
                       >
@@ -669,12 +1209,12 @@ const CaseRequestForm = () => {
             )}
           </Form.Group>
 
-          {/* Exibir arquivos UCC Notices Salvos */}
-          <Form.Group controlId="uploadedUccFiles" className="mb-3">
-            <Form.Label className={styles.uploadSectionTitle}>Uploaded UCC Notices</Form.Label>
-            {savedUccFiles.length > 0 ? (
+          {/* Exibir arquivos Agreement Salvos */}
+          <Form.Group controlId="uploadedAgreementFiles" className="mb-3">
+            <Form.Label className={styles.uploadSectionTitle}>Uploaded Agreements</Form.Label>
+            {savedAgreementFiles.length > 0 ? (
               <ul className={styles.fileList}>
-                {savedUccFiles.map((file, index) => (
+                {savedAgreementFiles.map((file, index) => (
                   <li key={index} className={styles.fileItem}>
                     <a
                       href={file.url}
@@ -688,7 +1228,7 @@ const CaseRequestForm = () => {
                       variant="danger"
                       size="sm"
                       className={styles.deleteButton}
-                      onClick={() => handleDeleteFile('uccFiles', file)}
+                      onClick={() => handleDeleteFile('agreementFiles', file)}
                     >
                       🗑️
                     </Button>
@@ -696,89 +1236,7 @@ const CaseRequestForm = () => {
                 ))}
               </ul>
             ) : (
-              <p className={styles.noFilesText}>No UCC Notices uploaded.</p>
-            )}
-          </Form.Group>
-        </div>
-
-        {/* Arquivos Proof of Transaction */}
-        <div className={styles.uploadSection}>
-          <Form.Group controlId="transactionProofFiles" className="mb-3">
-            <Form.Label className={styles.uploadSectionTitle}>Upload Proof of Transaction Files</Form.Label>
-            <Form.Control
-              type="file"
-              multiple
-              onChange={(e) =>
-                setNewTransactionProofFiles([
-                  ...newTransactionProofFiles,
-                  ...Array.from(e.target.files),
-                ])
-              }
-              className={styles.input}
-              ref={transactionProofFileInputRef}
-            />
-            {/* Exibir arquivos novos enviados */}
-            {newTransactionProofFiles.length > 0 && (
-              <div className={styles.newFileList}>
-                <strong>New Proof of Transaction Files:</strong>
-                <ul className={styles.fileList}>
-                  {newTransactionProofFiles.map((file, index) => (
-                    <li key={index} className={styles.fileItem}>
-                      <span className={styles.fileName}>{file.name}</span>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        className={styles.deleteButton}
-                        onClick={() =>
-                          setNewTransactionProofFiles(
-                            newTransactionProofFiles.filter(
-                              (_, i) => i !== index
-                            )
-                          )
-                        }
-                      >
-                        🗑️
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </Form.Group>
-
-          {/* Exibir arquivos Proof of Transaction Salvos */}
-          <Form.Group
-            controlId="uploadedTransactionProofFiles"
-            className="mb-3"
-          >
-            <Form.Label className={styles.uploadSectionTitle}>Uploaded Proof of Transaction</Form.Label>
-            {savedTransactionProofFiles.length > 0 ? (
-              <ul className={styles.fileList}>
-                {savedTransactionProofFiles.map((file, index) => (
-                  <li key={index} className={styles.fileItem}>
-                    <a
-                      href={file.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.fileName}
-                    >
-                      {file.name}
-                    </a>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      className={styles.deleteButton}
-                      onClick={() =>
-                        handleDeleteFile('transactionProofFiles', file)
-                      }
-                    >
-                      🗑️
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={styles.noFilesText}>No Proof of Transaction files uploaded.</p>
+              <p className={styles.noFilesText}>No Agreements uploaded.</p>
             )}
           </Form.Group>
         </div>
