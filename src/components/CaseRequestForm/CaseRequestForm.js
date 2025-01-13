@@ -759,7 +759,7 @@ const CaseRequestForm = () => {
               </Form.Group>
 
               {/* Exibir arquivos Judgment Salvos */}
-              <Form.Group controlId="uploadedUploadJudgmentFiles" className="mb-3">
+              <Form.Group controlId="uploadedJudgmentFiles" className="mb-3">
                 <Form.Label className={styles.uploadSectionTitle}>Uploaded Judgment</Form.Label>
                 {savedUploadJudgmentFiles.length > 0 ? (
                   <ul className={styles.fileList}>
@@ -880,7 +880,10 @@ const CaseRequestForm = () => {
   return (
     <Container className={styles.caseRequestContainer}>
       <h1 className={`${styles.title}`}>Case Request Form</h1>
-      <Form className={styles.form} onSubmit={handleSubmit}>
+      <Form
+        className={styles.form}
+        onSubmit={handleSubmit}
+      >
         {/* Exibição de alertas de erro ou sucesso */}
         {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
         {success && <Alert variant="success" className={styles.alert}>{success}</Alert>}
@@ -902,7 +905,256 @@ const CaseRequestForm = () => {
         )}
 
         {/* Campos principais */}
-        {/* ... (todos os campos do formulário) */}
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="requesterEmail">
+              <Form.Label>Requester Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter requester email"
+                value={formData.requesterEmail}
+                onChange={(e) =>
+                  handleInputChange('requesterEmail', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="requestType">
+              <Form.Label>Request Type</Form.Label>
+              <Form.Select
+                value={formData.requestType}
+                onChange={(e) => handleInputChange('requestType', e.target.value)}
+                className={styles.input}
+              >
+                <option value="">Select Request Type</option>
+                <option value="Lien">Lien</option>
+                <option value="Garnishment">Garnishment</option>
+                <option value="Release">Release</option> {/* Nova opção */}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="businessName">
+              <Form.Label>Business Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter business name"
+                value={formData.businessName}
+                onChange={(e) =>
+                  handleInputChange('businessName', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="creditorName">
+              <Form.Label>Creditor Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter creditor name"
+                value={formData.creditorName}
+                onChange={(e) =>
+                  handleInputChange('creditorName', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="merchantName">
+              <Form.Label>Merchant's Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter merchant's name"
+                value={formData.merchantName}
+                onChange={(e) =>
+                  handleInputChange('merchantName', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="ein">
+              <Form.Label>EIN</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter EIN"
+                value={formData.ein}
+                onChange={(e) =>
+                  handleInputChange('ein', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="ssn">
+              <Form.Label>SSN</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter SSN"
+                value={formData.ssn}
+                onChange={(e) =>
+                  handleInputChange('ssn', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="address">
+              <Form.Label>Address</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter address"
+                value={formData.address}
+                onChange={(e) =>
+                  handleInputChange('address', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="city">
+              <Form.Label>City</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter city"
+                value={formData.city}
+                onChange={(e) => handleInputChange('city', e.target.value)}
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="state">
+              <Form.Label>State</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter state"
+                value={formData.state}
+                onChange={(e) =>
+                  handleInputChange('state', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="zipcode">
+              <Form.Label>Zip Code</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter zip code"
+                value={formData.zipcode}
+                onChange={(e) =>
+                  handleInputChange('zipcode', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="emailAddress">
+              <Form.Label>Email Address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email address"
+                value={formData.emailAddress}
+                onChange={(e) =>
+                  handleInputChange('emailAddress', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="phoneNumber">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter phone number"
+                value={formData.phoneNumber}
+                onChange={(e) =>
+                  handleInputChange('phoneNumber', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="defaultAmount">
+              <Form.Label>Default Amount</Form.Label>
+              <CurrencyInput
+                id="defaultAmount"
+                name="defaultAmount"
+                placeholder="Enter default amount"
+                prefix="$"
+                decimalsLimit={2}
+                value={formData.defaultAmount}
+                onValueChange={(value) =>
+                  handleInputChange('defaultAmount', value)
+                }
+                className={`${styles.input} form-control`}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="defaultDate">
+              <Form.Label>Default Date</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="Select default date"
+                value={formData.defaultDate}
+                onChange={(e) =>
+                  handleInputChange('defaultDate', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={12}>
+            <Form.Group className="mb-3" controlId="additionalEntities">
+              <Form.Label>Additional Entities</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter additional entities"
+                value={formData.additionalEntities}
+                onChange={(e) =>
+                  handleInputChange('additionalEntities', e.target.value)
+                }
+                className={styles.textarea}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
 
         {/* Renderizar Uploads Condicionais */}
         {renderUploadSections()}
