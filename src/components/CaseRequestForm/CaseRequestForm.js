@@ -30,14 +30,13 @@ const CaseRequestForm = () => {
   const [newUccFiles, setNewUccFiles] = useState([]);
   const [newTransactionProofFiles, setNewTransactionProofFiles] = useState([]);
 
-  // EIN / SSN
-  const [einList, setEinList] = useState(['']);
-  const [ssnList, setSsnList] = useState(['']);
-
   // Dados do formulário
   const [formData, setFormData] = useState({
     requesterEmail: '',
     creditorName: '',
+    merchantName: '',       // Novo Campo
+    ein: '',                // Campo único EIN
+    ssn: '',                // Campo único SSN
     businessName: '',
     doingBusinessAs: '',
     requestType: '',
@@ -78,6 +77,9 @@ const CaseRequestForm = () => {
         setFormData({
           requesterEmail: caseRequest.get('requesterEmail') || '',
           creditorName: caseRequest.get('creditorName') || '',
+          merchantName: caseRequest.get('merchantName') || '', // Novo Campo
+          ein: caseRequest.get('ein') || '',                   // Campo único EIN
+          ssn: caseRequest.get('ssn') || '',                   // Campo único SSN
           businessName: caseRequest.get('businessName') || '',
           doingBusinessAs: caseRequest.get('doingBusinessAs') || '',
           requestType: caseRequest.get('requestType') || '',
@@ -91,10 +93,6 @@ const CaseRequestForm = () => {
           emailAddress: caseRequest.get('emailAddress') || '',
           phoneNumber: caseRequest.get('phoneNumber') || '',
         });
-
-        // Preenche listas EIN / SSN
-        setEinList(caseRequest.get('einList') || ['']);
-        setSsnList(caseRequest.get('ssnList') || ['']);
 
         // Converte arquivos salvos para exibição
         const uccParseFiles = caseRequest.get('uccFiles') || [];
@@ -134,14 +132,6 @@ const CaseRequestForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddToList = (listSetter) => {
-    listSetter((prevList) => [...prevList, '']);
-  };
-
-  const handleRemoveFromList = (listSetter, index) => {
-    listSetter((prevList) => prevList.filter((_, i) => i !== index));
-  };
-
   // ===========================================================================
   // Validação de arquivos
   // ===========================================================================
@@ -151,11 +141,11 @@ const CaseRequestForm = () => {
 
     for (let file of files) {
       if (!allowedTypes.includes(file.type)) {
-        setError(`File type not allowed: ${file.name}`);
+        setError(`Tipo de arquivo não permitido: ${file.name}`);
         return false;
       }
       if (file.size > maxSize) {
-        setError(`File too large (max 5MB): ${file.name}`);
+        setError(`Arquivo muito grande (máx 5MB): ${file.name}`);
         return false;
       }
     }
@@ -191,8 +181,6 @@ const CaseRequestForm = () => {
         CaseRequest.set(key, formData[key]);
       });
       CaseRequest.set('defaultAmount', parseFloat(formData.defaultAmount) || 0);
-      CaseRequest.set('einList', einList);
-      CaseRequest.set('ssnList', ssnList);
 
       // Carregar do Parse arrays antigos (se houver)
       const oldUccParseFiles = CaseRequest.get('uccFiles') || [];
@@ -237,7 +225,7 @@ const CaseRequestForm = () => {
       CaseRequest.set('transactionProofFiles', allTransactionProofFiles);
 
       await CaseRequest.save();
-      setSuccess('Case Request saved successfully!');
+      setSuccess('Case Request salvo com sucesso!');
       if (!id) {
         resetForm();
       }
@@ -277,7 +265,7 @@ const CaseRequestForm = () => {
       }
     } catch (error) {
       console.error('Error saving Case Request:', error);
-      setError('Failed to save Case Request. Please try again.');
+      setError('Falha ao salvar o Case Request. Por favor, tente novamente.');
     } finally {
       setLoading(false);
       setUploadProgress(0);
@@ -319,7 +307,7 @@ const CaseRequestForm = () => {
       }
     } catch (error) {
       console.error('Error deleting file:', error);
-      setError('Failed to delete file. Please try again.');
+      setError('Falha ao deletar o arquivo. Por favor, tente novamente.');
     }
   };
 
@@ -330,6 +318,9 @@ const CaseRequestForm = () => {
     setFormData({
       requesterEmail: '',
       creditorName: '',
+      merchantName: '',       // Novo Campo
+      ein: '',                // Campo único EIN
+      ssn: '',                // Campo único SSN
       businessName: '',
       doingBusinessAs: '',
       requestType: '',
@@ -343,8 +334,6 @@ const CaseRequestForm = () => {
       emailAddress: '',
       phoneNumber: '',
     });
-    setEinList(['']);
-    setSsnList(['']);
     setSavedUccFiles([]);
     setSavedTransactionProofFiles([]);
     setNewUccFiles([]);
@@ -449,14 +438,45 @@ const CaseRequestForm = () => {
           </Col>
 
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="doingBusinessAs">
-              <Form.Label>Doing Business As</Form.Label>
+            <Form.Group className="mb-3" controlId="merchantName">
+              <Form.Label>Merchant's Name</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter doing business as"
-                value={formData.doingBusinessAs}
+                placeholder="Enter merchant's name"
+                value={formData.merchantName}
                 onChange={(e) =>
-                  handleInputChange('doingBusinessAs', e.target.value)
+                  handleInputChange('merchantName', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="ein">
+              <Form.Label>EIN</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter EIN"
+                value={formData.ein}
+                onChange={(e) =>
+                  handleInputChange('ein', e.target.value)
+                }
+                className={styles.input}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="ssn">
+              <Form.Label>SSN</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter SSN"
+                value={formData.ssn}
+                onChange={(e) =>
+                  handleInputChange('ssn', e.target.value)
                 }
                 className={styles.input}
               />
@@ -603,84 +623,6 @@ const CaseRequestForm = () => {
                 className={styles.textarea}
               />
             </Form.Group>
-          </Col>
-        </Row>
-
-        {/* EIN List */}
-        <Row>
-          <Col md={12}>
-            <Form.Label>EIN</Form.Label>
-            {einList.map((ein, index) => (
-              <div key={index} className="d-flex mb-2">
-                <Form.Control
-                  type="text"
-                  placeholder="Enter EIN"
-                  value={ein}
-                  onChange={(e) =>
-                    setEinList(
-                      einList.map((item, i) =>
-                        i === index ? e.target.value : item
-                      )
-                    )
-                  }
-                  className={`${styles.input} me-2`}
-                />
-                <Button
-                  variant="danger"
-                  onClick={() =>
-                    handleRemoveFromList(setEinList, index)
-                  }
-                  disabled={einList.length === 1}
-                >
-                  Remover
-                </Button>
-              </div>
-            ))}
-            <Button
-              variant="primary"
-              onClick={() => handleAddToList(setEinList)}
-            >
-              Adicionar EIN
-            </Button>
-          </Col>
-        </Row>
-
-        {/* SSN List */}
-        <Row className="mt-3">
-          <Col md={12}>
-            <Form.Label>SSN</Form.Label>
-            {ssnList.map((ssn, index) => (
-              <div key={index} className="d-flex mb-2">
-                <Form.Control
-                  type="text"
-                  placeholder="Enter SSN"
-                  value={ssn}
-                  onChange={(e) =>
-                    setSsnList(
-                      ssnList.map((item, i) =>
-                        i === index ? e.target.value : item
-                      )
-                    )
-                  }
-                  className={`${styles.input} me-2`}
-                />
-                <Button
-                  variant="danger"
-                  onClick={() =>
-                    handleRemoveFromList(setSsnList, index)
-                  }
-                  disabled={ssnList.length === 1}
-                >
-                  Remover
-                </Button>
-              </div>
-            ))}
-            <Button
-              variant="primary"
-              onClick={() => handleAddToList(setSsnList)}
-            >
-              Adicionar SSN
-            </Button>
           </Col>
         </Row>
 
