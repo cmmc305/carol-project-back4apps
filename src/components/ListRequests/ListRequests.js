@@ -11,9 +11,9 @@ const ListRequests = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [deletingId, setDeletingId] = useState(null); // ID of the request being deleted
-  const [showConfirm, setShowConfirm] = useState(false); // Control for confirmation modal
-  const [selectedRequest, setSelectedRequest] = useState(null); // Selected request to delete
+  const [deletingId, setDeletingId] = useState(null); // ID do request sendo deletado
+  const [showConfirm, setShowConfirm] = useState(false); // Controle para o modal de confirmação
+  const [selectedRequest, setSelectedRequest] = useState(null); // Request selecionado para deletar
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const ListRequests = () => {
   }, []);
 
   const handleEdit = (requestId) => {
-    navigate(`/app/create-request/${requestId}`); // Navigate to edit page
+    navigate(`/app/create-request/${requestId}`); // Navegar para a página de edição
   };
 
   const handleDelete = (request) => {
@@ -54,7 +54,7 @@ const ListRequests = () => {
       const caseRequest = await query.get(requestId);
       await caseRequest.destroy();
 
-      // Update local state by removing the deleted request
+      // Atualizar o estado local removendo o request deletado
       setRequests((prevRequests) =>
         prevRequests.filter((req) => req.id !== requestId)
       );
@@ -75,15 +75,23 @@ const ListRequests = () => {
     setSelectedRequest(null);
   };
 
+  // Função para formatar valores como moeda
+  const formatCurrency = (value) => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return '-';
+    }
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+  };
+
   return (
     <Container className={styles.listRequestsContainer}>
       <h1 className={`text-center ${styles.title}`}>List of Requests</h1>
 
-      {/* Error or Success Alerts */}
+      {/* Alertas de Erro ou Sucesso */}
       {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
       {success && <Alert variant="success" className={styles.alert}>{success}</Alert>}
 
-      {/* Loading Indicator */}
+      {/* Indicador de Carregamento */}
       {loading ? (
         <div className={`text-center ${styles.loading}`}>
           <Spinner animation="border" role="status" className={styles.spinner}>
@@ -109,7 +117,7 @@ const ListRequests = () => {
                 <th>Type</th>
                 <th>City</th>
                 <th>Phone</th>
-                <th>Balance</th>
+                <th>Default Amount</th> {/* Renomeado de "Balance" para "Default Amount" */}
                 <th>Actions</th>
               </tr>
             </thead>
@@ -122,7 +130,7 @@ const ListRequests = () => {
                   <td>{request.get('requestType') || '-'}</td>
                   <td>{request.get('city') || '-'}</td>
                   <td>{request.get('phoneNumber') || '-'}</td>
-                  <td>{`$${parseFloat(request.get('lienBalance') || 0).toFixed(2)}`}</td>
+                  <td>{formatCurrency(request.get('defaultAmount'))}</td> {/* Alterado para 'defaultAmount' */}
                   <td>
                     <Button
                       variant="warning"
@@ -162,7 +170,7 @@ const ListRequests = () => {
         <p className={`text-center ${styles.noData}`}>No requests found.</p>
       )}
 
-      {/* Confirmation Modal for Deletion */}
+      {/* Modal de Confirmação para Deleção */}
       <Modal show={showConfirm} onHide={cancelDelete} centered>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Deletion</Modal.Title>
