@@ -634,553 +634,34 @@ const CaseRequestForm = () => {
                 )}
               </Form.Group>
             </div>
-          );
+          </>
+        );
 
-        case 'Garnishment':
-          return (
-            <>
-              {/* Upload Summons and Complaint */}
-              <div className={styles.uploadSection}>
-                <Form.Group controlId="uploadSummonsAndComplaintFiles" className="mb-3">
-                  <Form.Label className={styles.uploadSectionTitle}>Upload Summons and Complaint</Form.Label>
-                  <Form.Control
-                    type="file"
-                    multiple
-                    onChange={(e) =>
-                      setNewSummonsAndComplaintFiles([
-                        ...newSummonsAndComplaintFiles,
-                        ...Array.from(e.target.files),
-                      ])
-                    }
-                    className={styles.input}
-                    ref={summonsAndComplaintFileInputRef}
-                  />
-                  {/* Exibir arquivos novos enviados */}
-                  {newSummonsAndComplaintFiles.length > 0 && (
-                    <div className={styles.newFileList}>
-                      <strong>New Summons and Complaint Files:</strong>
-                      <ul className={styles.fileList}>
-                        {newSummonsAndComplaintFiles.map((file, index) => (
-                          <li key={index} className={styles.fileItem}>
-                            <span className={styles.fileName}>{file.name}</span>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              className={styles.deleteButton}
-                              onClick={() =>
-                                setNewSummonsAndComplaintFiles(
-                                  newSummonsAndComplaintFiles.filter((_, i) => i !== index)
-                                )
-                              }
-                            >
-                              🗑️
-                            </Button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </Form.Group>
-
-                {/* Exibir arquivos Summons and Complaint Salvos */}
-                <Form.Group controlId="uploadedSummonsAndComplaintFiles" className="mb-3">
-                  <Form.Label className={styles.uploadSectionTitle}>Uploaded Summons and Complaint</Form.Label>
-                  {savedUploadSummonsAndComplaintFiles.length > 0 ? (
-                    <ul className={styles.fileList}>
-                      {savedUploadSummonsAndComplaintFiles.map((file, index) => (
-                        <li key={index} className={styles.fileItem}>
-                          <a
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.fileName}
-                          >
-                            {file.name}
-                          </a>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            className={styles.deleteButton}
-                            onClick={() => handleDeleteFile('uploadSummonsAndComplaintFiles', file)}
-                          >
-                            🗑️
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className={styles.noFilesText}>No Summons and Complaint uploaded.</p>
-                  )}
-                </Form.Group>
-              </div>
-
-              {/* Upload Judgment */}
-              <div className={styles.uploadSection}>
-                <Form.Group controlId="uploadJudgmentFiles" className="mb-3">
-                  <Form.Label className={styles.uploadSectionTitle}>Upload Judgment</Form.Label>
-                  <Form.Control
-                    type="file"
-                    multiple
-                    onChange={(e) =>
-                      setNewUploadJudgmentFiles([
-                        ...newUploadJudgmentFiles,
-                        ...Array.from(e.target.files),
-                      ])
-                    }
-                    className={styles.input}
-                    ref={uploadJudgmentFileInputRef}
-                  />
-                  {/* Exibir arquivos novos enviados */}
-                  {newUploadJudgmentFiles.length > 0 && (
-                    <div className={styles.newFileList}>
-                      <strong>New Judgment Files:</strong>
-                      <ul className={styles.fileList}>
-                        {newUploadJudgmentFiles.map((file, index) => (
-                          <li key={index} className={styles.fileItem}>
-                            <span className={styles.fileName}>{file.name}</span>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              className={styles.deleteButton}
-                              onClick={() =>
-                                setNewUploadJudgmentFiles(
-                                  newUploadJudgmentFiles.filter((_, i) => i !== index)
-                                )
-                              }
-                            >
-                              🗑️
-                            </Button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </Form.Group>
-
-                {/* Exibir arquivos Judgment Salvos */}
-                <Form.Group controlId="uploadedUploadJudgmentFiles" className="mb-3">
-                  <Form.Label className={styles.uploadSectionTitle}>Uploaded Judgment</Form.Label>
-                  {savedUploadJudgmentFiles.length > 0 ? (
-                    <ul className={styles.fileList}>
-                      {savedUploadJudgmentFiles.map((file, index) => (
-                        <li key={index} className={styles.fileItem}>
-                          <a
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.fileName}
-                          >
-                            {file.name}
-                          </a>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            className={styles.deleteButton}
-                            onClick={() => handleDeleteFile('uploadJudgmentFiles', file)}
-                          >
-                            🗑️
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className={styles.noFilesText}>No Judgments uploaded.</p>
-                  )}
-                </Form.Group>
-              </div>
-            </>
-          );
-
-        case 'Release':
-          return (
-            <>
-              {/* Upload UCC Release */}
-              <div className={styles.uploadSection}>
-                <Form.Group controlId="uccReleaseFiles" className="mb-3">
-                  <Form.Label className={styles.uploadSectionTitle}>Upload UCC Release</Form.Label>
-                  <Form.Control
-                    type="file"
-                    multiple
-                    onChange={(e) =>
-                      setNewUccReleaseFiles([
-                        ...newUccReleaseFiles,
-                        ...Array.from(e.target.files),
-                      ])
-                    }
-                    className={styles.input}
-                    ref={uccReleaseFileInputRef}
-                  />
-                  {/* Exibir arquivos novos enviados */}
-                  {newUccReleaseFiles.length > 0 && (
-                    <div className={styles.newFileList}>
-                      <strong>New UCC Release Files:</strong>
-                      <ul className={styles.fileList}>
-                        {newUccReleaseFiles.map((file, index) => (
-                          <li key={index} className={styles.fileItem}>
-                            <span className={styles.fileName}>{file.name}</span>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              className={styles.deleteButton}
-                              onClick={() =>
-                                setNewUccReleaseFiles(
-                                  newUccReleaseFiles.filter((_, i) => i !== index)
-                                )
-                              }
-                            >
-                              🗑️
-                            </Button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </Form.Group>
-
-                {/* Exibir arquivos UCC Release Salvos */}
-                <Form.Group controlId="uploadedUccReleaseFiles" className="mb-3">
-                  <Form.Label className={styles.uploadSectionTitle}>Uploaded UCC Release</Form.Label>
-                  {savedUccReleaseFiles.length > 0 ? (
-                    <ul className={styles.fileList}>
-                      {savedUccReleaseFiles.map((file, index) => (
-                        <li key={index} className={styles.fileItem}>
-                          <a
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.fileName}
-                          >
-                            {file.name}
-                          </a>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            className={styles.deleteButton}
-                            onClick={() => handleDeleteFile('uccReleaseFiles', file)}
-                          >
-                            🗑️
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className={styles.noFilesText}>No UCC Release uploaded.</p>
-                  )}
-                </Form.Group>
-              </div>
-            </>
-          );
-
-        default:
-          return null;
-      }
-    };
-
-    return (
-      <Container className={styles.caseRequestContainer}>
-        <h1 className={`${styles.title}`}>Case Request Form</h1>
-        <Form
-          className={styles.form}
-          onSubmit={handleSubmit}
-        >
-          {/* Exibição de alertas de erro ou sucesso */}
-          {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
-          {success && <Alert variant="success" className={styles.alert}>{success}</Alert>}
-
-          {/* Indicador de progresso */}
-          {loading && (
-            <div className="mb-3">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-              {uploadProgress > 0 && (
-                <ProgressBar
-                  now={uploadProgress}
-                  label={`${uploadProgress}%`}
-                  className="mt-2"
-                />
-              )}
-            </div>
-          )}
-
-          {/* Campos principais */}
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="requesterEmail">
-                <Form.Label>Requester Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="Enter requester email"
-                  value={formData.requesterEmail}
-                  onChange={(e) =>
-                    handleInputChange('requesterEmail', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="requestType">
-                <Form.Label>Request Type</Form.Label>
-                <Form.Select
-                  value={formData.requestType}
-                  onChange={(e) => handleInputChange('requestType', e.target.value)}
-                  className={styles.input}
-                >
-                  <option value="">Select Request Type</option>
-                  <option value="Lien">Lien</option>
-                  <option value="Garnishment">Garnishment</option>
-                  <option value="Release">Release</option> {/* Nova opção */}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="businessName">
-                <Form.Label>Business Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter business name"
-                  value={formData.businessName}
-                  onChange={(e) =>
-                    handleInputChange('businessName', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="creditorName">
-                <Form.Label>Creditor Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter creditor name"
-                  value={formData.creditorName}
-                  onChange={(e) =>
-                    handleInputChange('creditorName', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="merchantName">
-                <Form.Label>Merchant's Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter merchant's name"
-                  value={formData.merchantName}
-                  onChange={(e) =>
-                    handleInputChange('merchantName', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="ein">
-                <Form.Label>EIN</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter EIN"
-                  value={formData.ein}
-                  onChange={(e) =>
-                    handleInputChange('ein', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="ssn">
-                <Form.Label>SSN</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter SSN"
-                  value={formData.ssn}
-                  onChange={(e) =>
-                    handleInputChange('ssn', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="address">
-                <Form.Label>Address</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter address"
-                  value={formData.address}
-                  onChange={(e) =>
-                    handleInputChange('address', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="city">
-                <Form.Label>City</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter city"
-                  value={formData.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="state">
-                <Form.Label>State</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter state"
-                  value={formData.state}
-                  onChange={(e) =>
-                    handleInputChange('state', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="zipcode">
-                <Form.Label>Zip Code</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter zip code"
-                  value={formData.zipcode}
-                  onChange={(e) =>
-                    handleInputChange('zipcode', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="emailAddress">
-                <Form.Label>Email Address</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="Enter email address"
-                  value={formData.emailAddress}
-                  onChange={(e) =>
-                    handleInputChange('emailAddress', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="phoneNumber">
-                <Form.Label>Phone Number</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter phone number"
-                  value={formData.phoneNumber}
-                  onChange={(e) =>
-                    handleInputChange('phoneNumber', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="defaultAmount">
-                <Form.Label>Default Amount</Form.Label>
-                <CurrencyInput
-                  id="defaultAmount"
-                  name="defaultAmount"
-                  placeholder="Enter default amount"
-                  prefix="$"
-                  decimalsLimit={2}
-                  value={formData.defaultAmount}
-                  onValueChange={(value) =>
-                    handleInputChange('defaultAmount', value)
-                  }
-                  className={`${styles.input} form-control`}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="defaultDate">
-                <Form.Label>Default Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  placeholder="Select default date"
-                  value={formData.defaultDate}
-                  onChange={(e) =>
-                    handleInputChange('defaultDate', e.target.value)
-                  }
-                  className={styles.input}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={12}>
-              <Form.Group className="mb-3" controlId="additionalEntities">
-                <Form.Label>Additional Entities</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Enter additional entities"
-                  value={formData.additionalEntities}
-                  onChange={(e) =>
-                    handleInputChange('additionalEntities', e.target.value)
-                  }
-                  className={styles.textarea}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          {/* Renderizar Uploads Condicionais */}
-          {renderUploadSections()}
-
-          {/* Upload Agreement (condicional) */}
-          {formData.requestType !== 'Garnishment' && (
+      case 'Garnishment':
+        return (
+          <>
+            {/* Upload Summons and Complaint */}
             <div className={styles.uploadSection}>
-              <Form.Group controlId="agreementFiles" className="mb-3">
-                <Form.Label className={styles.uploadSectionTitle}>Upload Agreement</Form.Label>
+              <Form.Group controlId="uploadSummonsAndComplaintFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Upload Summons and Complaint</Form.Label>
                 <Form.Control
                   type="file"
                   multiple
                   onChange={(e) =>
-                    setNewAgreementFiles([
-                      ...newAgreementFiles,
+                    setNewSummonsAndComplaintFiles([
+                      ...newSummonsAndComplaintFiles,
                       ...Array.from(e.target.files),
                     ])
                   }
                   className={styles.input}
-                  ref={agreementFileInputRef}
+                  ref={summonsAndComplaintFileInputRef}
                 />
                 {/* Exibir arquivos novos enviados */}
-                {newAgreementFiles.length > 0 && (
+                {newSummonsAndComplaintFiles.length > 0 && (
                   <div className={styles.newFileList}>
-                    <strong>New Agreement Files:</strong>
+                    <strong>New Summons and Complaint Files:</strong>
                     <ul className={styles.fileList}>
-                      {newAgreementFiles.map((file, index) => (
+                      {newSummonsAndComplaintFiles.map((file, index) => (
                         <li key={index} className={styles.fileItem}>
                           <span className={styles.fileName}>{file.name}</span>
                           <Button
@@ -1188,8 +669,8 @@ const CaseRequestForm = () => {
                             size="sm"
                             className={styles.deleteButton}
                             onClick={() =>
-                              setNewAgreementFiles(
-                                newAgreementFiles.filter((_, i) => i !== index)
+                              setNewSummonsAndComplaintFiles(
+                                newSummonsAndComplaintFiles.filter((_, i) => i !== index)
                               )
                             }
                           >
@@ -1202,12 +683,12 @@ const CaseRequestForm = () => {
                 )}
               </Form.Group>
 
-              {/* Exibir arquivos Agreement Salvos */}
-              <Form.Group controlId="uploadedAgreementFiles" className="mb-3">
-                <Form.Label className={styles.uploadSectionTitle}>Uploaded Agreements</Form.Label>
-                {savedAgreementFiles.length > 0 ? (
+              {/* Exibir arquivos Summons and Complaint Salvos */}
+              <Form.Group controlId="uploadedSummonsAndComplaintFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Uploaded Summons and Complaint</Form.Label>
+                {savedUploadSummonsAndComplaintFiles.length > 0 ? (
                   <ul className={styles.fileList}>
-                    {savedAgreementFiles.map((file, index) => (
+                    {savedUploadSummonsAndComplaintFiles.map((file, index) => (
                       <li key={index} className={styles.fileItem}>
                         <a
                           href={file.url}
@@ -1221,7 +702,7 @@ const CaseRequestForm = () => {
                           variant="danger"
                           size="sm"
                           className={styles.deleteButton}
-                          onClick={() => handleDeleteFile('agreementFiles', file)}
+                          onClick={() => handleDeleteFile('uploadSummonsAndComplaintFiles', file)}
                         >
                           🗑️
                         </Button>
@@ -1229,14 +710,92 @@ const CaseRequestForm = () => {
                     ))}
                   </ul>
                 ) : (
-                  <p className={styles.noFilesText}>No Agreements uploaded.</p>
+                  <p className={styles.noFilesText}>No Summons and Complaint uploaded.</p>
                 )}
               </Form.Group>
             </div>
-          )}
 
-          {/* Upload UCC Release (condicional para "Release") */}
-          {formData.requestType === 'Release' && (
+            {/* Upload Judgment */}
+            <div className={styles.uploadSection}>
+              <Form.Group controlId="uploadJudgmentFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Upload Judgment</Form.Label>
+                <Form.Control
+                  type="file"
+                  multiple
+                  onChange={(e) =>
+                    setNewUploadJudgmentFiles([
+                      ...newUploadJudgmentFiles,
+                      ...Array.from(e.target.files),
+                    ])
+                  }
+                  className={styles.input}
+                  ref={uploadJudgmentFileInputRef}
+                />
+                {/* Exibir arquivos novos enviados */}
+                {newUploadJudgmentFiles.length > 0 && (
+                  <div className={styles.newFileList}>
+                    <strong>New Judgment Files:</strong>
+                    <ul className={styles.fileList}>
+                      {newUploadJudgmentFiles.map((file, index) => (
+                        <li key={index} className={styles.fileItem}>
+                          <span className={styles.fileName}>{file.name}</span>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className={styles.deleteButton}
+                            onClick={() =>
+                              setNewUploadJudgmentFiles(
+                                newUploadJudgmentFiles.filter((_, i) => i !== index)
+                              )
+                            }
+                          >
+                            🗑️
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </Form.Group>
+
+              {/* Exibir arquivos Judgment Salvos */}
+              <Form.Group controlId="uploadedUploadJudgmentFiles" className="mb-3">
+                <Form.Label className={styles.uploadSectionTitle}>Uploaded Judgment</Form.Label>
+                {savedUploadJudgmentFiles.length > 0 ? (
+                  <ul className={styles.fileList}>
+                    {savedUploadJudgmentFiles.map((file, index) => (
+                      <li key={index} className={styles.fileItem}>
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.fileName}
+                        >
+                          {file.name}
+                        </a>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className={styles.deleteButton}
+                          onClick={() => handleDeleteFile('uploadJudgmentFiles', file)}
+                        >
+                          🗑️
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.noFilesText}>No Judgments uploaded.</p>
+                )}
+              </Form.Group>
+            </div>
+          </>
+        );
+
+      case 'Release':
+        return (
+          <>
+            {/* Upload UCC Release */}
             <div className={styles.uploadSection}>
               <Form.Group controlId="uccReleaseFiles" className="mb-3">
                 <Form.Label className={styles.uploadSectionTitle}>Upload UCC Release</Form.Label>
@@ -1310,14 +869,127 @@ const CaseRequestForm = () => {
                 )}
               </Form.Group>
             </div>
-          )}
+          </>
+        );
 
-          <Button type="submit" variant="primary" disabled={loading} className={styles.submitButton}>
-            {loading ? 'Submitting...' : 'Submit'}
-          </Button>
-        </Form>
-      </Container>
-    );
+      default:
+        return null;
+    }
   };
 
-  export default CaseRequestForm;
+  return (
+    <Container className={styles.caseRequestContainer}>
+      <h1 className={`${styles.title}`}>Case Request Form</h1>
+      <Form className={styles.form} onSubmit={handleSubmit}>
+        {/* Exibição de alertas de erro ou sucesso */}
+        {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
+        {success && <Alert variant="success" className={styles.alert}>{success}</Alert>}
+
+        {/* Indicador de progresso */}
+        {loading && (
+          <div className="mb-3">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            {uploadProgress > 0 && (
+              <ProgressBar
+                now={uploadProgress}
+                label={`${uploadProgress}%`}
+                className="mt-2"
+              />
+            )}
+          </div>
+        )}
+
+        {/* Campos principais */}
+        {/* ... (todos os campos do formulário) */}
+
+        {/* Renderizar Uploads Condicionais */}
+        {renderUploadSections()}
+
+        {/* Upload Agreement (condicional) */}
+        {formData.requestType !== 'Garnishment' && (
+          <div className={styles.uploadSection}>
+            <Form.Group controlId="agreementFiles" className="mb-3">
+              <Form.Label className={styles.uploadSectionTitle}>Upload Agreement</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                onChange={(e) =>
+                  setNewAgreementFiles([
+                    ...newAgreementFiles,
+                    ...Array.from(e.target.files),
+                  ])
+                }
+                className={styles.input}
+                ref={agreementFileInputRef}
+              />
+              {/* Exibir arquivos novos enviados */}
+              {newAgreementFiles.length > 0 && (
+                <div className={styles.newFileList}>
+                  <strong>New Agreement Files:</strong>
+                  <ul className={styles.fileList}>
+                    {newAgreementFiles.map((file, index) => (
+                      <li key={index} className={styles.fileItem}>
+                        <span className={styles.fileName}>{file.name}</span>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className={styles.deleteButton}
+                          onClick={() =>
+                            setNewAgreementFiles(
+                              newAgreementFiles.filter((_, i) => i !== index)
+                            )
+                          }
+                        >
+                          🗑️
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </Form.Group>
+
+            {/* Exibir arquivos Agreement Salvos */}
+            <Form.Group controlId="uploadedAgreementFiles" className="mb-3">
+              <Form.Label className={styles.uploadSectionTitle}>Uploaded Agreements</Form.Label>
+              {savedAgreementFiles.length > 0 ? (
+                <ul className={styles.fileList}>
+                  {savedAgreementFiles.map((file, index) => (
+                    <li key={index} className={styles.fileItem}>
+                      <a
+                        href={file.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.fileName}
+                      >
+                        {file.name}
+                      </a>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className={styles.deleteButton}
+                        onClick={() => handleDeleteFile('agreementFiles', file)}
+                      >
+                        🗑️
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className={styles.noFilesText}>No Agreements uploaded.</p>
+              )}
+            </Form.Group>
+          </div>
+        )}
+
+        <Button type="submit" variant="primary" disabled={loading} className={styles.submitButton}>
+          {loading ? 'Submitting...' : 'Submit'}
+        </Button>
+      </Form>
+    </Container>
+  );
+};
+
+export default CaseRequestForm;
