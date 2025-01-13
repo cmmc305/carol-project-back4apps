@@ -41,7 +41,7 @@ const CaseRequestForm = () => {
     businessName: '',
     doingBusinessAs: '',
     requestType: '',
-    lienBalance: '',
+    defaultAmount: '',
     additionalEntities: '',
     defaultDate: '',
     address: '',
@@ -57,9 +57,6 @@ const CaseRequestForm = () => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-
-  // Estado para validação do formulário
-  const [validated, setValidated] = useState(false);
 
   // Refs para inputs de arquivo para limpeza
   const uccFileInputRef = useRef(null);
@@ -84,7 +81,7 @@ const CaseRequestForm = () => {
           businessName: caseRequest.get('businessName') || '',
           doingBusinessAs: caseRequest.get('doingBusinessAs') || '',
           requestType: caseRequest.get('requestType') || '',
-          lienBalance: caseRequest.get('lienBalance') || '',
+          defaultAmount: caseRequest.get('defaultAmount') || '',
           additionalEntities: caseRequest.get('additionalEntities') || '',
           defaultDate: caseRequest.get('defaultDate') || '',
           address: caseRequest.get('address') || '',
@@ -137,14 +134,12 @@ const CaseRequestForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddToList = (listSetter, currentList) => {
-    listSetter([...currentList, '']);
+  const handleAddToList = (listSetter) => {
+    listSetter((prevList) => [...prevList, '']);
   };
 
-  const handleRemoveFromList = (listSetter, currentList, index) => {
-    const newList = [...currentList];
-    newList.splice(index, 1);
-    listSetter(newList);
+  const handleRemoveFromList = (listSetter, index) => {
+    listSetter((prevList) => prevList.filter((_, i) => i !== index));
   };
 
   // ===========================================================================
@@ -172,20 +167,10 @@ const CaseRequestForm = () => {
   // ===========================================================================
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    // Verifica a validade do formulário
-    if (form.checkValidity() === false) {
-      e.stopPropagation();
-      setValidated(true);
-      setError('Please correct the errors in the form.');
-      return;
-    }
-
     setLoading(true);
     setError('');
     setSuccess('');
     setUploadProgress(0);
-    setValidated(false); // Resetar a validação para permitir mensagens corretas
 
     // Validação dos arquivos
     if (
@@ -205,7 +190,7 @@ const CaseRequestForm = () => {
       Object.keys(formData).forEach((key) => {
         CaseRequest.set(key, formData[key]);
       });
-      CaseRequest.set('lienBalance', parseFloat(formData.lienBalance));
+      CaseRequest.set('defaultAmount', parseFloat(formData.defaultAmount) || 0);
       CaseRequest.set('einList', einList);
       CaseRequest.set('ssnList', ssnList);
 
@@ -260,13 +245,13 @@ const CaseRequestForm = () => {
       // Atualizar as listas de arquivos salvos com os novos arquivos
       const updatedCaseRequest = await new Parse.Query('CaseRequest').get(CaseRequest.id);
       const updatedUccParseFiles = updatedCaseRequest.get('uccFiles') || [];
-      const updatedTransactionParseFiles = updatedCaseRequest.get('transactionProofFiles') || [];
+      const updatedTransactionProofFiles = updatedCaseRequest.get('transactionProofFiles') || [];
 
       const convertedUpdatedUccFiles = updatedUccParseFiles.map((file) => ({
         name: file.name() || file.get('name'), // Corrigido para acessar corretamente
         url: file.url() || file.get('url'),
       }));
-      const convertedUpdatedTransactionProofFiles = updatedTransactionParseFiles.map((file) => ({
+      const convertedUpdatedTransactionProofFiles = updatedTransactionProofFiles.map((file) => ({
         name: file.name() || file.get('name'), // Corrigido para acessar corretamente
         url: file.url() || file.get('url'),
       }));
@@ -348,7 +333,7 @@ const CaseRequestForm = () => {
       businessName: '',
       doingBusinessAs: '',
       requestType: '',
-      lienBalance: '',
+      defaultAmount: '',
       additionalEntities: '',
       defaultDate: '',
       address: '',
@@ -380,8 +365,6 @@ const CaseRequestForm = () => {
       <Form
         className={styles.form}
         onSubmit={handleSubmit}
-        noValidate
-        validated={validated}
       >
         {/* Exibição de alertas de erro ou sucesso */}
         {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
@@ -416,12 +399,7 @@ const CaseRequestForm = () => {
                   handleInputChange('requesterEmail', e.target.value)
                 }
                 className={styles.input}
-                required
-                isInvalid={validated && !/\S+@\S+\.\S+/.test(formData.requesterEmail)}
               />
-              <Form.Control.Feedback type="invalid">
-                Please enter a valid email address.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -431,17 +409,11 @@ const CaseRequestForm = () => {
                 value={formData.requestType}
                 onChange={(e) => handleInputChange('requestType', e.target.value)}
                 className={styles.input}
-                required
-                isInvalid={validated && formData.requestType === ''}
               >
                 <option value="">Select Request Type</option>
                 <option value="Lien">Lien</option>
                 <option value="Garnishment">Garnishment</option>
-                <option value="Release">Release</option>
               </Form.Select>
-              <Form.Control.Feedback type="invalid">
-                Please select the request type.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
@@ -458,12 +430,7 @@ const CaseRequestForm = () => {
                   handleInputChange('businessName', e.target.value)
                 }
                 className={styles.input}
-                required
-                isInvalid={validated && formData.businessName.trim() === ''}
               />
-              <Form.Control.Feedback type="invalid">
-                Please enter the business name.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -477,12 +444,7 @@ const CaseRequestForm = () => {
                   handleInputChange('creditorName', e.target.value)
                 }
                 className={styles.input}
-                required
-                isInvalid={validated && formData.creditorName.trim() === ''}
               />
-              <Form.Control.Feedback type="invalid">
-                Please enter the creditor name.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
 
@@ -514,12 +476,7 @@ const CaseRequestForm = () => {
                   handleInputChange('address', e.target.value)
                 }
                 className={styles.input}
-                required
-                isInvalid={validated && formData.address.trim() === ''}
               />
-              <Form.Control.Feedback type="invalid">
-                Please enter the address.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -531,12 +488,7 @@ const CaseRequestForm = () => {
                 value={formData.city}
                 onChange={(e) => handleInputChange('city', e.target.value)}
                 className={styles.input}
-                required
-                isInvalid={validated && formData.city.trim() === ''}
               />
-              <Form.Control.Feedback type="invalid">
-                Please enter the city.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
@@ -553,12 +505,7 @@ const CaseRequestForm = () => {
                   handleInputChange('state', e.target.value)
                 }
                 className={styles.input}
-                required
-                isInvalid={validated && formData.state.trim() === ''}
               />
-              <Form.Control.Feedback type="invalid">
-                Please enter the state.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -572,12 +519,7 @@ const CaseRequestForm = () => {
                   handleInputChange('zipcode', e.target.value)
                 }
                 className={styles.input}
-                required
-                isInvalid={validated && formData.zipcode.trim() === ''}
               />
-              <Form.Control.Feedback type="invalid">
-                Please enter the zip code.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
@@ -594,12 +536,7 @@ const CaseRequestForm = () => {
                   handleInputChange('emailAddress', e.target.value)
                 }
                 className={styles.input}
-                required
-                isInvalid={validated && !/\S+@\S+\.\S+/.test(formData.emailAddress)}
               />
-              <Form.Control.Feedback type="invalid">
-                Please enter a valid email address.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -613,37 +550,26 @@ const CaseRequestForm = () => {
                   handleInputChange('phoneNumber', e.target.value)
                 }
                 className={styles.input}
-                required
-                isInvalid={validated && formData.phoneNumber.trim() === ''}
               />
-              <Form.Control.Feedback type="invalid">
-              Please enter the phone number.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
-
         <Row>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="lienBalance">
-              <Form.Label>Lien Balance</Form.Label>
+            <Form.Group className="mb-3" controlId="defaultAmount">
+              <Form.Label>Default Amount</Form.Label>
               <CurrencyInput
-                id="lienBalance"
-                name="lienBalance"
-                placeholder="Enter lien balance"
+                id="defaultAmount"
+                name="defaultAmount"
+                placeholder="Enter default amount"
                 prefix="$"
                 decimalsLimit={2}
-                value={formData.lienBalance}
+                value={formData.defaultAmount}
                 onValueChange={(value) =>
-                  handleInputChange('lienBalance', value)
+                  handleInputChange('defaultAmount', value)
                 }
                 className={`${styles.input} form-control`}
-                required
-                isInvalid={validated && (formData.lienBalance === '' || isNaN(parseFloat(formData.lienBalance)))}
               />
-              <Form.Control.Feedback type="invalid">
-              Please enter a valid lien balance.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -657,12 +583,7 @@ const CaseRequestForm = () => {
                   handleInputChange('defaultDate', e.target.value)
                 }
                 className={styles.input}
-                required
-                isInvalid={validated && formData.defaultDate === ''}
               />
-              <Form.Control.Feedback type="invalid">
-              Please select the default date.
-              </Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
@@ -703,28 +624,23 @@ const CaseRequestForm = () => {
                     )
                   }
                   className={`${styles.input} me-2`}
-                  required
-                  isInvalid={validated && ein.trim() === ''}
                 />
                 <Button
                   variant="danger"
                   onClick={() =>
-                    handleRemoveFromList(setEinList, einList, index)
+                    handleRemoveFromList(setEinList, index)
                   }
                   disabled={einList.length === 1}
                 >
-                  Remove
+                  Remover
                 </Button>
-                <Form.Control.Feedback type="invalid">
-                Please enter a valid EIN.
-                </Form.Control.Feedback>
               </div>
             ))}
             <Button
               variant="primary"
-              onClick={() => handleAddToList(setEinList, einList)}
+              onClick={() => handleAddToList(setEinList)}
             >
-              Add EIN
+              Adicionar EIN
             </Button>
           </Col>
         </Row>
@@ -747,28 +663,23 @@ const CaseRequestForm = () => {
                     )
                   }
                   className={`${styles.input} me-2`}
-                  required
-                  isInvalid={validated && ssn.trim() === ''}
                 />
                 <Button
                   variant="danger"
                   onClick={() =>
-                    handleRemoveFromList(setSsnList, ssnList, index)
+                    handleRemoveFromList(setSsnList, index)
                   }
                   disabled={ssnList.length === 1}
                 >
-                  Remove
+                  Remover
                 </Button>
-                <Form.Control.Feedback type="invalid">
-                Please enter a valid SSN.
-                </Form.Control.Feedback>
               </div>
             ))}
             <Button
               variant="primary"
-              onClick={() => handleAddToList(setSsnList, ssnList)}
+              onClick={() => handleAddToList(setSsnList)}
             >
-              Add SSN
+              Adicionar SSN
             </Button>
           </Col>
         </Row>
