@@ -936,9 +936,9 @@ const CaseRequestForm = () => {
                 className={styles.input}
               >
                 <option value="">Select Request Type</option>
-                <option value="Lien">Lien</option>
-                <option value="Garnishment">Garnishment</option>
+                <option value="Lien">Lien</option>               
                 <option value="Release">Release</option> {/* Nova opção */}
+                <option value="Garnishment">Garnishment</option>
               </Form.Select>
             </Form.Group>
           </Col>
