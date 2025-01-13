@@ -283,7 +283,7 @@ const CaseRequestForm = () => {
       CaseRequest.set('uccReleaseFiles', allUccReleaseFiles);
 
       await CaseRequest.save();
-      setSuccess('Case Request salvo com sucesso!');
+      setSuccess('Case Request saved successfully!');
       if (!id) {
         resetForm();
       }
