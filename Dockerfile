@@ -16,6 +16,9 @@ RUN npm install styled-components
 
 RUN npm install react-currency-input-field
 
+RUN npm install express body-parser openai dotenv
+
+
 # Copiar o restante do código do aplicativo
 COPY . .
 

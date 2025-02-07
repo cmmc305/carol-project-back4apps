@@ -128,6 +128,7 @@ const CaseRequestForm = () => {
       setError("Por favor, faça o upload de um arquivo PDF válido.");
     }
   };
+  
 
   // =======================================================================
   // useEffect - Busca o registro do Parse ao editar (id existente)
@@ -804,7 +805,7 @@ const CaseRequestForm = () => {
           </div>
         )}
 
-        {/* Novo campo para upload do PDF de transações bancárias */}
+// Novo campo para upload do PDF de transações bancárias e análise com ChatGPT
         <Form.Group controlId="pdfFile" className="mb-3">
           <Form.Label className={styles.uploadSectionTitle}>
             Upload PDF de Transações Bancárias
