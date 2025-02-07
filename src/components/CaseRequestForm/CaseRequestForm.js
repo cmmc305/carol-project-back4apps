@@ -21,7 +21,6 @@ import CurrencyInput from 'react-currency-input-field';
 // ==========================================================
 const analyzePdfTextWithGPT = async (text) => {
   try {
-    // Faz uma requisição POST para o endpoint que realiza a análise (ajuste a URL conforme sua API)
     const response = await fetch('/api/analyze-pdf', {
       method: 'POST',
       headers: {
@@ -33,13 +32,14 @@ const analyzePdfTextWithGPT = async (text) => {
       throw new Error('Erro na chamada da API');
     }
     const data = await response.json();
-    // Supomos que o endpoint retorne um objeto { analysis: "mensagem" }
-    return data.analysis;
+    // Aqui você pode fazer validações adicionais na estrutura do JSON, se necessário.
+    return JSON.stringify(data); // Ou retorne diretamente data se preferir manipular como objeto.
   } catch (error) {
     console.error("Erro ao analisar PDF:", error);
     return "Erro na análise do PDF.";
   }
 };
+
 
 const CaseRequestForm = () => {
   const { id } = useParams();
