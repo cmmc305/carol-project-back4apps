@@ -20,9 +20,8 @@ const CaseRequestForm = () => {
   const { id } = useParams();
 
   // =====================================
-  // SEPARAÇÃO DE ESTADOS PARA ARQUIVOS
+  // ESTADOS PARA ARQUIVOS (SALVOS E NOVOS)
   // =====================================
-  // 1) Arquivos ANTIGOS (já salvos no Parse) => exibição ( { name, url } ):
   const [savedUccFiles, setSavedUccFiles] = useState([]);
   const [savedAgreementFiles, setSavedAgreementFiles] = useState([]);
   const [savedBankStatementsFiles, setSavedBankStatementsFiles] = useState([]);
@@ -30,7 +29,6 @@ const CaseRequestForm = () => {
   const [savedUploadJudgmentFiles, setSavedUploadJudgmentFiles] = useState([]);
   const [savedUccReleaseFiles, setSavedUccReleaseFiles] = useState([]);
 
-  // 2) Arquivos NOVOS (input type="file") => upload:
   const [newUccFiles, setNewUccFiles] = useState([]);
   const [newAgreementFiles, setNewAgreementFiles] = useState([]);
   const [newBankStatementsFiles, setNewBankStatementsFiles] = useState([]);
@@ -38,7 +36,13 @@ const CaseRequestForm = () => {
   const [newUploadJudgmentFiles, setNewUploadJudgmentFiles] = useState([]);
   const [newUccReleaseFiles, setNewUccReleaseFiles] = useState([]);
 
-  // Dados do formulário
+  // Novo estado para o PDF de transações bancárias
+  const [pdfFile, setPdfFile] = useState(null);
+  const [pdfAnalysisResult, setPdfAnalysisResult] = useState("");
+
+  // =========================
+  // ESTADO DOS DADOS DO FORMULÁRIO
+  // =========================
   const [formData, setFormData] = useState({
     requesterEmail: '',
     creditorName: '',
@@ -47,7 +51,7 @@ const CaseRequestForm = () => {
     ssn: '',                // Campo único SSN
     businessName: '',
     doingBusinessAs: '',
-    requestType: '',        // Adicionar 'Release' nas opções
+    requestType: '',        // Opções: Lien, Garnishment, Release
     defaultAmount: '',
     additionalEntities: '',
     defaultDate: '',
@@ -59,13 +63,17 @@ const CaseRequestForm = () => {
     phoneNumber: '',
   });
 
-  // Estados de UI
+  // =========================
+  // ESTADOS DE UI
+  // =========================
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Refs para inputs de arquivo para limpeza
+  // =========================
+  // REFS PARA LIMPAR OS INPUTS DE ARQUIVO
+  // =========================
   const uccFileInputRef = useRef(null);
   const agreementFileInputRef = useRef(null);
   const bankStatementsFileInputRef = useRef(null);
@@ -73,11 +81,72 @@ const CaseRequestForm = () => {
   const uploadJudgmentFileInputRef = useRef(null);
   const uccReleaseFileInputRef = useRef(null);
 
-  // ===========================================================================
+  // ===================================================
+  // Função para upload e análise do PDF de transações
+  // ===================================================
+  const handlePdfUpload = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setPdfFile(file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target.result;
+        // Supondo que o PDF seja pesquisável e as páginas sejam separadas pelo caractere de form feed ("\f")
+        const pages = text.split('\f');
+        // Definição dos padrões financeiros conforme a tabela fornecida
+        const patterns = [
+          { name: "American Express", keywords: ["AMEX EPAYMENT", "Amex", "2005032111"] },
+          { name: "PayPal", keywords: ["VENMO", "PAYPAL", "7264681992"] },
+          { name: "Intuit Payment Systems", keywords: ["9215986202", "Intuit", "0000756346"] },
+          { name: "Chase Paymentech", keywords: ["Paymentech", "1020401225"] },
+          { name: "Stripe", keywords: ["Stripe", "ST-", "Brightwheel", "Doordash", "Uber", "Uber eats"] },
+          { name: "Bill.com", keywords: ["Bill.com", "Divvypay", "invoice2go"] },
+          { name: "Mollie Payments", keywords: ["ID:OL90691-0001", "Mollie Payments"] },
+          { name: "Paya", keywords: ["Company ID: 3383693141"] },
+          { name: "Payliance", keywords: ["Company ID: 1273846756"] },
+          { name: "ACHQ", keywords: ["Company ID: 1464699697", "1112999721"] },
+          { name: "AMAZON", keywords: ["1541507947", "3383693141", "1383693141", "2383693141"] },
+        ];
+
+        let foundResults = [];
+        pages.forEach((pageText, index) => {
+          const foundInPage = [];
+          patterns.forEach((pattern) => {
+            pattern.keywords.forEach((keyword) => {
+              if (pageText.includes(keyword)) {
+                foundInPage.push(pattern.name);
+              }
+            });
+          });
+          if (foundInPage.length > 0) {
+            // Armazena o número da página e os padrões encontrados (sem duplicatas)
+            foundResults.push({ page: index + 1, patterns: [...new Set(foundInPage)] });
+          }
+        });
+
+        if (foundResults.length > 0) {
+          const message = foundResults
+            .map(result => `Página ${result.page}: ${result.patterns.join(", ")}`)
+            .join(" | ");
+          setPdfAnalysisResult(`Esse arquivo possui padrões financeiros: ${message}`);
+        } else {
+          setPdfAnalysisResult("Nenhum padrão financeiro relevante encontrado.");
+        }
+      };
+      reader.onerror = () => {
+        setError("Falha ao ler o arquivo PDF.");
+      };
+      reader.readAsText(file);
+    } else {
+      setError("Por favor, faça o upload de um arquivo PDF válido.");
+    }
+  };
+
+  // =======================================================================
   // useEffect - Busca o registro do Parse ao editar (id existente)
-  // ===========================================================================
+  // =======================================================================
   useEffect(() => {
-    if (!id) return; // Se não tem id, é criação de novo, não carrega nada
+    if (!id) return;
 
     const fetchRequest = async () => {
       setLoading(true);
@@ -85,13 +154,12 @@ const CaseRequestForm = () => {
         const query = new Parse.Query('CaseRequest');
         const caseRequest = await query.get(id);
 
-        // Preenche campos de texto
         setFormData({
           requesterEmail: caseRequest.get('requesterEmail') || '',
           creditorName: caseRequest.get('creditorName') || '',
-          merchantName: caseRequest.get('merchantName') || '', // Novo Campo
-          ein: caseRequest.get('ein') || '',                   // Campo único EIN
-          ssn: caseRequest.get('ssn') || '',                   // Campo único SSN
+          merchantName: caseRequest.get('merchantName') || '',
+          ein: caseRequest.get('ein') || '',
+          ssn: caseRequest.get('ssn') || '',
           businessName: caseRequest.get('businessName') || '',
           doingBusinessAs: caseRequest.get('doingBusinessAs') || '',
           requestType: caseRequest.get('requestType') || '',
@@ -106,7 +174,6 @@ const CaseRequestForm = () => {
           phoneNumber: caseRequest.get('phoneNumber') || '',
         });
 
-        // Converte arquivos salvos para exibição
         const uccParseFiles = caseRequest.get('uccFiles') || [];
         const agreementParseFiles = caseRequest.get('agreementFiles') || [];
         const bankStatementsParseFiles = caseRequest.get('bankStatementsFiles') || [];
@@ -115,30 +182,25 @@ const CaseRequestForm = () => {
         const uccReleaseParseFiles = caseRequest.get('uccReleaseFiles') || [];
 
         const convertedUccFiles = uccParseFiles.map((file) => ({
-          name: file.name() || file.get('name'), // Corrigido para acessar corretamente
+          name: file.name() || file.get('name'),
           url: file.url() || file.get('url'),
         }));
-
         const convertedAgreementFiles = agreementParseFiles.map((file) => ({
           name: file.name() || file.get('name'),
           url: file.url() || file.get('url'),
         }));
-
         const convertedBankStatementsFiles = bankStatementsParseFiles.map((file) => ({
           name: file.name() || file.get('name'),
           url: file.url() || file.get('url'),
         }));
-
         const convertedSummonsAndComplaintFiles = summonsAndComplaintParseFiles.map((file) => ({
           name: file.name() || file.get('name'),
           url: file.url() || file.get('url'),
         }));
-
         const convertedUploadJudgmentFiles = uploadJudgmentParseFiles.map((file) => ({
           name: file.name() || file.get('name'),
           url: file.url() || file.get('url'),
         }));
-
         const convertedUccReleaseFiles = uccReleaseParseFiles.map((file) => ({
           name: file.name() || file.get('name'),
           url: file.url() || file.get('url'),
@@ -151,7 +213,6 @@ const CaseRequestForm = () => {
         setSavedUploadJudgmentFiles(convertedUploadJudgmentFiles);
         setSavedUccReleaseFiles(convertedUccReleaseFiles);
 
-        // Limpa quaisquer arquivos novos pendentes de upload
         setNewUccFiles([]);
         setNewAgreementFiles([]);
         setNewBankStatementsFiles([]);
@@ -169,20 +230,19 @@ const CaseRequestForm = () => {
     fetchRequest();
   }, [id]);
 
-  // ===========================================================================
+  // =======================================================================
   // Helpers de formulário
-  // ===========================================================================
+  // =======================================================================
   const handleInputChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ===========================================================================
+  // =======================================================================
   // Validação de arquivos
-  // ===========================================================================
+  // =======================================================================
   const validateFiles = (files) => {
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-    const maxSize = 5 * 1024 * 1024; // 5MB
-
+    const maxSize = 5 * 1024 * 1024;
     for (let file of files) {
       if (!allowedTypes.includes(file.type)) {
         setError(`Tipo de arquivo não permitido: ${file.name}`);
@@ -196,9 +256,9 @@ const CaseRequestForm = () => {
     return true;
   };
 
-  // ===========================================================================
+  // =======================================================================
   // handleSubmit - Salvar / editar
-  // ===========================================================================
+  // =======================================================================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -206,14 +266,13 @@ const CaseRequestForm = () => {
     setSuccess('');
     setUploadProgress(0);
 
-    // Validação dos arquivos
     if (
       (newUccFiles.length > 0 && !validateFiles(newUccFiles)) ||
       (newAgreementFiles.length > 0 && !validateFiles(newAgreementFiles)) ||
       (newBankStatementsFiles.length > 0 && !validateFiles(newBankStatementsFiles)) ||
       (newSummonsAndComplaintFiles.length > 0 && !validateFiles(newSummonsAndComplaintFiles)) ||
       (newUploadJudgmentFiles.length > 0 && !validateFiles(newUploadJudgmentFiles)) ||
-      (newUccReleaseFiles.length > 0 && !validateFiles(newUccReleaseFiles)) 
+      (newUccReleaseFiles.length > 0 && !validateFiles(newUccReleaseFiles))
     ) {
       setLoading(false);
       return;
@@ -224,13 +283,11 @@ const CaseRequestForm = () => {
         ? await new Parse.Query('CaseRequest').get(id)
         : new Parse.Object('CaseRequest');
 
-      // Salvar campos de texto
       Object.keys(formData).forEach((key) => {
         CaseRequest.set(key, formData[key]);
       });
       CaseRequest.set('defaultAmount', parseFloat(formData.defaultAmount) || 0);
 
-      // Carregar do Parse arrays antigos (se houver)
       const oldUccParseFiles = CaseRequest.get('uccFiles') || [];
       const oldAgreementParseFiles = CaseRequest.get('agreementFiles') || [];
       const oldBankStatementsParseFiles = CaseRequest.get('bankStatementsFiles') || [];
@@ -238,16 +295,13 @@ const CaseRequestForm = () => {
       const oldUploadJudgmentParseFiles = CaseRequest.get('uploadJudgmentFiles') || [];
       const oldUccReleaseParseFiles = CaseRequest.get('uccReleaseFiles') || [];
 
-      // Converter novos arquivos (File) em Parse.File com progresso
       const convertToParseFiles = async (files) => {
         return await Promise.all(
           files.map(async (file) => {
             const parseFile = new Parse.File(file.name, file);
             await parseFile.save(null, {
               progress: (progress) => {
-                setUploadProgress((prev) =>
-                  Math.max(prev, Math.round(progress * 100))
-                );
+                setUploadProgress((prev) => Math.max(prev, Math.round(progress * 100)));
               },
             });
             return {
@@ -266,7 +320,6 @@ const CaseRequestForm = () => {
       const newUploadJudgmentFilesUploaded = newUploadJudgmentFiles.length > 0 ? await convertToParseFiles(newUploadJudgmentFiles) : [];
       const newUccReleaseFilesUploaded = newUccReleaseFiles.length > 0 ? await convertToParseFiles(newUccReleaseFiles) : [];
 
-      // Combinar arquivos antigos e novos
       const allUccFiles = [...oldUccParseFiles, ...newUccParseFilesUploaded];
       const allAgreementFiles = [...oldAgreementParseFiles, ...newAgreementParseFilesUploaded];
       const allBankStatementsFiles = [...oldBankStatementsParseFiles, ...newBankStatementsFilesUploaded];
@@ -274,7 +327,6 @@ const CaseRequestForm = () => {
       const allUploadJudgmentFiles = [...oldUploadJudgmentParseFiles, ...newUploadJudgmentFilesUploaded];
       const allUccReleaseFiles = [...oldUccReleaseParseFiles, ...newUccReleaseFilesUploaded];
 
-      // Atualizar no Parse
       CaseRequest.set('uccFiles', allUccFiles);
       CaseRequest.set('agreementFiles', allAgreementFiles);
       CaseRequest.set('bankStatementsFiles', allBankStatementsFiles);
@@ -284,11 +336,8 @@ const CaseRequestForm = () => {
 
       await CaseRequest.save();
       setSuccess('Case Request saved successfully!');
-      if (!id) {
-        resetForm();
-      }
+      if (!id) resetForm();
 
-      // Atualizar as listas de arquivos salvos com os novos arquivos
       const updatedCaseRequest = await new Parse.Query('CaseRequest').get(CaseRequest.id);
       const updatedUccParseFiles = updatedCaseRequest.get('uccFiles') || [];
       const updatedAgreementFiles = updatedCaseRequest.get('agreementFiles') || [];
@@ -329,7 +378,6 @@ const CaseRequestForm = () => {
       setSavedUploadJudgmentFiles(convertedUpdatedUploadJudgmentFiles);
       setSavedUccReleaseFiles(convertedUpdatedUccReleaseFiles);
 
-      // Limpar os novos arquivos após o salvamento
       setNewUccFiles([]);
       setNewAgreementFiles([]);
       setNewBankStatementsFiles([]);
@@ -337,30 +385,14 @@ const CaseRequestForm = () => {
       setNewUploadJudgmentFiles([]);
       setNewUccReleaseFiles([]);
 
-      // Limpar os inputs de arquivo
-      if (uccFileInputRef.current) {
-        uccFileInputRef.current.value = '';
-      }
-      if (agreementFileInputRef.current) {
-        agreementFileInputRef.current.value = '';
-      }
-      if (bankStatementsFileInputRef.current) {
-        bankStatementsFileInputRef.current.value = '';
-      }
-      if (summonsAndComplaintFileInputRef.current) {
-        summonsAndComplaintFileInputRef.current.value = '';
-      }
-      if (uploadJudgmentFileInputRef.current) {
-        uploadJudgmentFileInputRef.current.value = '';
-      }
-      if (uccReleaseFileInputRef.current) {
-        uccReleaseFileInputRef.current.value = '';
-      }
+      if (uccFileInputRef.current) uccFileInputRef.current.value = '';
+      if (agreementFileInputRef.current) agreementFileInputRef.current.value = '';
+      if (bankStatementsFileInputRef.current) bankStatementsFileInputRef.current.value = '';
+      if (summonsAndComplaintFileInputRef.current) summonsAndComplaintFileInputRef.current.value = '';
+      if (uploadJudgmentFileInputRef.current) uploadJudgmentFileInputRef.current.value = '';
+      if (uccReleaseFileInputRef.current) uccReleaseFileInputRef.current.value = '';
 
-      // Se for novo registro, limpa tudo
-      if (!id) {
-        resetForm();
-      }
+      if (!id) resetForm();
     } catch (error) {
       console.error('Error saving Case Request:', error);
       setError('Falha ao salvar o Case Request. Por favor, tente novamente.');
@@ -370,13 +402,12 @@ const CaseRequestForm = () => {
     }
   };
 
-  // ===========================================================================
+  // =======================================================================
   // handleDeleteFile - Remove file from saved lists
-  // ===========================================================================
+  // =======================================================================
   const handleDeleteFile = async (fileType, file) => {
     try {
       let updatedFiles = [];
-
       if (fileType === 'uccFiles') {
         updatedFiles = savedUccFiles.filter((f) => f.name !== file.name);
         setSavedUccFiles(updatedFiles);
@@ -396,12 +427,9 @@ const CaseRequestForm = () => {
         updatedFiles = savedUccReleaseFiles.filter((f) => f.name !== file.name);
         setSavedUccReleaseFiles(updatedFiles);
       }
-
-      // Opcional: Remover do Parse
       if (id) {
         const query = new Parse.Query('CaseRequest');
         const caseRequest = await query.get(id);
-
         caseRequest.set(
           fileType,
           updatedFiles.map((f) => ({
@@ -418,16 +446,16 @@ const CaseRequestForm = () => {
     }
   };
 
-  // ===========================================================================
+  // =======================================================================
   // resetForm - Reset form data
-  // ===========================================================================
+  // =======================================================================
   const resetForm = () => {
     setFormData({
       requesterEmail: '',
       creditorName: '',
-      merchantName: '',       // Novo Campo
-      ein: '',                // Campo único EIN
-      ssn: '',                // Campo único SSN
+      merchantName: '',
+      ein: '',
+      ssn: '',
       businessName: '',
       doingBusinessAs: '',
       requestType: '',
@@ -453,34 +481,19 @@ const CaseRequestForm = () => {
     setNewSummonsAndComplaintFiles([]);
     setNewUploadJudgmentFiles([]);
     setNewUccReleaseFiles([]);
-
-    // Clear file inputs
-    if (uccFileInputRef.current) {
-      uccFileInputRef.current.value = '';
-    }
-    if (agreementFileInputRef.current) {
-      agreementFileInputRef.current.value = '';
-    }
-    if (bankStatementsFileInputRef.current) {
-      bankStatementsFileInputRef.current.value = '';
-    }
-    if (summonsAndComplaintFileInputRef.current) {
-      summonsAndComplaintFileInputRef.current.value = '';
-    }
-    if (uploadJudgmentFileInputRef.current) {
-      uploadJudgmentFileInputRef.current.value = '';
-    }
-    if (uccReleaseFileInputRef.current) {
-      uccReleaseFileInputRef.current.value = '';
-    }
+    if (uccFileInputRef.current) uccFileInputRef.current.value = '';
+    if (agreementFileInputRef.current) agreementFileInputRef.current.value = '';
+    if (bankStatementsFileInputRef.current) bankStatementsFileInputRef.current.value = '';
+    if (summonsAndComplaintFileInputRef.current) summonsAndComplaintFileInputRef.current.value = '';
+    if (uploadJudgmentFileInputRef.current) uploadJudgmentFileInputRef.current.value = '';
+    if (uccReleaseFileInputRef.current) uccReleaseFileInputRef.current.value = '';
   };
 
-  // ===========================================================================
+  // =======================================================================
   // Renderização Condicional dos Campos de Upload com base no Request Type
-  // ===========================================================================
+  // =======================================================================
   const renderUploadSections = () => {
     const { requestType } = formData;
-
     switch (requestType) {
       case 'Lien':
         return (
@@ -492,16 +505,10 @@ const CaseRequestForm = () => {
                 <Form.Control
                   type="file"
                   multiple
-                  onChange={(e) =>
-                    setNewUccFiles([
-                      ...newUccFiles,
-                      ...Array.from(e.target.files),
-                    ])
-                  }
+                  onChange={(e) => setNewUccFiles([...newUccFiles, ...Array.from(e.target.files)])}
                   className={styles.input}
                   ref={uccFileInputRef}
                 />
-                {/* Exibir arquivos novos enviados */}
                 {newUccFiles.length > 0 && (
                   <div className={styles.newFileList}>
                     <strong>New UCC Files:</strong>
@@ -513,11 +520,7 @@ const CaseRequestForm = () => {
                             variant="danger"
                             size="sm"
                             className={styles.deleteButton}
-                            onClick={() =>
-                              setNewUccFiles(
-                                newUccFiles.filter((_, i) => i !== index)
-                              )
-                            }
+                            onClick={() => setNewUccFiles(newUccFiles.filter((_, i) => i !== index))}
                           >
                             🗑️
                           </Button>
@@ -527,20 +530,13 @@ const CaseRequestForm = () => {
                   </div>
                 )}
               </Form.Group>
-
-              {/* Exibir arquivos UCC Salvos */}
               <Form.Group controlId="uploadedUccFiles" className="mb-3">
                 <Form.Label className={styles.uploadSectionTitle}>Uploaded UCC</Form.Label>
                 {savedUccFiles.length > 0 ? (
                   <ul className={styles.fileList}>
                     {savedUccFiles.map((file, index) => (
                       <li key={index} className={styles.fileItem}>
-                        <a
-                          href={file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.fileName}
-                        >
+                        <a href={file.url} target="_blank" rel="noopener noreferrer" className={styles.fileName}>
                           {file.name}
                         </a>
                         <Button
@@ -559,7 +555,6 @@ const CaseRequestForm = () => {
                 )}
               </Form.Group>
             </div>
-
             {/* Upload Bank Statements */}
             <div className={styles.uploadSection}>
               <Form.Group controlId="bankStatementsFiles" className="mb-3">
@@ -567,16 +562,10 @@ const CaseRequestForm = () => {
                 <Form.Control
                   type="file"
                   multiple
-                  onChange={(e) =>
-                    setNewBankStatementsFiles([
-                      ...newBankStatementsFiles,
-                      ...Array.from(e.target.files),
-                    ])
-                  }
+                  onChange={(e) => setNewBankStatementsFiles([...newBankStatementsFiles, ...Array.from(e.target.files)])}
                   className={styles.input}
                   ref={bankStatementsFileInputRef}
                 />
-                {/* Exibir arquivos novos enviados */}
                 {newBankStatementsFiles.length > 0 && (
                   <div className={styles.newFileList}>
                     <strong>New Bank Statements Files:</strong>
@@ -588,11 +577,7 @@ const CaseRequestForm = () => {
                             variant="danger"
                             size="sm"
                             className={styles.deleteButton}
-                            onClick={() =>
-                              setNewBankStatementsFiles(
-                                newBankStatementsFiles.filter((_, i) => i !== index)
-                              )
-                            }
+                            onClick={() => setNewBankStatementsFiles(newBankStatementsFiles.filter((_, i) => i !== index))}
                           >
                             🗑️
                           </Button>
@@ -602,20 +587,13 @@ const CaseRequestForm = () => {
                   </div>
                 )}
               </Form.Group>
-
-              {/* Exibir arquivos Bank Statements Salvos */}
               <Form.Group controlId="uploadedBankStatementsFiles" className="mb-3">
                 <Form.Label className={styles.uploadSectionTitle}>Uploaded Bank Statements</Form.Label>
                 {savedBankStatementsFiles.length > 0 ? (
                   <ul className={styles.fileList}>
                     {savedBankStatementsFiles.map((file, index) => (
                       <li key={index} className={styles.fileItem}>
-                        <a
-                          href={file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.fileName}
-                        >
+                        <a href={file.url} target="_blank" rel="noopener noreferrer" className={styles.fileName}>
                           {file.name}
                         </a>
                         <Button
@@ -636,7 +614,6 @@ const CaseRequestForm = () => {
             </div>
           </>
         );
-
       case 'Garnishment':
         return (
           <>
@@ -647,16 +624,10 @@ const CaseRequestForm = () => {
                 <Form.Control
                   type="file"
                   multiple
-                  onChange={(e) =>
-                    setNewSummonsAndComplaintFiles([
-                      ...newSummonsAndComplaintFiles,
-                      ...Array.from(e.target.files),
-                    ])
-                  }
+                  onChange={(e) => setNewSummonsAndComplaintFiles([...newSummonsAndComplaintFiles, ...Array.from(e.target.files)])}
                   className={styles.input}
                   ref={summonsAndComplaintFileInputRef}
                 />
-                {/* Exibir arquivos novos enviados */}
                 {newSummonsAndComplaintFiles.length > 0 && (
                   <div className={styles.newFileList}>
                     <strong>New Summons and Complaint Files:</strong>
@@ -668,11 +639,7 @@ const CaseRequestForm = () => {
                             variant="danger"
                             size="sm"
                             className={styles.deleteButton}
-                            onClick={() =>
-                              setNewSummonsAndComplaintFiles(
-                                newSummonsAndComplaintFiles.filter((_, i) => i !== index)
-                              )
-                            }
+                            onClick={() => setNewSummonsAndComplaintFiles(newSummonsAndComplaintFiles.filter((_, i) => i !== index))}
                           >
                             🗑️
                           </Button>
@@ -682,20 +649,13 @@ const CaseRequestForm = () => {
                   </div>
                 )}
               </Form.Group>
-
-              {/* Exibir arquivos Summons and Complaint Salvos */}
               <Form.Group controlId="uploadedSummonsAndComplaintFiles" className="mb-3">
                 <Form.Label className={styles.uploadSectionTitle}>Uploaded Summons and Complaint</Form.Label>
                 {savedUploadSummonsAndComplaintFiles.length > 0 ? (
                   <ul className={styles.fileList}>
                     {savedUploadSummonsAndComplaintFiles.map((file, index) => (
                       <li key={index} className={styles.fileItem}>
-                        <a
-                          href={file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.fileName}
-                        >
+                        <a href={file.url} target="_blank" rel="noopener noreferrer" className={styles.fileName}>
                           {file.name}
                         </a>
                         <Button
@@ -714,7 +674,6 @@ const CaseRequestForm = () => {
                 )}
               </Form.Group>
             </div>
-
             {/* Upload Judgment */}
             <div className={styles.uploadSection}>
               <Form.Group controlId="uploadJudgmentFiles" className="mb-3">
@@ -722,16 +681,10 @@ const CaseRequestForm = () => {
                 <Form.Control
                   type="file"
                   multiple
-                  onChange={(e) =>
-                    setNewUploadJudgmentFiles([
-                      ...newUploadJudgmentFiles,
-                      ...Array.from(e.target.files),
-                    ])
-                  }
+                  onChange={(e) => setNewUploadJudgmentFiles([...newUploadJudgmentFiles, ...Array.from(e.target.files)])}
                   className={styles.input}
                   ref={uploadJudgmentFileInputRef}
                 />
-                {/* Exibir arquivos novos enviados */}
                 {newUploadJudgmentFiles.length > 0 && (
                   <div className={styles.newFileList}>
                     <strong>New Judgment Files:</strong>
@@ -743,11 +696,7 @@ const CaseRequestForm = () => {
                             variant="danger"
                             size="sm"
                             className={styles.deleteButton}
-                            onClick={() =>
-                              setNewUploadJudgmentFiles(
-                                newUploadJudgmentFiles.filter((_, i) => i !== index)
-                              )
-                            }
+                            onClick={() => setNewUploadJudgmentFiles(newUploadJudgmentFiles.filter((_, i) => i !== index))}
                           >
                             🗑️
                           </Button>
@@ -757,20 +706,13 @@ const CaseRequestForm = () => {
                   </div>
                 )}
               </Form.Group>
-
-              {/* Exibir arquivos Judgment Salvos */}
               <Form.Group controlId="uploadedJudgmentFiles" className="mb-3">
                 <Form.Label className={styles.uploadSectionTitle}>Uploaded Judgment</Form.Label>
                 {savedUploadJudgmentFiles.length > 0 ? (
                   <ul className={styles.fileList}>
                     {savedUploadJudgmentFiles.map((file, index) => (
                       <li key={index} className={styles.fileItem}>
-                        <a
-                          href={file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.fileName}
-                        >
+                        <a href={file.url} target="_blank" rel="noopener noreferrer" className={styles.fileName}>
                           {file.name}
                         </a>
                         <Button
@@ -791,7 +733,6 @@ const CaseRequestForm = () => {
             </div>
           </>
         );
-
       case 'Release':
         return (
           <>
@@ -802,16 +743,10 @@ const CaseRequestForm = () => {
                 <Form.Control
                   type="file"
                   multiple
-                  onChange={(e) =>
-                    setNewUccReleaseFiles([
-                      ...newUccReleaseFiles,
-                      ...Array.from(e.target.files),
-                    ])
-                  }
+                  onChange={(e) => setNewUccReleaseFiles([...newUccReleaseFiles, ...Array.from(e.target.files)])}
                   className={styles.input}
                   ref={uccReleaseFileInputRef}
                 />
-                {/* Exibir arquivos novos enviados */}
                 {newUccReleaseFiles.length > 0 && (
                   <div className={styles.newFileList}>
                     <strong>New UCC Release Files:</strong>
@@ -823,11 +758,7 @@ const CaseRequestForm = () => {
                             variant="danger"
                             size="sm"
                             className={styles.deleteButton}
-                            onClick={() =>
-                              setNewUccReleaseFiles(
-                                newUccReleaseFiles.filter((_, i) => i !== index)
-                              )
-                            }
+                            onClick={() => setNewUccReleaseFiles(newUccReleaseFiles.filter((_, i) => i !== index))}
                           >
                             🗑️
                           </Button>
@@ -837,20 +768,13 @@ const CaseRequestForm = () => {
                   </div>
                 )}
               </Form.Group>
-
-              {/* Exibir arquivos UCC Release Salvos */}
               <Form.Group controlId="uploadedUccReleaseFiles" className="mb-3">
                 <Form.Label className={styles.uploadSectionTitle}>Uploaded UCC Release</Form.Label>
                 {savedUccReleaseFiles.length > 0 ? (
                   <ul className={styles.fileList}>
                     {savedUccReleaseFiles.map((file, index) => (
                       <li key={index} className={styles.fileItem}>
-                        <a
-                          href={file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.fileName}
-                        >
+                        <a href={file.url} target="_blank" rel="noopener noreferrer" className={styles.fileName}>
                           {file.name}
                         </a>
                         <Button
@@ -871,7 +795,6 @@ const CaseRequestForm = () => {
             </div>
           </>
         );
-
       default:
         return null;
     }
@@ -880,48 +803,54 @@ const CaseRequestForm = () => {
   return (
     <Container className={styles.caseRequestContainer}>
       <h1 className={`${styles.title}`}>Case Request Form</h1>
-      <Form
-        className={styles.form}
-        onSubmit={handleSubmit}
-      >
-        {/* Exibição de alertas de erro ou sucesso */}
+      <Form className={styles.form} onSubmit={handleSubmit}>
         {error && <Alert variant="danger" className={styles.alert}>{error}</Alert>}
         {success && <Alert variant="success" className={styles.alert}>{success}</Alert>}
-
-        {/* Indicador de progresso */}
         {loading && (
           <div className="mb-3">
             <Spinner animation="border" role="status">
               <span className="visually-hidden">Loading...</span>
             </Spinner>
             {uploadProgress > 0 && (
-              <ProgressBar
-                now={uploadProgress}
-                label={`${uploadProgress}%`}
-                className="mt-2"
-              />
+              <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-2" />
             )}
           </div>
         )}
 
-        {/* Campos principais */}
+        {/* Novo campo para upload do PDF de transações bancárias */}
+        <Form.Group controlId="pdfFile" className="mb-3">
+          <Form.Label className={styles.uploadSectionTitle}>
+            Upload PDF de Transações Bancárias
+          </Form.Label>
+          <Form.Control
+            type="file"
+            accept="application/pdf"
+            onChange={handlePdfUpload}
+            className={styles.input}
+          />
+        </Form.Group>
+        {pdfAnalysisResult && (
+          <Alert variant="info" className={styles.alert}>
+            {pdfAnalysisResult}
+          </Alert>
+        )}
+
+        {/* Campos principais do formulário */}
         <Row>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="requesterEmail">
+            <Form.Group controlId="requesterEmail" className="mb-3">
               <Form.Label>Requester Email</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="Enter requester email"
                 value={formData.requesterEmail}
-                onChange={(e) =>
-                  handleInputChange('requesterEmail', e.target.value)
-                }
+                onChange={(e) => handleInputChange('requesterEmail', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
           </Col>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="requestType">
+            <Form.Group controlId="requestType" className="mb-3">
               <Form.Label>Request Type</Form.Label>
               <Form.Select
                 value={formData.requestType}
@@ -931,7 +860,7 @@ const CaseRequestForm = () => {
                 <option value="">Select Request Type</option>
                 <option value="Lien">Lien</option>
                 <option value="Garnishment">Garnishment</option>
-                <option value="Release">Release</option> {/* Nova opção */}
+                <option value="Release">Release</option>
               </Form.Select>
             </Form.Group>
           </Col>
@@ -939,44 +868,37 @@ const CaseRequestForm = () => {
 
         <Row>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="businessName">
+            <Form.Group controlId="businessName" className="mb-3">
               <Form.Label>Business Name</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter business name"
                 value={formData.businessName}
-                onChange={(e) =>
-                  handleInputChange('businessName', e.target.value)
-                }
+                onChange={(e) => handleInputChange('businessName', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
           </Col>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="creditorName">
+            <Form.Group controlId="creditorName" className="mb-3">
               <Form.Label>Creditor Name</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter creditor name"
                 value={formData.creditorName}
-                onChange={(e) =>
-                  handleInputChange('creditorName', e.target.value)
-                }
+                onChange={(e) => handleInputChange('creditorName', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
           </Col>
-
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="merchantName">
+            <Form.Group controlId="merchantName" className="mb-3">
               <Form.Label>Merchant's Name</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter merchant's name"
                 value={formData.merchantName}
-                onChange={(e) =>
-                  handleInputChange('merchantName', e.target.value)
-                }
+                onChange={(e) => handleInputChange('merchantName', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
@@ -985,29 +907,25 @@ const CaseRequestForm = () => {
 
         <Row>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="ein">
+            <Form.Group controlId="ein" className="mb-3">
               <Form.Label>EIN</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter EIN"
                 value={formData.ein}
-                onChange={(e) =>
-                  handleInputChange('ein', e.target.value)
-                }
+                onChange={(e) => handleInputChange('ein', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
           </Col>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="ssn">
+            <Form.Group controlId="ssn" className="mb-3">
               <Form.Label>SSN</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter SSN"
                 value={formData.ssn}
-                onChange={(e) =>
-                  handleInputChange('ssn', e.target.value)
-                }
+                onChange={(e) => handleInputChange('ssn', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
@@ -1016,21 +934,19 @@ const CaseRequestForm = () => {
 
         <Row>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="address">
+            <Form.Group controlId="address" className="mb-3">
               <Form.Label>Address</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter address"
                 value={formData.address}
-                onChange={(e) =>
-                  handleInputChange('address', e.target.value)
-                }
+                onChange={(e) => handleInputChange('address', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
           </Col>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="city">
+            <Form.Group controlId="city" className="mb-3">
               <Form.Label>City</Form.Label>
               <Form.Control
                 type="text"
@@ -1045,29 +961,25 @@ const CaseRequestForm = () => {
 
         <Row>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="state">
+            <Form.Group controlId="state" className="mb-3">
               <Form.Label>State</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter state"
                 value={formData.state}
-                onChange={(e) =>
-                  handleInputChange('state', e.target.value)
-                }
+                onChange={(e) => handleInputChange('state', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
           </Col>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="zipcode">
+            <Form.Group controlId="zipcode" className="mb-3">
               <Form.Label>Zip Code</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter zip code"
                 value={formData.zipcode}
-                onChange={(e) =>
-                  handleInputChange('zipcode', e.target.value)
-                }
+                onChange={(e) => handleInputChange('zipcode', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
@@ -1076,37 +988,34 @@ const CaseRequestForm = () => {
 
         <Row>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="emailAddress">
+            <Form.Group controlId="emailAddress" className="mb-3">
               <Form.Label>Email Address</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="Enter email address"
                 value={formData.emailAddress}
-                onChange={(e) =>
-                  handleInputChange('emailAddress', e.target.value)
-                }
+                onChange={(e) => handleInputChange('emailAddress', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
           </Col>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="phoneNumber">
+            <Form.Group controlId="phoneNumber" className="mb-3">
               <Form.Label>Phone Number</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter phone number"
                 value={formData.phoneNumber}
-                onChange={(e) =>
-                  handleInputChange('phoneNumber', e.target.value)
-                }
+                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
           </Col>
         </Row>
+
         <Row>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="defaultAmount">
+            <Form.Group controlId="defaultAmount" className="mb-3">
               <Form.Label>Default Amount</Form.Label>
               <CurrencyInput
                 id="defaultAmount"
@@ -1115,23 +1024,19 @@ const CaseRequestForm = () => {
                 prefix="$"
                 decimalsLimit={2}
                 value={formData.defaultAmount}
-                onValueChange={(value) =>
-                  handleInputChange('defaultAmount', value)
-                }
+                onValueChange={(value) => handleInputChange('defaultAmount', value)}
                 className={`${styles.input} form-control`}
               />
             </Form.Group>
           </Col>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="defaultDate">
+            <Form.Group controlId="defaultDate" className="mb-3">
               <Form.Label>Default Date</Form.Label>
               <Form.Control
                 type="date"
                 placeholder="Select default date"
                 value={formData.defaultDate}
-                onChange={(e) =>
-                  handleInputChange('defaultDate', e.target.value)
-                }
+                onChange={(e) => handleInputChange('defaultDate', e.target.value)}
                 className={styles.input}
               />
             </Form.Group>
@@ -1140,26 +1045,24 @@ const CaseRequestForm = () => {
 
         <Row>
           <Col md={12}>
-            <Form.Group className="mb-3" controlId="additionalEntities">
+            <Form.Group controlId="additionalEntities" className="mb-3">
               <Form.Label>Additional Entities</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 placeholder="Enter additional entities"
                 value={formData.additionalEntities}
-                onChange={(e) =>
-                  handleInputChange('additionalEntities', e.target.value)
-                }
+                onChange={(e) => handleInputChange('additionalEntities', e.target.value)}
                 className={styles.textarea}
               />
             </Form.Group>
           </Col>
         </Row>
 
-        {/* Renderizar Uploads Condicionais */}
+        {/* Renderizar as seções de upload já existentes */}
         {renderUploadSections()}
 
-        {/* Upload Agreement (condicional) */}
+        {/* Upload Agreement (condicional para Request Type diferente de Garnishment) */}
         {formData.requestType !== 'Garnishment' && (
           <div className={styles.uploadSection}>
             <Form.Group controlId="agreementFiles" className="mb-3">
@@ -1167,16 +1070,10 @@ const CaseRequestForm = () => {
               <Form.Control
                 type="file"
                 multiple
-                onChange={(e) =>
-                  setNewAgreementFiles([
-                    ...newAgreementFiles,
-                    ...Array.from(e.target.files),
-                  ])
-                }
+                onChange={(e) => setNewAgreementFiles([...newAgreementFiles, ...Array.from(e.target.files)])}
                 className={styles.input}
                 ref={agreementFileInputRef}
               />
-              {/* Exibir arquivos novos enviados */}
               {newAgreementFiles.length > 0 && (
                 <div className={styles.newFileList}>
                   <strong>New Agreement Files:</strong>
@@ -1188,11 +1085,7 @@ const CaseRequestForm = () => {
                           variant="danger"
                           size="sm"
                           className={styles.deleteButton}
-                          onClick={() =>
-                            setNewAgreementFiles(
-                              newAgreementFiles.filter((_, i) => i !== index)
-                            )
-                          }
+                          onClick={() => setNewAgreementFiles(newAgreementFiles.filter((_, i) => i !== index))}
                         >
                           🗑️
                         </Button>
@@ -1202,20 +1095,13 @@ const CaseRequestForm = () => {
                 </div>
               )}
             </Form.Group>
-
-            {/* Exibir arquivos Agreement Salvos */}
             <Form.Group controlId="uploadedAgreementFiles" className="mb-3">
               <Form.Label className={styles.uploadSectionTitle}>Uploaded Agreements</Form.Label>
               {savedAgreementFiles.length > 0 ? (
                 <ul className={styles.fileList}>
                   {savedAgreementFiles.map((file, index) => (
                     <li key={index} className={styles.fileItem}>
-                      <a
-                        href={file.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.fileName}
-                      >
+                      <a href={file.url} target="_blank" rel="noopener noreferrer" className={styles.fileName}>
                         {file.name}
                       </a>
                       <Button
