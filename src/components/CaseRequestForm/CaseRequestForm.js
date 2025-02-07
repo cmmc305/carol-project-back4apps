@@ -16,6 +16,31 @@ import {
 import styles from './CaseRequestForm.module.css';
 import CurrencyInput from 'react-currency-input-field';
 
+// ==========================================================
+// Função que chama a API para analisar o texto do PDF usando ChatGPT (ou lógica similar)
+// ==========================================================
+const analyzePdfTextWithGPT = async (text) => {
+  try {
+    // Faz uma requisição POST para o endpoint que realiza a análise (ajuste a URL conforme sua API)
+    const response = await fetch('/api/analyze-pdf', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text })
+    });
+    if (!response.ok) {
+      throw new Error('Erro na chamada da API');
+    }
+    const data = await response.json();
+    // Supomos que o endpoint retorne um objeto { analysis: "mensagem" }
+    return data.analysis;
+  } catch (error) {
+    console.error("Erro ao analisar PDF:", error);
+    return "Erro na análise do PDF.";
+  }
+};
+
 const CaseRequestForm = () => {
   const { id } = useParams();
 
@@ -81,30 +106,8 @@ const CaseRequestForm = () => {
   const uploadJudgmentFileInputRef = useRef(null);
   const uccReleaseFileInputRef = useRef(null);
 
-  const analyzePdfTextWithGPT = async (text) => {
-    try {
-      // Faz uma requisição POST para seu endpoint que realiza a análise
-      const response = await fetch('/api/analyze-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ text })
-      });
-      if (!response.ok) {
-        throw new Error('Erro na chamada da API');
-      }
-      const data = await response.json();
-      // Supomos que o endpoint retorne um objeto { analysis: "mensagem" }
-      return data.analysis;
-    } catch (error) {
-      console.error("Erro ao analisar PDF:", error);
-      return "Erro na análise do PDF.";
-    }
-  };
-
   // ===================================================
-  // Função para upload e análise do PDF de transações
+  // Função para upload e análise do PDF de transações bancárias
   // ===================================================
   const handlePdfUpload = (e) => {
     const file = e.target.files[0];
@@ -113,7 +116,7 @@ const CaseRequestForm = () => {
       const reader = new FileReader();
       reader.onload = async (event) => {
         const text = event.target.result;
-        // Chama a função que utiliza a API (ChatGPT ou similar) para analisar o texto
+        // Chama a função que utiliza a API do ChatGPT para analisar o texto extraído do PDF
         const analysis = await analyzePdfTextWithGPT(text);
         setPdfAnalysisResult(analysis);
       };
@@ -125,7 +128,6 @@ const CaseRequestForm = () => {
       setError("Por favor, faça o upload de um arquivo PDF válido.");
     }
   };
-
 
   // =======================================================================
   // useEffect - Busca o registro do Parse ao editar (id existente)
