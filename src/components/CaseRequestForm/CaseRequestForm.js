@@ -19,27 +19,25 @@ import CurrencyInput from 'react-currency-input-field';
 // ==========================================================
 // Função que chama a API para analisar o texto do PDF usando ChatGPT (ou lógica similar)
 // ==========================================================
-const analyzePdfTextWithGPT = async (text) => {
+const analyzePdfTextWithGPT = async (text, customPrompt) => {
   try {
     const response = await fetch('/api/analyze-pdf', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, customPrompt })
     });
     if (!response.ok) {
       throw new Error('Erro na chamada da API');
     }
     const data = await response.json();
-    // Aqui você pode fazer validações adicionais na estrutura do JSON, se necessário.
-    return JSON.stringify(data); // Ou retorne diretamente data se preferir manipular como objeto.
+    return data.analysis;
   } catch (error) {
     console.error("Erro ao analisar PDF:", error);
     return "Erro na análise do PDF.";
   }
 };
-
 
 const CaseRequestForm = () => {
   const { id } = useParams();
@@ -63,6 +61,7 @@ const CaseRequestForm = () => {
 
   // Novo estado para o PDF de transações bancárias
   const [pdfFile, setPdfFile] = useState(null);
+  const [pdfText, setPdfText] = useState("");
   const [pdfAnalysisResult, setPdfAnalysisResult] = useState("");
 
   // =========================
@@ -86,6 +85,7 @@ const CaseRequestForm = () => {
     zipcode: '',
     emailAddress: '',
     phoneNumber: '',
+    pdfAnalysis: ''         // Novo campo para salvar a análise do PDF
   });
 
   // =========================
@@ -95,6 +95,37 @@ const CaseRequestForm = () => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  // =========================
+  // NOVO ESTADO PARA O PROMPT CUSTOMIZADO
+  // =========================
+  const defaultPrompt = `Analyze the following text extracted from a PDF of banking transactions and identify any relevant financial patterns based on the table below:
+
+Table of Patterns:
+American Express: AMEX EPAYMENT, Amex, 2005032111
+PayPal: VENMO, PAYPAL, 7264681992
+Intuit Payment Systems: 9215986202, Intuit, 0000756346
+Chase Paymentech: Paymentech, 1020401225
+Stripe: Stripe, ST-, Brightwheel, Doordash, Uber, Uber eats
+Bill.com: Bill.com, Divvypay, invoice2go
+Mollie Payments: ID:OL90691-0001, Mollie Payments
+Paya: Company ID: 3383693141
+Payliance: Company ID: 1273846756
+ACHQ: Company ID: 1464699697 and 1112999721
+AMAZON: 1541507947, 3383693141, 1383693141, 2383693141
+
+Return the results in JSON format with the following structure:
+{
+  "pages": [
+    { "page": <page number>, "patterns": [<list of patterns found>] },
+    ...
+  ]
+}
+If no relevant pattern is found, return: { "pages": [] }.
+
+Provide the answer in Portuguese.`;
+
+  const [customPrompt, setCustomPrompt] = useState(defaultPrompt);
 
   // =========================
   // REFS PARA LIMPAR OS INPUTS DE ARQUIVO
@@ -116,8 +147,9 @@ const CaseRequestForm = () => {
       const reader = new FileReader();
       reader.onload = async (event) => {
         const text = event.target.result;
-        // Chama a função que utiliza a API do ChatGPT para analisar o texto extraído do PDF
-        const analysis = await analyzePdfTextWithGPT(text);
+        setPdfText(text);
+        // Chama a função que utiliza a API do ChatGPT para analisar o texto com o prompt customizado
+        const analysis = await analyzePdfTextWithGPT(text, customPrompt);
         setPdfAnalysisResult(analysis);
       };
       reader.onerror = () => {
@@ -128,20 +160,36 @@ const CaseRequestForm = () => {
       setError("Por favor, faça o upload de um arquivo PDF válido.");
     }
   };
-  
+
+  // Função para reanalisar o PDF usando o prompt customizado
+  const handleReanalyze = async () => {
+    if (!pdfText) {
+      setError("Nenhum texto de PDF disponível. Faça o upload de um PDF primeiro.");
+      return;
+    }
+    setLoading(true);
+    const analysis = await analyzePdfTextWithGPT(pdfText, customPrompt);
+    setPdfAnalysisResult(analysis);
+    setLoading(false);
+  };
+
+  // Função para salvar a análise no request (atualiza o campo pdfAnalysis do formData)
+  const handleSaveAnalysis = () => {
+    if (pdfAnalysisResult) {
+      setFormData(prev => ({ ...prev, pdfAnalysis: pdfAnalysisResult }));
+    }
+  };
 
   // =======================================================================
   // useEffect - Busca o registro do Parse ao editar (id existente)
   // =======================================================================
   useEffect(() => {
     if (!id) return;
-
     const fetchRequest = async () => {
       setLoading(true);
       try {
         const query = new Parse.Query('CaseRequest');
         const caseRequest = await query.get(id);
-
         setFormData({
           requesterEmail: caseRequest.get('requesterEmail') || '',
           creditorName: caseRequest.get('creditorName') || '',
@@ -160,15 +208,14 @@ const CaseRequestForm = () => {
           zipcode: caseRequest.get('zipcode') || '',
           emailAddress: caseRequest.get('emailAddress') || '',
           phoneNumber: caseRequest.get('phoneNumber') || '',
+          pdfAnalysis: caseRequest.get('pdfAnalysis') || ''
         });
-
         const uccParseFiles = caseRequest.get('uccFiles') || [];
         const agreementParseFiles = caseRequest.get('agreementFiles') || [];
         const bankStatementsParseFiles = caseRequest.get('bankStatementsFiles') || [];
         const summonsAndComplaintParseFiles = caseRequest.get('uploadSummonsAndComplaintFiles') || [];
         const uploadJudgmentParseFiles = caseRequest.get('uploadJudgmentFiles') || [];
         const uccReleaseParseFiles = caseRequest.get('uccReleaseFiles') || [];
-
         const convertedUccFiles = uccParseFiles.map((file) => ({
           name: file.name() || file.get('name'),
           url: file.url() || file.get('url'),
@@ -193,14 +240,12 @@ const CaseRequestForm = () => {
           name: file.name() || file.get('name'),
           url: file.url() || file.get('url'),
         }));
-
         setSavedUccFiles(convertedUccFiles);
         setSavedAgreementFiles(convertedAgreementFiles);
         setSavedBankStatementsFiles(convertedBankStatementsFiles);
         setSavedUploadSummonsAndComplaintFiles(convertedSummonsAndComplaintFiles);
         setSavedUploadJudgmentFiles(convertedUploadJudgmentFiles);
         setSavedUccReleaseFiles(convertedUccReleaseFiles);
-
         setNewUccFiles([]);
         setNewAgreementFiles([]);
         setNewBankStatementsFiles([]);
@@ -214,7 +259,6 @@ const CaseRequestForm = () => {
         setLoading(false);
       }
     };
-
     fetchRequest();
   }, [id]);
 
@@ -275,6 +319,11 @@ const CaseRequestForm = () => {
         CaseRequest.set(key, formData[key]);
       });
       CaseRequest.set('defaultAmount', parseFloat(formData.defaultAmount) || 0);
+
+      // Inclui o resultado da análise do PDF (caso tenha sido salvo)
+      if (formData.pdfAnalysis) {
+        CaseRequest.set('pdfAnalysis', formData.pdfAnalysis);
+      }
 
       const oldUccParseFiles = CaseRequest.get('uccFiles') || [];
       const oldAgreementParseFiles = CaseRequest.get('agreementFiles') || [];
@@ -456,6 +505,7 @@ const CaseRequestForm = () => {
       zipcode: '',
       emailAddress: '',
       phoneNumber: '',
+      pdfAnalysis: ''
     });
     setSavedUccFiles([]);
     setSavedAgreementFiles([]);
@@ -805,7 +855,22 @@ const CaseRequestForm = () => {
           </div>
         )}
 
-// Novo campo para upload do PDF de transações bancárias e análise com ChatGPT
+        {/* Novo campo para editar o prompt customizado */}
+        <Form.Group controlId="customPrompt" className="mb-3">
+          <Form.Label className={styles.uploadSectionTitle}>Custom Prompt (opcional)</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={4}
+            value={customPrompt}
+            onChange={(e) => setCustomPrompt(e.target.value)}
+            className={styles.input}
+          />
+          <Button variant="secondary" onClick={handleReanalyze} className="mt-2">
+            Reanalyze PDF with Custom Prompt
+          </Button>
+        </Form.Group>
+
+        {/* Novo campo para upload do PDF de transações bancárias */}
         <Form.Group controlId="pdfFile" className="mb-3">
           <Form.Label className={styles.uploadSectionTitle}>
             Upload PDF de Transações Bancárias
@@ -818,9 +883,14 @@ const CaseRequestForm = () => {
           />
         </Form.Group>
         {pdfAnalysisResult && (
-          <Alert variant="info" className={styles.alert}>
-            {pdfAnalysisResult}
-          </Alert>
+          <>
+            <Alert variant="info" className={styles.alert}>
+              {pdfAnalysisResult}
+            </Alert>
+            <Button variant="primary" onClick={handleSaveAnalysis} className="mb-3">
+              Incluir análise no Request
+            </Button>
+          </>
         )}
 
         {/* Campos principais do formulário */}
