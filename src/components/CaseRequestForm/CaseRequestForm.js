@@ -124,7 +124,6 @@ Return the results in JSON format with the following structure:
 If no relevant pattern is found, return: { "pages": [] }.
 
 Provide the answer in Portuguese.`;
-
   const [customPrompt, setCustomPrompt] = useState(defaultPrompt);
 
   // =========================
@@ -320,7 +319,7 @@ Provide the answer in Portuguese.`;
       });
       CaseRequest.set('defaultAmount', parseFloat(formData.defaultAmount) || 0);
 
-      // Inclui o resultado da análise do PDF (caso tenha sido salvo)
+      // Inclui o resultado da análise do PDF, se disponível
       if (formData.pdfAnalysis) {
         CaseRequest.set('pdfAnalysis', formData.pdfAnalysis);
       }
@@ -855,7 +854,7 @@ Provide the answer in Portuguese.`;
           </div>
         )}
 
-        {/* Novo campo para editar o prompt customizado */}
+        {/* Campo para edição do prompt customizado */}
         <Form.Group controlId="customPrompt" className="mb-3">
           <Form.Label className={styles.uploadSectionTitle}>Custom Prompt (opcional)</Form.Label>
           <Form.Control
@@ -870,7 +869,7 @@ Provide the answer in Portuguese.`;
           </Button>
         </Form.Group>
 
-        {/* Novo campo para upload do PDF de transações bancárias */}
+        {/* Campo para upload do PDF de transações bancárias */}
         <Form.Group controlId="pdfFile" className="mb-3">
           <Form.Label className={styles.uploadSectionTitle}>
             Upload PDF de Transações Bancárias
