@@ -81,6 +81,28 @@ const CaseRequestForm = () => {
   const uploadJudgmentFileInputRef = useRef(null);
   const uccReleaseFileInputRef = useRef(null);
 
+  const analyzePdfTextWithGPT = async (text) => {
+    try {
+      // Faz uma requisição POST para seu endpoint que realiza a análise
+      const response = await fetch('/api/analyze-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text })
+      });
+      if (!response.ok) {
+        throw new Error('Erro na chamada da API');
+      }
+      const data = await response.json();
+      // Supomos que o endpoint retorne um objeto { analysis: "mensagem" }
+      return data.analysis;
+    } catch (error) {
+      console.error("Erro ao analisar PDF:", error);
+      return "Erro na análise do PDF.";
+    }
+  };
+
   // ===================================================
   // Função para upload e análise do PDF de transações
   // ===================================================
@@ -89,49 +111,11 @@ const CaseRequestForm = () => {
     if (file && file.type === "application/pdf") {
       setPdfFile(file);
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const text = event.target.result;
-        // Supondo que o PDF seja pesquisável e as páginas sejam separadas pelo caractere de form feed ("\f")
-        const pages = text.split('\f');
-        // Definição dos padrões financeiros conforme a tabela fornecida
-        const patterns = [
-          { name: "American Express", keywords: ["AMEX EPAYMENT", "Amex", "2005032111"] },
-          { name: "PayPal", keywords: ["VENMO", "PAYPAL", "7264681992"] },
-          { name: "Intuit Payment Systems", keywords: ["9215986202", "Intuit", "0000756346"] },
-          { name: "Chase Paymentech", keywords: ["Paymentech", "1020401225"] },
-          { name: "Stripe", keywords: ["Stripe", "ST-", "Brightwheel", "Doordash", "Uber", "Uber eats"] },
-          { name: "Bill.com", keywords: ["Bill.com", "Divvypay", "invoice2go"] },
-          { name: "Mollie Payments", keywords: ["ID:OL90691-0001", "Mollie Payments"] },
-          { name: "Paya", keywords: ["Company ID: 3383693141"] },
-          { name: "Payliance", keywords: ["Company ID: 1273846756"] },
-          { name: "ACHQ", keywords: ["Company ID: 1464699697", "1112999721"] },
-          { name: "AMAZON", keywords: ["1541507947", "3383693141", "1383693141", "2383693141"] },
-        ];
-
-        let foundResults = [];
-        pages.forEach((pageText, index) => {
-          const foundInPage = [];
-          patterns.forEach((pattern) => {
-            pattern.keywords.forEach((keyword) => {
-              if (pageText.includes(keyword)) {
-                foundInPage.push(pattern.name);
-              }
-            });
-          });
-          if (foundInPage.length > 0) {
-            // Armazena o número da página e os padrões encontrados (sem duplicatas)
-            foundResults.push({ page: index + 1, patterns: [...new Set(foundInPage)] });
-          }
-        });
-
-        if (foundResults.length > 0) {
-          const message = foundResults
-            .map(result => `Página ${result.page}: ${result.patterns.join(", ")}`)
-            .join(" | ");
-          setPdfAnalysisResult(`Esse arquivo possui padrões financeiros: ${message}`);
-        } else {
-          setPdfAnalysisResult("Nenhum padrão financeiro relevante encontrado.");
-        }
+        // Chama a função que utiliza a API (ChatGPT ou similar) para analisar o texto
+        const analysis = await analyzePdfTextWithGPT(text);
+        setPdfAnalysisResult(analysis);
       };
       reader.onerror = () => {
         setError("Falha ao ler o arquivo PDF.");
@@ -141,6 +125,7 @@ const CaseRequestForm = () => {
       setError("Por favor, faça o upload de um arquivo PDF válido.");
     }
   };
+
 
   // =======================================================================
   // useEffect - Busca o registro do Parse ao editar (id existente)
