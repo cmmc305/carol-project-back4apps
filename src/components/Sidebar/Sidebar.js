@@ -9,6 +9,7 @@ import {
   faList,
   faUser,
   faSignOutAlt,
+  faFileAlt, // Novo ícone para Document Analysis
 } from '@fortawesome/free-solid-svg-icons';
 import Parse from '../../config/parseConfig';
 import styles from './Sidebar.module.css'; // Usando CSS Modules
@@ -27,22 +28,27 @@ const Sidebar = () => {
     }
   };
 
-  // Definindo os links da Sidebar
+  // Definindo os links da Sidebar, agora incluindo "Document Analysis"
   const navLinks = [
     {
-      to: '/app/create-request', // Altere para corresponder ao caminho configurado em routes.js
+      to: '/app/create-request',
       label: 'Create Request',
       icon: faPlus,
     },
     {
-      to: '/app/list-requests', // Altere para corresponder ao caminho configurado em routes.js
+      to: '/app/list-requests',
       label: 'List Requests',
       icon: faList,
     },
     {
-      to: '/app/register', // Altere para corresponder ao caminho configurado em routes.js
+      to: '/app/register',
       label: 'Register User',
       icon: faUser,
+    },
+    {
+      to: '/app/document-analysis', // Novo link para Document Analysis
+      label: 'Document Analysis',
+      icon: faFileAlt,
     },
   ];
 
