@@ -147,9 +147,24 @@ Provide the answer in Portuguese.`;
       reader.onload = async (event) => {
         const text = event.target.result;
         setPdfText(text);
-        // Chama a função que utiliza a API do ChatGPT para analisar o texto com o prompt customizado
-        const analysis = await analyzePdfTextWithGPT(text, customPrompt);
-        setPdfAnalysisResult(analysis);
+
+        // Separar o texto em páginas utilizando "\f" (form feed)
+        const pages = text.split('\f');
+        const totalPages = pages.length;
+        let results = [];
+
+        // Processa cada página e atualiza o progresso
+        for (let i = 0; i < totalPages; i++) {
+          const pageText = pages[i];
+          const pageAnalysis = await analyzePdfTextWithGPT(pageText, customPrompt);
+          results.push({ page: i + 1, patterns: pageAnalysis });
+          const progress = Math.round(((i + 1) / totalPages) * 100);
+          setUploadProgress(progress);
+        }
+
+        // Combina os resultados em um JSON formatado
+        const combinedAnalysis = JSON.stringify({ pages: results }, null, 2);
+        setPdfAnalysisResult(combinedAnalysis);
       };
       reader.onerror = () => {
         setError("Falha ao ler o arquivo PDF.");
@@ -167,8 +182,19 @@ Provide the answer in Portuguese.`;
       return;
     }
     setLoading(true);
-    const analysis = await analyzePdfTextWithGPT(pdfText, customPrompt);
-    setPdfAnalysisResult(analysis);
+    // Reprocessa o PDF dividido por páginas
+    const pages = pdfText.split('\f');
+    const totalPages = pages.length;
+    let results = [];
+    for (let i = 0; i < totalPages; i++) {
+      const pageText = pages[i];
+      const pageAnalysis = await analyzePdfTextWithGPT(pageText, customPrompt);
+      results.push({ page: i + 1, patterns: pageAnalysis });
+      const progress = Math.round(((i + 1) / totalPages) * 100);
+      setUploadProgress(progress);
+    }
+    const combinedAnalysis = JSON.stringify({ pages: results }, null, 2);
+    setPdfAnalysisResult(combinedAnalysis);
     setLoading(false);
   };
 
