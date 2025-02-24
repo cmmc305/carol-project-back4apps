@@ -3,9 +3,14 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner, ProgressBar } from 'react-bootstrap';
 import styles from './DocumentAnalysis.module.css';
+// Importa o pdfjsLib para extração de texto do PDF
+import * as pdfjsLib from "pdfjs-dist/build/pdf";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const DocumentAnalysis = () => {
-  // Estado para o PDF e seu texto
+  // Estados para PDF e seu conteúdo
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
   const [analysisResult, setAnalysisResult] = useState("");
@@ -39,10 +44,9 @@ Return the results in JSON format with the following structure:
 If no relevant pattern is found, return: { "pages": [] }.
 
 Provide the answer in Portuguese.`;
-
   const [customPrompt, setCustomPrompt] = useState(defaultPrompt);
 
-  // Função para chamar a API do ChatGPT para analisar o texto do PDF
+  // Função que chama a API do ChatGPT para analisar o texto
   const analyzePdfTextWithGPT = async (text, prompt) => {
     try {
       const response = await fetch('/api/analyze-pdf', {
@@ -63,27 +67,43 @@ Provide the answer in Portuguese.`;
     }
   };
 
-  // Função para ler o PDF, extrair texto e dividir em páginas
+  // Função para extrair texto do PDF usando pdfjs-dist
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
     if (file && file.type === "application/pdf") {
       setPdfFile(file);
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        const text = event.target.result;
-        setPdfText(text);
+      const fileReader = new FileReader();
+      fileReader.onload = async function() {
+        try {
+          const typedArray = new Uint8Array(this.result);
+          const pdf = await pdfjsLib.getDocument(typedArray).promise;
+          let fullText = "";
+          const totalPages = pdf.numPages;
+          for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const content = await page.getTextContent();
+            const pageText = content.items.map(item => item.str).join(" ");
+            fullText += "\f" + pageText; // usamos "\f" como separador de páginas
+            const progress = Math.round((pageNum / totalPages) * 100);
+            setUploadProgress(progress);
+          }
+          setPdfText(fullText);
+        } catch (err) {
+          console.error("Erro na extração do PDF:", err);
+          setError("Falha ao extrair o texto do PDF.");
+        }
       };
-      reader.onerror = () => {
+      fileReader.onerror = () => {
         setError("Falha ao ler o arquivo PDF.");
       };
-      reader.readAsText(file);
+      fileReader.readAsArrayBuffer(file);
     } else {
       setError("Por favor, faça o upload de um arquivo PDF válido.");
     }
   };
 
-  // Função para processar o PDF, dividir em páginas e analisar cada página
+  // Função para processar e analisar o PDF página a página
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("Nenhum texto de PDF disponível. Faça o upload de um PDF primeiro.");
@@ -91,21 +111,17 @@ Provide the answer in Portuguese.`;
     }
     setLoading(true);
     setAnalysisResult("");
-    // Dividindo o texto pelo separador de página (ajuste conforme necessário)
     let pages = pdfText.split('\f').filter(p => p.trim().length > 0);
     const totalPages = pages.length;
     let results = [];
     for (let i = 0; i < totalPages; i++) {
       const pageText = pages[i];
-      // Chama a API para cada página
       const pageResult = await analyzePdfTextWithGPT(pageText, customPrompt);
-      // Aqui esperamos que a API retorne um objeto com a estrutura { pages: [{ page, patterns: [...] }, ...] }
-      // Mas como estamos enviando página a página, vamos assumir que pageResult contém a lista de padrões encontrados para aquela página.
+      // Espera que a API retorne um objeto com a propriedade "patterns"
       results.push({ page: i + 1, patterns: pageResult.patterns || [] });
       const progress = Math.round(((i + 1) / totalPages) * 100);
       setUploadProgress(progress);
     }
-    // Converte o resultado em JSON formatado
     const combinedAnalysis = JSON.stringify({ pages: results }, null, 2);
     setAnalysisResult(combinedAnalysis);
     setLoading(false);
