@@ -3,14 +3,12 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner, ProgressBar } from 'react-bootstrap';
 import styles from './DocumentAnalysis.module.css';
-// Importa o pdfjsLib para extração de texto do PDF
-import * as pdfjsLib from "pdfjs-dist/build/pdf";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+// Importação do pdfjs-dist na versão legacy para compatibilidade com Webpack
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 const DocumentAnalysis = () => {
-  // Estados para PDF e seu conteúdo
+  // Estado para o PDF e seu texto
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
   const [analysisResult, setAnalysisResult] = useState("");
@@ -46,7 +44,7 @@ If no relevant pattern is found, return: { "pages": [] }.
 Provide the answer in Portuguese.`;
   const [customPrompt, setCustomPrompt] = useState(defaultPrompt);
 
-  // Função que chama a API do ChatGPT para analisar o texto
+  // Função para chamar a API do ChatGPT para analisar o texto do PDF
   const analyzePdfTextWithGPT = async (text, prompt) => {
     try {
       const response = await fetch('/api/analyze-pdf', {
@@ -67,7 +65,7 @@ Provide the answer in Portuguese.`;
     }
   };
 
-  // Função para extrair texto do PDF usando pdfjs-dist
+  // Função para ler o PDF e extrair o texto usando pdfjs-dist
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -76,6 +74,7 @@ Provide the answer in Portuguese.`;
       const fileReader = new FileReader();
       fileReader.onload = async function() {
         try {
+          // Lê o PDF como ArrayBuffer para que o pdfjs-dist possa processá-lo
           const typedArray = new Uint8Array(this.result);
           const pdf = await pdfjsLib.getDocument(typedArray).promise;
           let fullText = "";
@@ -103,7 +102,7 @@ Provide the answer in Portuguese.`;
     }
   };
 
-  // Função para processar e analisar o PDF página a página
+  // Função para processar o PDF, dividir em páginas e analisar cada página
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("Nenhum texto de PDF disponível. Faça o upload de um PDF primeiro.");
@@ -117,7 +116,6 @@ Provide the answer in Portuguese.`;
     for (let i = 0; i < totalPages; i++) {
       const pageText = pages[i];
       const pageResult = await analyzePdfTextWithGPT(pageText, customPrompt);
-      // Espera que a API retorne um objeto com a propriedade "patterns"
       results.push({ page: i + 1, patterns: pageResult.patterns || [] });
       const progress = Math.round(((i + 1) / totalPages) * 100);
       setUploadProgress(progress);
