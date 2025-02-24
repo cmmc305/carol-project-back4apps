@@ -8,9 +8,6 @@ import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 
-// Configura o worker para apontar para o arquivo no diretório público
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
-
 const DocumentAnalysis = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
