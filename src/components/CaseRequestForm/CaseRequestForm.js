@@ -17,25 +17,25 @@ import styles from './CaseRequestForm.module.css';
 import CurrencyInput from 'react-currency-input-field';
 
 // ==========================================================
-// Função que chama a API para analisar o texto do PDF usando ChatGPT (ou lógica similar)
+// Função que chama a API para resumir o texto do PDF usando ChatGPT
 // ==========================================================
-const analyzePdfTextWithGPT = async (text, customPrompt) => {
+const summarizePdfTextWithGPT = async (text) => {
   try {
+    // Define o prompt de sumarização
+    const prompt = `Por favor, forneça um resumo conciso do seguinte conteúdo extraído de um documento PDF de transações bancárias, em português: ${text}`;
     const response = await fetch('/api/analyze-pdf', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ text, customPrompt })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, customPrompt: prompt })
     });
     if (!response.ok) {
       throw new Error('Erro na chamada da API');
     }
     const data = await response.json();
-    return data.analysis;
+    return data.analysis; // Supomos que a API retorne o resumo em data.analysis
   } catch (error) {
-    console.error("Erro ao analisar PDF:", error);
-    return "Erro na análise do PDF.";
+    console.error("Erro ao resumir PDF:", error);
+    return "Erro ao gerar o resumo do PDF.";
   }
 };
 
@@ -59,10 +59,10 @@ const CaseRequestForm = () => {
   const [newUploadJudgmentFiles, setNewUploadJudgmentFiles] = useState([]);
   const [newUccReleaseFiles, setNewUccReleaseFiles] = useState([]);
 
-  // Novo estado para o PDF de transações bancárias
+  // Estado para o PDF e seu resumo
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
-  const [pdfAnalysisResult, setPdfAnalysisResult] = useState("");
+  const [pdfSummary, setPdfSummary] = useState("");
 
   // =========================
   // ESTADO DOS DADOS DO FORMULÁRIO
@@ -70,12 +70,12 @@ const CaseRequestForm = () => {
   const [formData, setFormData] = useState({
     requesterEmail: '',
     creditorName: '',
-    merchantName: '',       // Novo Campo
-    ein: '',                // Campo único EIN
-    ssn: '',                // Campo único SSN
+    merchantName: '',
+    ein: '',
+    ssn: '',
     businessName: '',
     doingBusinessAs: '',
-    requestType: '',        // Opções: Lien, Garnishment, Release
+    requestType: '',
     defaultAmount: '',
     additionalEntities: '',
     defaultDate: '',
@@ -85,7 +85,7 @@ const CaseRequestForm = () => {
     zipcode: '',
     emailAddress: '',
     phoneNumber: '',
-    pdfAnalysis: ''         // Novo campo para salvar a análise do PDF
+    pdfAnalysis: '' // Neste caso, vamos usar este campo para armazenar o resumo gerado
   });
 
   // =========================
@@ -95,36 +95,6 @@ const CaseRequestForm = () => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-
-  // =========================
-  // NOVO ESTADO PARA O PROMPT CUSTOMIZADO
-  // =========================
-  const defaultPrompt = `Analyze the following text extracted from a PDF of banking transactions and identify any relevant financial patterns based on the table below:
-
-Table of Patterns:
-American Express: AMEX EPAYMENT, Amex, 2005032111
-PayPal: VENMO, PAYPAL, 7264681992
-Intuit Payment Systems: 9215986202, Intuit, 0000756346
-Chase Paymentech: Paymentech, 1020401225
-Stripe: Stripe, ST-, Brightwheel, Doordash, Uber, Uber eats
-Bill.com: Bill.com, Divvypay, invoice2go
-Mollie Payments: ID:OL90691-0001, Mollie Payments
-Paya: Company ID: 3383693141
-Payliance: Company ID: 1273846756
-ACHQ: Company ID: 1464699697 and 1112999721
-AMAZON: 1541507947, 3383693141, 1383693141, 2383693141
-
-Return the results in JSON format with the following structure:
-{
-  "pages": [
-    { "page": <page number>, "patterns": [<list of patterns found>] },
-    ...
-  ]
-}
-If no relevant pattern is found, return: { "pages": [] }.
-
-Provide the answer in Portuguese.`;
-  const [customPrompt, setCustomPrompt] = useState(defaultPrompt);
 
   // =========================
   // REFS PARA LIMPAR OS INPUTS DE ARQUIVO
@@ -137,7 +107,7 @@ Provide the answer in Portuguese.`;
   const uccReleaseFileInputRef = useRef(null);
 
   // ===================================================
-  // Função para upload e análise do PDF de transações bancárias
+  // Função para upload, leitura e resumo do PDF de transações bancárias
   // ===================================================
   const handlePdfUpload = (e) => {
     const file = e.target.files[0];
@@ -148,23 +118,9 @@ Provide the answer in Portuguese.`;
         const text = event.target.result;
         setPdfText(text);
 
-        // Separar o texto em páginas utilizando "\f" (form feed)
-        const pages = text.split('\f');
-        const totalPages = pages.length;
-        let results = [];
-
-        // Processa cada página e atualiza o progresso
-        for (let i = 0; i < totalPages; i++) {
-          const pageText = pages[i];
-          const pageAnalysis = await analyzePdfTextWithGPT(pageText, customPrompt);
-          results.push({ page: i + 1, patterns: pageAnalysis });
-          const progress = Math.round(((i + 1) / totalPages) * 100);
-          setUploadProgress(progress);
-        }
-
-        // Combina os resultados em um JSON formatado
-        const combinedAnalysis = JSON.stringify({ pages: results }, null, 2);
-        setPdfAnalysisResult(combinedAnalysis);
+        // Neste exemplo, enviamos o texto completo para resumir (pode ser adaptado se necessário)
+        const summary = await summarizePdfTextWithGPT(text);
+        setPdfSummary(summary);
       };
       reader.onerror = () => {
         setError("Falha ao ler o arquivo PDF.");
@@ -175,33 +131,12 @@ Provide the answer in Portuguese.`;
     }
   };
 
-  // Função para reanalisar o PDF usando o prompt customizado
-  const handleReanalyze = async () => {
-    if (!pdfText) {
-      setError("Nenhum texto de PDF disponível. Faça o upload de um PDF primeiro.");
-      return;
-    }
-    setLoading(true);
-    // Reprocessa o PDF dividido por páginas
-    const pages = pdfText.split('\f');
-    const totalPages = pages.length;
-    let results = [];
-    for (let i = 0; i < totalPages; i++) {
-      const pageText = pages[i];
-      const pageAnalysis = await analyzePdfTextWithGPT(pageText, customPrompt);
-      results.push({ page: i + 1, patterns: pageAnalysis });
-      const progress = Math.round(((i + 1) / totalPages) * 100);
-      setUploadProgress(progress);
-    }
-    const combinedAnalysis = JSON.stringify({ pages: results }, null, 2);
-    setPdfAnalysisResult(combinedAnalysis);
-    setLoading(false);
-  };
-
-  // Função para salvar a análise no request (atualiza o campo pdfAnalysis do formData)
+  // =======================================================================
+  // Função para salvar o resumo do PDF no request (atualiza o campo pdfAnalysis do formData)
+  // =======================================================================
   const handleSaveAnalysis = () => {
-    if (pdfAnalysisResult) {
-      setFormData(prev => ({ ...prev, pdfAnalysis: pdfAnalysisResult }));
+    if (pdfSummary) {
+      setFormData(prev => ({ ...prev, pdfAnalysis: pdfSummary }));
     }
   };
 
@@ -345,7 +280,7 @@ Provide the answer in Portuguese.`;
       });
       CaseRequest.set('defaultAmount', parseFloat(formData.defaultAmount) || 0);
 
-      // Inclui o resultado da análise do PDF, se disponível
+      // Inclui o resultado da análise (resumo) do PDF, se disponível
       if (formData.pdfAnalysis) {
         CaseRequest.set('pdfAnalysis', formData.pdfAnalysis);
       }
@@ -907,13 +842,13 @@ Provide the answer in Portuguese.`;
             className={styles.input}
           />
         </Form.Group>
-        {pdfAnalysisResult && (
+        {pdfSummary && (
           <>
             <Alert variant="info" className={styles.alert}>
-              {pdfAnalysisResult}
+              {pdfSummary}
             </Alert>
             <Button variant="primary" onClick={handleSaveAnalysis} className="mb-3">
-              Incluir análise no Request
+              Incluir resumo no Request
             </Button>
           </>
         )}
