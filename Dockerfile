@@ -18,7 +18,7 @@ RUN npm install react-currency-input-field
 
 RUN npm install express body-parser openai dotenv
 
-RUN npm install pdfjs-dist
+RUN npm install pdfjs-dist@2.5.207
 
 # Copiar o restante do código do aplicativo
 COPY . .
