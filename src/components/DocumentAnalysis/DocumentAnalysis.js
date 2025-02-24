@@ -5,6 +5,8 @@ import { Container, Form, Button, Alert, Spinner, ProgressBar } from 'react-boot
 import styles from './DocumentAnalysis.module.css';
 // Importação do pdfjs-dist na versão legacy para compatibilidade
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+
 
 // Configura o worker para apontar para o arquivo no diretório público
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
