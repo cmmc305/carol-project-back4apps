@@ -31,6 +31,11 @@ const Sidebar = () => {
   // Definindo os links da Sidebar, agora incluindo "Document Analysis"
   const navLinks = [
     {
+      to: '/app/document-analysis', // Novo link para Document Analysis
+      label: 'Document Analysis',
+      icon: faFileAlt,
+    },
+    {
       to: '/app/create-request',
       label: 'Create Request',
       icon: faPlus,
@@ -44,12 +49,7 @@ const Sidebar = () => {
       to: '/app/register',
       label: 'Register User',
       icon: faUser,
-    },
-    {
-      to: '/app/document-analysis', // Novo link para Document Analysis
-      label: 'Document Analysis',
-      icon: faFileAlt,
-    },
+    }
   ];
 
   return (
