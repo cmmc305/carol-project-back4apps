@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner, ProgressBar } from 'react-bootstrap';
 import styles from './DocumentAnalysis.module.css';
-// Importação do pdfjs-dist na versão legacy para compatibilidade com Webpack
+// Importação do pdfjs-dist na versão legacy para compatibilidade
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
+// Configura o worker para apontar para o arquivo no diretório público
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 const DocumentAnalysis = () => {
-  // Estado para o PDF e seu texto
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
   const [analysisResult, setAnalysisResult] = useState("");
@@ -16,7 +17,6 @@ const DocumentAnalysis = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
 
-  // Estado para o prompt customizado
   const defaultPrompt = `Analyze the following text extracted from a PDF of banking transactions and identify any relevant financial patterns based on the table below:
 
 Table of Patterns:
@@ -44,14 +44,11 @@ If no relevant pattern is found, return: { "pages": [] }.
 Provide the answer in Portuguese.`;
   const [customPrompt, setCustomPrompt] = useState(defaultPrompt);
 
-  // Função para chamar a API do ChatGPT para analisar o texto do PDF
   const analyzePdfTextWithGPT = async (text, prompt) => {
     try {
       const response = await fetch('/api/analyze-pdf', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, customPrompt: prompt })
       });
       if (!response.ok) {
@@ -65,7 +62,6 @@ Provide the answer in Portuguese.`;
     }
   };
 
-  // Função para ler o PDF e extrair o texto usando pdfjs-dist
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -74,7 +70,6 @@ Provide the answer in Portuguese.`;
       const fileReader = new FileReader();
       fileReader.onload = async function() {
         try {
-          // Lê o PDF como ArrayBuffer para que o pdfjs-dist possa processá-lo
           const typedArray = new Uint8Array(this.result);
           const pdf = await pdfjsLib.getDocument(typedArray).promise;
           let fullText = "";
@@ -83,7 +78,7 @@ Provide the answer in Portuguese.`;
             const page = await pdf.getPage(pageNum);
             const content = await page.getTextContent();
             const pageText = content.items.map(item => item.str).join(" ");
-            fullText += "\f" + pageText; // usamos "\f" como separador de páginas
+            fullText += "\f" + pageText;
             const progress = Math.round((pageNum / totalPages) * 100);
             setUploadProgress(progress);
           }
@@ -102,7 +97,6 @@ Provide the answer in Portuguese.`;
     }
   };
 
-  // Função para processar o PDF, dividir em páginas e analisar cada página
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("Nenhum texto de PDF disponível. Faça o upload de um PDF primeiro.");
@@ -129,7 +123,6 @@ Provide the answer in Portuguese.`;
     <Container className={styles.documentAnalysisContainer}>
       <h1 className={styles.title}>Document Analysis</h1>
       
-      {/* Campo para edição do prompt customizado */}
       <Form.Group controlId="customPrompt" className="mb-3">
         <Form.Label className={styles.label}>Custom Prompt (opcional)</Form.Label>
         <Form.Control
@@ -141,7 +134,6 @@ Provide the answer in Portuguese.`;
         />
       </Form.Group>
       
-      {/* Campo para upload do PDF */}
       <Form.Group controlId="pdfFile" className="mb-3">
         <Form.Label className={styles.label}>Upload PDF de Transações Bancárias</Form.Label>
         <Form.Control
