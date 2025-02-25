@@ -10,7 +10,7 @@ const DocumentAnalysis = () => {
     const fetchPatterns = async () => {
       try {
         // 🔗 URL corrigida com o nome correto da aba
-        const response = await fetch('https://opensheet.elk.sh/1wpnDIkr7A_RpM8sulHh2OcifbJD7zXol19dlmeJD7zXol19dlmeJDmug/Sheet1');
+        const response = await fetch('https://opensheet.elk.sh/1wpnDIkr7A_RpM8sulHh2OcifbJD7zXol19dlmeJDmug/1');
         if (!response.ok) {
           throw new Error(`Erro ao buscar padrões: ${response.status} - ${response.statusText}`);
         }
