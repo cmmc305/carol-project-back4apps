@@ -6,42 +6,45 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 const DocumentAnalysis = () => {
   const [pdfText, setPdfText] = useState("");
   const [patterns, setPatterns] = useState([]);
-  const [analysisResult, setAnalysisResult] = useState("");
+  const [analysisResult, setAnalysisResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
-  const [customPrompt, setCustomPrompt] = useState("Digite seu prompt personalizado aqui...");
 
-  // ✅ Busca os padrões da planilha do Google Sheets
+  // Default prompt (disabled for users)
+  const defaultPrompt = "Analyze the document and identify financial patterns based on the extracted text.";
+  const [customPrompt, setCustomPrompt] = useState(defaultPrompt);
+
+  // ✅ Fetch patterns from Google Sheets
   useEffect(() => {
     const fetchPatterns = async () => {
       try {
         const response = await fetch('https://opensheet.elk.sh/1wpnDIkr7A_RpM8sulHh2OcifbJD7zXol19dlmeJDmug/1');
-        if (!response.ok) throw new Error("Erro ao carregar padrões da planilha.");
+        if (!response.ok) throw new Error("Error fetching patterns from the spreadsheet.");
         
         const data = await response.json();
-        console.log("📊 Dados da Planilha:", data);
+        console.log("📊 Google Sheets Data:", data);
 
-        // 🔹 Extrai somente as colunas "Name" e "Codes"
+        // 🔹 Extract only "Name" and "Codes" columns
         const extractedPatterns = data
-          .filter(item => item.Name && item.Codes) // Remove entradas vazias
+          .filter(item => item.Name && item.Codes) // Remove empty entries
           .map(item => ({
             name: item.Name,
-            codes: item.Codes.split(', ').map(code => code.trim()) // Converte em array de códigos
+            codes: item.Codes.split(', ').map(code => code.trim()) // Convert to array of codes
           }));
 
-        console.log("✅ Padrões extraídos:", extractedPatterns);
+        console.log("✅ Extracted Patterns:", extractedPatterns);
         setPatterns(extractedPatterns);
       } catch (err) {
-        console.error("🚨 Erro ao buscar padrões:", err);
-        setError("Falha ao carregar padrões da planilha.");
+        console.error("🚨 Error fetching patterns:", err);
+        setError("Failed to load patterns from Google Sheets.");
       }
     };
 
     fetchPatterns();
   }, []);
 
-  // ✅ Processa o upload do PDF e extrai o texto
+  // ✅ Process PDF upload and extract text
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -61,33 +64,33 @@ const DocumentAnalysis = () => {
             setUploadProgress(Math.round((pageNum / pdf.numPages) * 100));
           }
 
-          console.log("📄 Texto extraído do PDF:", extractedText);
+          console.log("📄 Extracted PDF Text:", extractedText);
           setPdfText(extractedText);
         } catch (err) {
-          console.error("🚨 Erro na extração do PDF:", err);
-          setError("Falha ao extrair o texto do PDF.");
+          console.error("🚨 Error extracting PDF:", err);
+          setError("Failed to extract text from the PDF.");
         }
       };
       reader.readAsArrayBuffer(file);
     } else {
-      setError("Por favor, faça o upload de um arquivo PDF válido.");
+      setError("Please upload a valid PDF file.");
     }
   };
 
-  // ✅ Analisa o PDF cruzando com os padrões da planilha
+  // ✅ Analyze PDF text and compare with patterns from Google Sheets
   const handleAnalyze = () => {
     if (!pdfText) {
-      setError("Nenhum texto extraído do PDF. Faça o upload primeiro.");
+      setError("No text extracted from the PDF. Please upload a file first.");
       return;
     }
     
     setLoading(true);
-    setAnalysisResult("");
+    setAnalysisResult([]);
 
     let results = pdfText.split('\f').map((pageText, index) => {
       let foundPatterns = [];
 
-      // 🔍 Percorre os padrões e verifica se algum código aparece no PDF
+      // 🔍 Check if any pattern codes appear in the PDF text
       patterns.forEach(pattern => {
         const matches = pattern.codes.filter(code => pageText.includes(code));
         if (matches.length > 0) {
@@ -99,37 +102,36 @@ const DocumentAnalysis = () => {
       });
 
       return { page: index + 1, patterns: foundPatterns };
-    });
+    }).filter(page => page.patterns.length > 0); // Remove pages with no matches
 
-    setAnalysisResult(JSON.stringify({ pages: results }, null, 2));
+    setAnalysisResult(results);
     setLoading(false);
   };
 
   return (
     <Container>
-      <h2 className="mb-4">Análise de Documento</h2>
+      <h2 className="mb-4">Document Analysis</h2>
 
-      {/* ✅ Campo de Prompt Personalizado */}
+      {/* ✅ Custom Prompt Field (Disabled for users) */}
       <Form.Group controlId="customPrompt" className="mb-3">
-        <Form.Label><strong>Prompt Personalizado</strong></Form.Label>
+        <Form.Label><strong>Custom Prompt</strong></Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
           value={customPrompt}
-          onChange={(e) => setCustomPrompt(e.target.value)}
-          placeholder="Digite as instruções para análise..."
+          disabled
         />
       </Form.Group>
 
-      {/* ✅ Exibe padrões em uma tabela compacta */}
-      <h5 className="mt-4">Padrões de Busca</h5>
+      {/* ✅ Display patterns in a compact table */}
+      <h5 className="mt-4">Search Patterns</h5>
       {patterns.length > 0 ? (
         <div style={{ maxHeight: "200px", overflowY: "auto" }}>
           <Table striped bordered hover size="sm">
             <thead>
               <tr>
-                <th>Nome</th>
-                <th>Códigos</th>
+                <th>Name</th>
+                <th>Codes</th>
               </tr>
             </thead>
             <tbody>
@@ -143,31 +145,60 @@ const DocumentAnalysis = () => {
           </Table>
         </div>
       ) : (
-        <Alert variant="warning">Nenhum padrão carregado. Verifique a planilha.</Alert>
+        <Alert variant="warning">No patterns loaded. Please check the spreadsheet.</Alert>
       )}
 
-      {/* ✅ Upload do PDF */}
+      {/* ✅ PDF Upload */}
       <Form.Group controlId="pdfFile" className="mb-3">
-        <Form.Label><strong>Upload do PDF</strong></Form.Label>
+        <Form.Label><strong>Upload PDF</strong></Form.Label>
         <Form.Control type="file" accept="application/pdf" onChange={handlePdfUpload} />
       </Form.Group>
 
       <Button variant="primary" onClick={handleAnalyze} disabled={loading || !pdfText}>
-        {loading ? 'Analisando...' : 'Analisar PDF'}
+        {loading ? 'Analyzing...' : 'Analyze PDF'}
       </Button>
 
-      {/* ✅ Barra de progresso */}
+      {/* ✅ Progress Bar */}
       {loading && <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-3" />}
 
-      {/* ✅ Exibe erros */}
+      {/* ✅ Error Messages */}
       {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
 
-      {/* ✅ Exibe resultado da análise */}
-      {analysisResult && (
-        <Form.Group controlId="analysisResult" className="mt-3">
-          <Form.Label><strong>Resultado da Análise</strong></Form.Label>
-          <Form.Control as="textarea" rows={10} value={analysisResult} readOnly />
-        </Form.Group>
+      {/* ✅ Display Analysis Results in a Table */}
+      {analysisResult.length > 0 && (
+        <div className="mt-4">
+          <h5>Analysis Results</h5>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Page</th>
+                <th>Matched Patterns</th>
+                <th>Matched Codes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {analysisResult.map((page, index) => (
+                <tr key={index}>
+                  <td>{page.page}</td>
+                  <td>
+                    {page.patterns.map(pattern => (
+                      <div key={pattern.name}>
+                        <strong>{pattern.name}</strong>
+                      </div>
+                    ))}
+                  </td>
+                  <td>
+                    {page.patterns.map(pattern => (
+                      <div key={pattern.name}>
+                        {pattern.matchedCodes.join(", ")}
+                      </div>
+                    ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       )}
     </Container>
   );
