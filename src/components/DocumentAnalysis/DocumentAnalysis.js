@@ -1,118 +1,71 @@
 // src/components/DocumentAnalysis/DocumentAnalysis.js
 
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Button, Alert, ProgressBar } from 'react-bootstrap';
+import { Container, Form, Button, Alert, Spinner, ProgressBar, ListGroup } from 'react-bootstrap';
+import Papa from 'papaparse'; // Para processar CSV
 import styles from './DocumentAnalysis.module.css';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-import Papa from 'papaparse';
-
-// Configure o worker do pdf.js – certifique-se de que o arquivo esteja na pasta public
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 const DocumentAnalysis = () => {
-  // Estados para o PDF e extração de texto
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
+  const [patterns, setPatterns] = useState([]); // Padrões da planilha
   const [analysisResult, setAnalysisResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
 
-  // Estado para os padrões financeiros vindos da planilha
-  const [patternsData, setPatternsData] = useState(null);
-
-  // Estado para o prompt customizado
-  const [customPrompt, setCustomPrompt] = useState("");
-
-  // ==============================
-  // Busca os dados da planilha do Google Sheets
-  // ==============================
+  // Carrega os padrões da planilha no Google Sheets
   useEffect(() => {
     const fetchPatterns = async () => {
       try {
-        // URL para exportar a planilha como CSV – ajuste se necessário
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/1wpnDIkr7A_RpM8sulHh2OcifbJD7zXol19dlmeJDmug/export?format=csv&id=1wpnDIkr7A_RpM8sulHh2OcifbJD7zXol19dlmeJDmug';
-        const response = await fetch(csvUrl);
-        if (!response.ok) throw new Error("Erro ao buscar CSV da planilha");
+        const response = await fetch(
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7ZJ3hSlp-BLAblw_d0th6xuJzi7FqjJd95Y4EXL7bKPnchzZlaPfJ2hIYXrBCbR4cH8iVgEx5vWJH/pub?output=csv"
+        );
         const csvText = await response.text();
+        const parsedData = Papa.parse(csvText, { header: true }).data;
 
-        // Parse do CSV usando PapaParse
-        Papa.parse(csvText, {
-          header: true,
-          complete: (results) => {
-            // Aqui esperamos que cada linha contenha colunas como "Name" e "Codes"
-            setPatternsData(results.data);
-          },
-          error: (err) => {
-            console.error("Erro no PapaParse:", err);
-            setError("Falha ao processar os dados da planilha.");
-          }
-        });
-      } catch (err) {
-        console.error("Erro ao buscar padrões da planilha:", err);
-        setError("Falha ao buscar os dados dos padrões.");
+        // Extrai os padrões e remove linhas vazias
+        const extractedPatterns = parsedData
+          .map(row => ({
+            name: row["Name"],
+            codes: row["Codes"] ? row["Codes"].split(",").map(code => code.trim()) : []
+          }))
+          .filter(item => item.name && item.codes.length > 0);
+
+        setPatterns(extractedPatterns);
+      } catch (error) {
+        console.error("Erro ao carregar padrões:", error);
+        setError("Erro ao carregar padrões financeiros.");
       }
     };
 
     fetchPatterns();
   }, []);
 
-  // ==============================
-  // Constrói o prompt customizado com base nos dados da planilha
-  // ==============================
-  useEffect(() => {
-    if (!patternsData) return;
-    let tableText = "";
-    // Supondo que as colunas sejam "Name" e "Codes"
-    patternsData.forEach(row => {
-      if (row.Name && row.Codes) {
-        tableText += `${row.Name}: ${row.Codes}\n`;
-      }
-    });
-
-    const prompt = `Analise o seguinte texto extraído de um PDF de transações bancárias e identifique os padrões financeiros relevantes, comparando com a tabela abaixo:
-
-Tabela de Padrões:
-${tableText}
-
-Retorne o resultado em formato JSON com a seguinte estrutura:
-{
-  "pages": [
-    { "page": <número da página>, "patterns": [<lista de padrões encontrados>] },
-    ...
-  ]
-}
-Caso nenhum padrão seja encontrado, retorne: { "pages": [] }.
-
-Forneça a resposta em Português.`;
-
-    setCustomPrompt(prompt);
-  }, [patternsData]);
-
-  // ==============================
-  // Função para chamar a API do ChatGPT (OpenAI)
-  // ==============================
-  const analyzePdfTextWithGPT = async (text, prompt) => {
+  // Função para analisar o PDF
+  const analyzePdfTextWithGPT = async (text, patterns) => {
     try {
       const response = await fetch('/api/analyze-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, customPrompt: prompt })
+        body: JSON.stringify({ text, patterns }) // Envia os padrões junto com o texto
       });
+
       if (!response.ok) {
         throw new Error('Erro na chamada da API');
       }
+      
       const data = await response.json();
       return data;
-    } catch (err) {
-      console.error("Erro ao analisar PDF:", err);
+    } catch (error) {
+      console.error("Erro ao analisar PDF:", error);
       return { error: "Erro na análise do PDF." };
     }
   };
 
-  // ==============================
-  // Função para upload e extração do texto do PDF usando pdfjs
-  // ==============================
+  // Função para ler o PDF
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -125,6 +78,7 @@ Forneça a resposta em Português.`;
           const pdf = await pdfjsLib.getDocument(typedArray).promise;
           let fullText = "";
           const totalPages = pdf.numPages;
+
           for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
             const content = await page.getTextContent();
@@ -133,45 +87,46 @@ Forneça a resposta em Português.`;
             const progress = Math.round((pageNum / totalPages) * 100);
             setUploadProgress(progress);
           }
+
           setPdfText(fullText);
         } catch (err) {
           console.error("Erro na extração do PDF:", err);
           setError("Falha ao extrair o texto do PDF.");
         }
       };
+
       fileReader.onerror = () => {
         setError("Falha ao ler o arquivo PDF.");
       };
+
       fileReader.readAsArrayBuffer(file);
     } else {
       setError("Por favor, faça o upload de um arquivo PDF válido.");
     }
   };
 
-  // ==============================
-  // Função para analisar o PDF (dividir em páginas e chamar a API para cada página)
-  // ==============================
+  // Função para processar o PDF
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("Nenhum texto de PDF disponível. Faça o upload de um PDF primeiro.");
       return;
     }
-    if (!customPrompt) {
-      setError("Nenhum prompt customizado disponível. Verifique os dados da planilha.");
-      return;
-    }
+    
     setLoading(true);
     setAnalysisResult("");
-    const pages = pdfText.split('\f').filter(p => p.trim().length > 0);
+
+    let pages = pdfText.split('\f').filter(p => p.trim().length > 0);
     const totalPages = pages.length;
     let results = [];
+
     for (let i = 0; i < totalPages; i++) {
       const pageText = pages[i];
-      const pageResult = await analyzePdfTextWithGPT(pageText, customPrompt);
+      const pageResult = await analyzePdfTextWithGPT(pageText, patterns);
       results.push({ page: i + 1, patterns: pageResult.patterns || [] });
       const progress = Math.round(((i + 1) / totalPages) * 100);
       setUploadProgress(progress);
     }
+
     const combinedAnalysis = JSON.stringify({ pages: results }, null, 2);
     setAnalysisResult(combinedAnalysis);
     setLoading(false);
@@ -179,32 +134,30 @@ Forneça a resposta em Português.`;
 
   return (
     <Container className={styles.documentAnalysisContainer}>
-      <h1 className={styles.title}>Document Analysis</h1>
-      
-      {/* Campo para edição do prompt customizado */}
-      <Form.Group controlId="customPrompt" className="mb-3">
-        <Form.Label className={styles.label}>Custom Prompt (opcional)</Form.Label>
-        <Form.Control
-          as="textarea"
-          rows={4}
-          value={customPrompt}
-          onChange={(e) => setCustomPrompt(e.target.value)}
-          className={styles.input}
-        />
-      </Form.Group>
-      
-      {/* Campo para upload do PDF */}
+      <h1 className={styles.title}>Análise de Documento</h1>
+
+      {/* Exibição dos padrões carregados da planilha */}
+      <h4 className={styles.subtitle}>Padrões que serão buscados</h4>
+      <ListGroup className="mb-3">
+        {patterns.length === 0 ? (
+          <Alert variant="warning">Carregando padrões...</Alert>
+        ) : (
+          patterns.map((pattern, index) => (
+            <ListGroup.Item key={index}>
+              <strong>{pattern.name}</strong>: {pattern.codes.join(", ")}
+            </ListGroup.Item>
+          ))
+        )}
+      </ListGroup>
+
+      {/* Upload do PDF */}
       <Form.Group controlId="pdfFile" className="mb-3">
         <Form.Label className={styles.label}>Upload PDF de Transações Bancárias</Form.Label>
-        <Form.Control
-          type="file"
-          accept="application/pdf"
-          onChange={handlePdfUpload}
-          className={styles.input}
-        />
+        <Form.Control type="file" accept="application/pdf" onChange={handlePdfUpload} className={styles.input} />
       </Form.Group>
-      
-      <Button variant="primary" onClick={handleAnalyze} disabled={loading || !pdfText}>
+
+      {/* Botão de Análise */}
+      <Button variant="primary" onClick={handleAnalyze} disabled={loading || !pdfText || patterns.length === 0}>
         {loading ? 'Analisando...' : 'Analisar PDF'}
       </Button>
 
@@ -215,17 +168,12 @@ Forneça a resposta em Português.`;
       )}
 
       {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-      
+
+      {/* Resultado da Análise */}
       {analysisResult && (
         <Form.Group controlId="analysisResult" className="mt-3">
           <Form.Label className={styles.label}>Resultado da Análise</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={10}
-            value={analysisResult}
-            readOnly
-            className={styles.input}
-          />
+          <Form.Control as="textarea" rows={10} value={analysisResult} readOnly className={styles.input} />
         </Form.Group>
       )}
     </Container>
