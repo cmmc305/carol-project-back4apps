@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Button, Alert, Spinner, ProgressBar, ListGroup } from 'react-bootstrap';
+import { Container, Form, Button, Alert, ProgressBar, Table } from 'react-bootstrap';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
@@ -10,6 +10,7 @@ const DocumentAnalysis = () => {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
+  const [customPrompt, setCustomPrompt] = useState("Digite seu prompt personalizado aqui...");
 
   // ✅ Busca os padrões da planilha do Google Sheets
   useEffect(() => {
@@ -108,23 +109,46 @@ const DocumentAnalysis = () => {
     <Container>
       <h2 className="mb-4">Análise de Documento</h2>
 
-      {/* ✅ Exibe os padrões da planilha */}
-      <h4>Padrões de Busca</h4>
+      {/* ✅ Campo de Prompt Personalizado */}
+      <Form.Group controlId="customPrompt" className="mb-3">
+        <Form.Label><strong>Prompt Personalizado</strong></Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          value={customPrompt}
+          onChange={(e) => setCustomPrompt(e.target.value)}
+          placeholder="Digite as instruções para análise..."
+        />
+      </Form.Group>
+
+      {/* ✅ Exibe padrões em uma tabela compacta */}
+      <h5 className="mt-4">Padrões de Busca</h5>
       {patterns.length > 0 ? (
-        <ListGroup className="mb-3">
-          {patterns.map((pattern, index) => (
-            <ListGroup.Item key={index}>
-              <strong>{pattern.name}</strong>: {pattern.codes.join(", ")}
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+        <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+          <Table striped bordered hover size="sm">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Códigos</th>
+              </tr>
+            </thead>
+            <tbody>
+              {patterns.map((pattern, index) => (
+                <tr key={index}>
+                  <td>{pattern.name}</td>
+                  <td>{pattern.codes.join(", ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       ) : (
         <Alert variant="warning">Nenhum padrão carregado. Verifique a planilha.</Alert>
       )}
 
       {/* ✅ Upload do PDF */}
       <Form.Group controlId="pdfFile" className="mb-3">
-        <Form.Label>Upload do PDF</Form.Label>
+        <Form.Label><strong>Upload do PDF</strong></Form.Label>
         <Form.Control type="file" accept="application/pdf" onChange={handlePdfUpload} />
       </Form.Group>
 
@@ -141,7 +165,7 @@ const DocumentAnalysis = () => {
       {/* ✅ Exibe resultado da análise */}
       {analysisResult && (
         <Form.Group controlId="analysisResult" className="mt-3">
-          <Form.Label>Resultado da Análise</Form.Label>
+          <Form.Label><strong>Resultado da Análise</strong></Form.Label>
           <Form.Control as="textarea" rows={10} value={analysisResult} readOnly />
         </Form.Group>
       )}
