@@ -20,6 +20,8 @@ RUN npm install express body-parser openai dotenv
 
 RUN npm install pdfjs-dist@2.5.207
 
+RUN npm install papaparse
+
 # Copiar o restante do código do aplicativo
 COPY . .
 
