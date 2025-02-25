@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Container, Form, Button, Alert, Spinner, ProgressBar } from 'react-bootstrap';
 import styles from './DocumentAnalysis.module.css';
 // Importação do pdfjs-dist na versão legacy para compatibilidade
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 
