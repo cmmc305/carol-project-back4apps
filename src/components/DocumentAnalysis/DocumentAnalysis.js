@@ -1,14 +1,13 @@
 // src/components/DocumentAnalysis/DocumentAnalysis.js
 
-import React, { useState } from 'react';
-import { Container, Form, Button, Alert, Spinner, ProgressBar } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Form, Button, Alert, ProgressBar } from 'react-bootstrap';
 import styles from './DocumentAnalysis.module.css';
-// Importação do pdfjs-dist na versão legacy para compatibilidade
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
-
 const DocumentAnalysis = () => {
+  // Estados para PDF e análise
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfText, setPdfText] = useState("");
   const [analysisResult, setAnalysisResult] = useState("");
@@ -16,20 +15,42 @@ const DocumentAnalysis = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
 
-  const defaultPrompt = `Analyze the following text extracted from a PDF of banking transactions and identify any relevant financial patterns based on the table below:
+  // Estado para os padrões (patterns) vindos da planilha
+  const [patternsData, setPatternsData] = useState(null);
+
+  // Busca os padrões do Google Sheets assim que o componente for montado.
+  useEffect(() => {
+    const fetchPatterns = async () => {
+      try {
+        // Suponha que você tenha publicado a planilha como JSON ou converta para JSON por um endpoint
+        // Exemplo: (ajuste a URL conforme sua publicação)
+        const response = await fetch('https://api.example.com/patterns'); 
+        const data = await response.json();
+        setPatternsData(data);
+      } catch (err) {
+        console.error("Erro ao buscar padrões:", err);
+        setError("Erro ao buscar os dados dos padrões.");
+      }
+    };
+    fetchPatterns();
+  }, []);
+
+  // Constrói o prompt customizado com base nos padrões vindos da planilha.
+  const buildPrompt = () => {
+    if (!patternsData) {
+      return "";
+    }
+    // Suponha que patternsData seja um objeto onde cada chave é o nome do padrão
+    // e o valor é um array de termos, por exemplo:
+    // { "American Express": ["AMEX EPAYMENT", "Amex", "2005032111"], ... }
+    let tableText = "";
+    for (const key in patternsData) {
+      tableText += `${key}: ${patternsData[key].join(", ")}\n`;
+    }
+    return `Analyze the following text extracted from a PDF of banking transactions and identify any relevant financial patterns based on the table below:
 
 Table of Patterns:
-American Express: AMEX EPAYMENT, Amex, 2005032111
-PayPal: VENMO, PAYPAL, 7264681992
-Intuit Payment Systems: 9215986202, Intuit, 0000756346
-Chase Paymentech: Paymentech, 1020401225
-Stripe: Stripe, ST-, Brightwheel, Doordash, Uber, Uber eats
-Bill.com: Bill.com, Divvypay, invoice2go
-Mollie Payments: ID:OL90691-0001, Mollie Payments
-Paya: Company ID: 3383693141
-Payliance: Company ID: 1273846756
-ACHQ: Company ID: 1464699697 and 1112999721
-AMAZON: 1541507947, 3383693141, 1383694141, 2383693141
+${tableText}
 
 Return the results in JSON format with the following structure:
 {
@@ -41,8 +62,16 @@ Return the results in JSON format with the following structure:
 If no relevant pattern is found, return: { "pages": [] }.
 
 Provide the answer in Portuguese.`;
-  const [customPrompt, setCustomPrompt] = useState(defaultPrompt);
+  };
 
+  // Estado para o prompt customizado; atualiza sempre que os padrões são carregados.
+  const [customPrompt, setCustomPrompt] = useState("");
+  useEffect(() => {
+    const prompt = buildPrompt();
+    setCustomPrompt(prompt);
+  }, [patternsData]);
+
+  // Função que chama a API do ChatGPT para analisar o texto do PDF
   const analyzePdfTextWithGPT = async (text, prompt) => {
     try {
       const response = await fetch('/api/analyze-pdf', {
@@ -61,6 +90,7 @@ Provide the answer in Portuguese.`;
     }
   };
 
+  // Função para upload e extração de texto do PDF usando pdfjs
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -96,14 +126,19 @@ Provide the answer in Portuguese.`;
     }
   };
 
+  // Função para analisar o PDF (dividir em páginas e chamar a API para cada página)
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("Nenhum texto de PDF disponível. Faça o upload de um PDF primeiro.");
       return;
     }
+    if (!customPrompt) {
+      setError("Nenhum prompt customizado disponível. Verifique os dados dos padrões.");
+      return;
+    }
     setLoading(true);
     setAnalysisResult("");
-    let pages = pdfText.split('\f').filter(p => p.trim().length > 0);
+    const pages = pdfText.split('\f').filter(p => p.trim().length > 0);
     const totalPages = pages.length;
     let results = [];
     for (let i = 0; i < totalPages; i++) {
