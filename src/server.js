@@ -21,6 +21,8 @@ app.post('/api/analyze-pdf', async (req, res) => {
       return res.status(400).json({ error: "Missing text or prompt." });
     }
 
+    console.log("📩 Received request:", { textSnippet: text.substring(0, 100), customPrompt });
+
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [
@@ -36,14 +38,16 @@ app.post('/api/analyze-pdf', async (req, res) => {
       throw new Error("Invalid response from OpenAI.");
     }
 
+    console.log("✅ AI Response:", responseText);
+
     res.json({ aiAnalysis: responseText });
   } catch (error) {
-    console.error("Error with OpenAI API:", error);
+    console.error("🚨 Error with OpenAI API:", error);
     res.status(500).json({ error: "Failed to analyze text with AI." });
   }
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

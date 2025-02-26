@@ -14,6 +14,7 @@ const DocumentAnalysis = () => {
   const [customPrompt, setCustomPrompt] = useState("Identify relevant financial patterns in this document.");
   const [formattedResponse, setFormattedResponse] = useState("");
 
+  // ✅ Busca os padrões da planilha do Google Sheets
   useEffect(() => {
     const fetchPatterns = async () => {
       try {
@@ -37,6 +38,7 @@ const DocumentAnalysis = () => {
     fetchPatterns();
   }, []);
 
+  // ✅ Upload do PDF e extração de texto
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -67,6 +69,7 @@ const DocumentAnalysis = () => {
     }
   };
 
+  // ✅ Chamada para API do ChatGPT
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("No extracted text from PDF. Please upload a file first.");
@@ -78,18 +81,18 @@ const DocumentAnalysis = () => {
     setFormattedResponse("");
 
     try {
+      console.log("📤 Sending request to AI API...");
       const response = await fetch('/api/analyze-pdf', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: pdfText, customPrompt })
       });
 
-      console.log("🔹 API Response Status:", response.status);
       const data = await response.json();
-      console.log("✅ API Response Data:", data);
 
       if (!response.ok) throw new Error(data.error || "Unknown error from API");
 
+      console.log("✅ AI Response received:", data);
       setFormattedResponse(data.aiAnalysis);
     } catch (err) {
       setError("Failed to get response from AI.");
@@ -102,6 +105,7 @@ const DocumentAnalysis = () => {
     <Container>
       <h2 className="mb-4">Document Analysis</h2>
 
+      {/* ✅ Prompt Personalizado */}
       <Form.Group controlId="customPrompt" className="mb-3">
         <Form.Label><strong>Custom Prompt</strong></Form.Label>
         <Form.Control
@@ -113,6 +117,32 @@ const DocumentAnalysis = () => {
         />
       </Form.Group>
 
+      {/* ✅ Tabela de Patterns */}
+      <h5 className="mt-4">Patterns to Search</h5>
+      {patterns.length > 0 ? (
+        <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+          <Table striped bordered hover size="sm">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Codes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {patterns.map((pattern, index) => (
+                <tr key={index}>
+                  <td>{pattern.name}</td>
+                  <td>{pattern.codes.join(", ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      ) : (
+        <Alert variant="warning">No patterns loaded. Check the spreadsheet.</Alert>
+      )}
+
+      {/* ✅ Upload do PDF */}
       <Form.Group controlId="pdfFile" className="mb-3">
         <Form.Label><strong>Upload PDF</strong></Form.Label>
         <Form.Control type="file" accept="application/pdf" onChange={handlePdfUpload} />
