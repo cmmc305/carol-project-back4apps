@@ -8,13 +8,12 @@ const DocumentAnalysis = () => {
   const [pdfText, setPdfText] = useState("");
   const [patterns, setPatterns] = useState([]);
   const [analysisResult, setAnalysisResult] = useState("");
-  const [aiAnalysis, setAiAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
-  const [customPrompt, setCustomPrompt] = useState("Analyze the financial transactions and highlight any unusual patterns or relevant insights.");
+  const [formattedResponse, setFormattedResponse] = useState("");
+  const [customPrompt, setCustomPrompt] = useState("Identify relevant financial patterns in the extracted text and summarize the findings.");
 
-  // ✅ Fetch patterns from Google Sheets
   useEffect(() => {
     const fetchPatterns = async () => {
       try {
@@ -38,7 +37,6 @@ const DocumentAnalysis = () => {
     fetchPatterns();
   }, []);
 
-  // ✅ Process PDF upload and extract text
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -69,7 +67,6 @@ const DocumentAnalysis = () => {
     }
   };
 
-  // ✅ Analyze PDF and send request to backend
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("No extracted text from PDF. Please upload a file first.");
@@ -78,18 +75,32 @@ const DocumentAnalysis = () => {
 
     setLoading(true);
     setAnalysisResult("");
-    setAiAnalysis("");
+    setFormattedResponse("");
+
+    let results = pdfText.split('\f').map((pageText, index) => {
+      let foundPatterns = [];
+
+      patterns.forEach(pattern => {
+        const matches = pattern.codes.filter(code => pageText.includes(code));
+        if (matches.length > 0) {
+          foundPatterns.push({ name: pattern.name, matchedCodes: matches });
+        }
+      });
+
+      return { page: index + 1, patterns: foundPatterns };
+    });
+
+    setAnalysisResult(JSON.stringify({ pages: results }, null, 2));
 
     try {
-      const response = await fetch('/api/analyze-pdf', {
+      const response = await fetch('/api/analyze-text', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: pdfText, customPrompt })
       });
 
       const data = await response.json();
-      setAnalysisResult(JSON.stringify(data.patternsFound, null, 2));
-      setAiAnalysis(data.aiAnalysis);
+      setFormattedResponse(data.aiAnalysis);
     } catch (err) {
       setError("Failed to get response from AI.");
     }
@@ -101,13 +112,25 @@ const DocumentAnalysis = () => {
     <Container>
       <h2 className="mb-4">Document Analysis</h2>
 
-      {/* ✅ Upload PDF Field */}
+      {/* Prompt input field */}
+      <Form.Group controlId="customPrompt" className="mb-3">
+        <Form.Label><strong>Analysis Prompt</strong></Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          value={customPrompt}
+          onChange={(e) => setCustomPrompt(e.target.value)}
+          placeholder="Enter analysis instructions..."
+        />
+      </Form.Group>
+
+      {/* Upload PDF */}
       <Form.Group controlId="pdfFile" className="mb-3">
         <Form.Label><strong>Upload PDF</strong></Form.Label>
         <Form.Control type="file" accept="application/pdf" onChange={handlePdfUpload} />
       </Form.Group>
 
-      {/* ✅ Patterns Table */}
+      {/* Patterns Table */}
       <h5 className="mt-4">Patterns to Search</h5>
       {patterns.length > 0 ? (
         <div style={{ maxHeight: "200px", overflowY: "auto" }}>
@@ -132,21 +155,18 @@ const DocumentAnalysis = () => {
         <Alert variant="warning">No patterns loaded. Check the spreadsheet.</Alert>
       )}
 
-      {/* ✅ Analysis Button */}
       <Button variant="primary" onClick={handleAnalyze} disabled={loading || !pdfText}>
         {loading ? 'Analyzing...' : 'Analyze PDF'}
       </Button>
 
       {loading && <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-3" />}
 
-      {/* ✅ Display Errors */}
       {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
 
-      {/* ✅ Display AI Analysis */}
-      {aiAnalysis && (
+      {formattedResponse && (
         <Alert variant="success" className="mt-3">
           <h5>AI Analysis Report</h5>
-          <p>{aiAnalysis}</p>
+          <p>{formattedResponse}</p>
         </Alert>
       )}
     </Container>
