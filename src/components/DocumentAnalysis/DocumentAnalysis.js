@@ -1,7 +1,10 @@
+// src/components/DocumentAnalysis/DocumentAnalysis.js
+
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Alert, ProgressBar, Table } from 'react-bootstrap';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 
+// Set the worker source (ensure pdf.worker.min.js is placed in the public folder)
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 const DocumentAnalysis = () => {
@@ -14,13 +17,12 @@ const DocumentAnalysis = () => {
   const [customPrompt, setCustomPrompt] = useState("Identify relevant financial patterns in this document.");
   const [formattedResponse, setFormattedResponse] = useState("");
 
-  // ✅ Busca os padrões da planilha do Google Sheets
+  // Fetch patterns from Google Sheets as JSON (using opensheet API)
   useEffect(() => {
     const fetchPatterns = async () => {
       try {
         const response = await fetch('https://opensheet.elk.sh/1wpnDIkr7A_RpM8sulHh2OcifbJD7zXol19dlmeJDmug/1');
         if (!response.ok) throw new Error("Error loading patterns from the spreadsheet.");
-        
         const data = await response.json();
         const extractedPatterns = data
           .filter(item => item.Name && item.Codes)
@@ -28,9 +30,9 @@ const DocumentAnalysis = () => {
             name: item.Name,
             codes: item.Codes.split(', ').map(code => code.trim())
           }));
-          
         setPatterns(extractedPatterns);
       } catch (err) {
+        console.error("Error fetching patterns:", err);
         setError("Failed to load patterns from the spreadsheet.");
       }
     };
@@ -38,7 +40,7 @@ const DocumentAnalysis = () => {
     fetchPatterns();
   }, []);
 
-  // ✅ Upload do PDF e extração de texto
+  // Process PDF upload and extract text using PDF.js
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -49,17 +51,17 @@ const DocumentAnalysis = () => {
           const typedArray = new Uint8Array(this.result);
           const pdf = await pdfjsLib.getDocument(typedArray).promise;
           let extractedText = "";
-
-          for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const totalPages = pdf.numPages;
+          for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
             const content = await page.getTextContent();
             const pageText = content.items.map(item => item.str).join(" ");
             extractedText += "\f" + pageText;
-            setUploadProgress(Math.round((pageNum / pdf.numPages) * 100));
+            setUploadProgress(Math.round((pageNum / totalPages) * 100));
           }
-
           setPdfText(extractedText);
         } catch (err) {
+          console.error("Error extracting PDF text:", err);
           setError("Failed to extract text from the PDF.");
         }
       };
@@ -69,35 +71,31 @@ const DocumentAnalysis = () => {
     }
   };
 
-  // ✅ Chamada para API do ChatGPT
+  // Call the AI API (ChatGPT) to analyze the entire extracted PDF text
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("No extracted text from PDF. Please upload a file first.");
       return;
     }
-    
     setLoading(true);
     setAnalysisResult("");
     setFormattedResponse("");
 
     try {
-      console.log("📤 Sending request to AI API...");
-      const response = await fetch('/api/analyze-pdf', { 
+      console.log("Sending request to AI API...");
+      const response = await fetch('https://carolsproject-wkzz9vvb.b4a.run/api/analyze-pdf', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: pdfText, customPrompt })
       });
-
       const data = await response.json();
-
       if (!response.ok) throw new Error(data.error || "Unknown error from API");
-
-      console.log("✅ AI Response received:", data);
+      console.log("AI API response:", data);
       setFormattedResponse(data.aiAnalysis);
     } catch (err) {
+      console.error("Failed to get AI response:", err);
       setError("Failed to get response from AI.");
     }
-
     setLoading(false);
   };
 
@@ -105,7 +103,7 @@ const DocumentAnalysis = () => {
     <Container>
       <h2 className="mb-4">Document Analysis</h2>
 
-      {/* ✅ Prompt Personalizado */}
+      {/* Custom Prompt - (Disabled for now if you want to lock it, you can add disabled attribute) */}
       <Form.Group controlId="customPrompt" className="mb-3">
         <Form.Label><strong>Custom Prompt</strong></Form.Label>
         <Form.Control
@@ -114,10 +112,11 @@ const DocumentAnalysis = () => {
           value={customPrompt}
           onChange={(e) => setCustomPrompt(e.target.value)}
           placeholder="Enter analysis instructions..."
+          // disabled // Uncomment this line if you want to disable editing for now
         />
       </Form.Group>
 
-      {/* ✅ Tabela de Patterns */}
+      {/* Display Patterns in a compact table */}
       <h5 className="mt-4">Patterns to Search</h5>
       {patterns.length > 0 ? (
         <div style={{ maxHeight: "200px", overflowY: "auto" }}>
@@ -142,7 +141,7 @@ const DocumentAnalysis = () => {
         <Alert variant="warning">No patterns loaded. Check the spreadsheet.</Alert>
       )}
 
-      {/* ✅ Upload do PDF */}
+      {/* PDF Upload Field */}
       <Form.Group controlId="pdfFile" className="mb-3">
         <Form.Label><strong>Upload PDF</strong></Form.Label>
         <Form.Control type="file" accept="application/pdf" onChange={handlePdfUpload} />
@@ -159,7 +158,7 @@ const DocumentAnalysis = () => {
       {formattedResponse && (
         <Alert variant="success" className="mt-3">
           <h5>AI Analysis Report</h5>
-          <p>{formattedResponse}</p>
+          <pre style={{ whiteSpace: "pre-wrap" }}>{formattedResponse}</pre>
         </Alert>
       )}
     </Container>
