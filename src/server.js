@@ -1,6 +1,6 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const { Configuration, OpenAIApi } = require('openai');
 require('dotenv').config();
 
@@ -13,37 +13,37 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-// API para análise de texto extraído do PDF
-app.post('/api/analyze-text', async (req, res) => {
+app.post('/api/analyze-pdf', async (req, res) => {
   try {
     const { text, customPrompt } = req.body;
-    
+
     if (!text || !customPrompt) {
-      return res.status(400).json({ error: "Missing text or prompt for analysis." });
+      return res.status(400).json({ error: "Missing text or prompt." });
     }
 
-    console.log("🔹 Sending request to OpenAI...");
-    
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [
-        { role: "system", content: "You are an AI specialized in document analysis. Identify relevant financial patterns from the extracted text." },
+        { role: "system", content: "You are an AI assistant that analyzes financial documents." },
         { role: "user", content: `${customPrompt}\n\nExtracted Text:\n${text}` }
       ],
-      max_tokens: 500,
+      max_tokens: 1000,
     });
 
-    console.log("✅ OpenAI Response:", completion.data);
+    const responseText = completion.data.choices[0]?.message?.content;
 
-    res.json({ aiAnalysis: completion.data.choices[0].message.content });
+    if (!responseText) {
+      throw new Error("Invalid response from OpenAI.");
+    }
 
+    res.json({ aiAnalysis: responseText });
   } catch (error) {
-    console.error("🚨 OpenAI API Error:", error.response ? error.response.data : error.message);
-    res.status(500).json({ error: "Error analyzing the document.", details: error.response ? error.response.data : error.message });
+    console.error("Error with OpenAI API:", error);
+    res.status(500).json({ error: "Failed to analyze text with AI." });
   }
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
