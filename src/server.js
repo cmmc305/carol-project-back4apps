@@ -1,8 +1,7 @@
-// server.js
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Configuration, OpenAIApi } = require('openai');
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
@@ -13,74 +12,85 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+// ✅ Função para buscar padrões do Google Sheets
+const fetchPatternsFromGoogleSheets = async () => {
+  try {
+    const response = await axios.get('https://opensheet.elk.sh/1wpnDIkr7A_RpM8sulHh2OcifbJD7zXol19dlmeJDmug/1');
+    if (!response.data) throw new Error("No data returned from Google Sheets.");
+
+    return response.data
+      .filter(item => item.Name && item.Codes)
+      .map(item => ({
+        name: item.Name,
+        codes: item.Codes.split(', ').map(code => code.trim())
+      }));
+  } catch (error) {
+    console.error("Error fetching patterns from Google Sheets:", error);
+    return [];
+  }
+};
+
+// ✅ Rota para análise do PDF
 app.post('/api/analyze-pdf', async (req, res) => {
   try {
-    const { text } = req.body;
-    if (!text) {
-      return res.status(400).json({ error: "Texto não fornecido." });
+    const { text, customPrompt } = req.body;
+    if (!text || !customPrompt) {
+      return res.status(400).json({ error: "Text and prompt are required." });
     }
 
-    // Crie o prompt com instruções para retornar JSON com a estrutura desejada.
-    const prompt = `Você é um assistente especializado em análise de documentos financeiros. 
-Analise o seguinte texto extraído de um PDF de transações bancárias e identifique os padrões financeiros relevantes, 
-segundo a tabela abaixo:
+    // 🔹 Obtém os padrões da planilha do Google Sheets
+    const patterns = await fetchPatternsFromGoogleSheets();
 
-Tabela de Padrões:
-{
-  "American Express": ["AMEX EPAYMENT", "Amex", "2005032111"],
-  "PayPal": ["VENMO", "PAYPAL", "7264681992"],
-  "Intuit Payment Systems": ["9215986202", "Intuit", "0000756346"],
-  "Chase Paymentech": ["Paymentech", "1020401225"],
-  "Stripe": ["Stripe", "ST-", "Brightwheel", "Doordash", "Uber", "Uber eats"],
-  "Bill.com": ["Bill.com", "Divvypay", "invoice2go"],
-  "Mollie Payments": ["ID:OL90691-0001", "Mollie Payments"],
-  "Paya": ["Company ID: 3383693141"],
-  "Payliance": ["Company ID: 1273846756"],
-  "ACHQ": ["Company ID: 1464699697", "1112999721"],
-  "AMAZON": ["1541507947", "3383693141", "1383693141", "2383693141"]
-}
+    // 🔹 Encontra padrões no texto do PDF
+    let results = text.split('\f').map((pageText, index) => {
+      let foundPatterns = [];
 
-Leia o texto abaixo e retorne a resposta no formato JSON com a seguinte estrutura:
-{
-  "pages": [
-    { "page": <número da página>, "patterns": [<lista de padrões encontrados>] },
-    ...
-  ]
-}
-Caso nenhum padrão seja encontrado, retorne: { "pages": [] }.
+      patterns.forEach(pattern => {
+        const matches = pattern.codes.filter(code => pageText.includes(code));
+        if (matches.length > 0) {
+          foundPatterns.push({ name: pattern.name, matchedCodes: matches });
+        }
+      });
 
-Texto:
-${text}
-
-Forneça a resposta apenas em JSON.`;
-
-    const completion = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo", // ou "gpt-4"
-      messages: [
-        { role: "system", content: "Você é um assistente que analisa textos de PDF e extrai padrões financeiros." },
-        { role: "user", content: prompt }
-      ],
-      max_tokens: 500,
+      return { page: index + 1, patterns: foundPatterns };
     });
 
-    // Tenta extrair o JSON da resposta
-    const responseText = completion.data.choices[0].message.content;
-    let analysisJson;
-    try {
-      analysisJson = JSON.parse(responseText);
-    } catch (parseError) {
-      // Se a resposta não estiver em formato JSON válido, retorne o texto bruto como fallback
-      analysisJson = { error: "A resposta da API não está em formato JSON válido.", raw: responseText };
-    }
+    // 🔹 Usa o prompt do usuário na requisição ao ChatGPT
+    const userPrompt = `${customPrompt}
 
-    res.json(analysisJson);
+### Extracted PDF Text:
+${text}
+
+### Matched Patterns:
+${JSON.stringify(results, null, 2)}
+
+Generate a structured summary highlighting key insights. Return the response in English.`
+
+    // 🔹 Envia para o ChatGPT
+    const completion = await openai.createChatCompletion({
+      model: "gpt-4", // ou "gpt-3.5-turbo"
+      messages: [
+        { role: "system", content: "You analyze PDF texts and extract financial patterns." },
+        { role: "user", content: userPrompt }
+      ],
+      max_tokens: 700,
+    });
+
+    // 🔹 Formata a resposta da IA
+    const responseText = completion.data.choices[0].message.content;
+
+    res.json({
+      patternsFound: results,
+      aiAnalysis: responseText
+    });
+
   } catch (error) {
-    console.error("Erro ao analisar PDF:", error);
-    res.status(500).json({ error: "Erro ao analisar o PDF." });
+    console.error("Error analyzing PDF:", error);
+    res.status(500).json({ error: "Error analyzing the PDF." });
   }
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
