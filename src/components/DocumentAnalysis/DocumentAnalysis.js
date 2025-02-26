@@ -93,17 +93,23 @@ const DocumentAnalysis = () => {
     setAnalysisResult(JSON.stringify({ pages: results }, null, 2));
 
     try {
-      const response = await fetch('/api/analyze-text', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: pdfText, customPrompt })
-      });
-
-      const data = await response.json();
-      setFormattedResponse(data.aiAnalysis);
-    } catch (err) {
-      setError("Failed to get response from AI.");
-    }
+        const response = await fetch('https://carolsproject-wkzz9vvb.b4a.run/api/analyze-text', { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: pdfText, customPrompt })
+        });
+      
+        console.log("🔹 API Response Status:", response.status);
+        const data = await response.json();
+        console.log("✅ API Response Data:", data);
+      
+        if (!response.ok) throw new Error(data.error || "Unknown error from API");
+      
+        setFormattedResponse(data.aiAnalysis);
+      } catch (err) {
+        console.error("🚨 AI API Error:", err);
+        setError("Failed to get response from AI.");
+      }
 
     setLoading(false);
   };
