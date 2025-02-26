@@ -3,8 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Alert, ProgressBar, Table } from 'react-bootstrap';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-
-// Set the worker source (ensure pdf.worker.min.js is placed in the public folder)
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 const DocumentAnalysis = () => {
@@ -17,7 +15,7 @@ const DocumentAnalysis = () => {
   const [customPrompt, setCustomPrompt] = useState("Identify relevant financial patterns in this document.");
   const [formattedResponse, setFormattedResponse] = useState("");
 
-  // Fetch patterns from Google Sheets as JSON (using opensheet API)
+  // Fetch patterns from the Google Sheets using the opensheet API
   useEffect(() => {
     const fetchPatterns = async () => {
       try {
@@ -40,7 +38,7 @@ const DocumentAnalysis = () => {
     fetchPatterns();
   }, []);
 
-  // Process PDF upload and extract text using PDF.js
+  // Process the PDF upload and extract text using PDF.js
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -59,11 +57,15 @@ const DocumentAnalysis = () => {
             extractedText += "\f" + pageText;
             setUploadProgress(Math.round((pageNum / totalPages) * 100));
           }
+          console.log("Extracted PDF text:", extractedText.substring(0, 200) + "...");
           setPdfText(extractedText);
         } catch (err) {
           console.error("Error extracting PDF text:", err);
           setError("Failed to extract text from the PDF.");
         }
+      };
+      reader.onerror = () => {
+        setError("Failed to read the PDF file.");
       };
       reader.readAsArrayBuffer(file);
     } else {
@@ -71,7 +73,7 @@ const DocumentAnalysis = () => {
     }
   };
 
-  // Call the AI API (ChatGPT) to analyze the entire extracted PDF text
+  // Call the AI API to analyze the PDF text using your custom prompt
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("No extracted text from PDF. Please upload a file first.");
@@ -83,6 +85,7 @@ const DocumentAnalysis = () => {
 
     try {
       console.log("Sending request to AI API...");
+      // Note: Using the absolute URL for your API endpoint
       const response = await fetch('https://carolsproject-wkzz9vvb.b4a.run/api/analyze-pdf', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -103,7 +106,7 @@ const DocumentAnalysis = () => {
     <Container>
       <h2 className="mb-4">Document Analysis</h2>
 
-      {/* Custom Prompt - (Disabled for now if you want to lock it, you can add disabled attribute) */}
+      {/* Custom Prompt (disabled for now) */}
       <Form.Group controlId="customPrompt" className="mb-3">
         <Form.Label><strong>Custom Prompt</strong></Form.Label>
         <Form.Control
@@ -112,7 +115,7 @@ const DocumentAnalysis = () => {
           value={customPrompt}
           onChange={(e) => setCustomPrompt(e.target.value)}
           placeholder="Enter analysis instructions..."
-          // disabled // Uncomment this line if you want to disable editing for now
+          disabled // Disable editing for now if desired
         />
       </Form.Group>
 
