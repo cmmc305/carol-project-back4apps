@@ -99,19 +99,50 @@ const DocumentAnalysis = () => {
 
   return (
     <Container>
-      <h2>Document Analysis</h2>
+      <h2 className="mb-4">Document Analysis</h2>
 
-      <Form.Group controlId="customPrompt" className="mb-3">
-        <Form.Label><strong>Analysis Prompt</strong></Form.Label>
-        <Form.Control as="textarea" rows={3} value={customPrompt} onChange={(e) => setCustomPrompt(e.target.value)} />
+      {/* ✅ Upload PDF Field */}
+      <Form.Group controlId="pdfFile" className="mb-3">
+        <Form.Label><strong>Upload PDF</strong></Form.Label>
+        <Form.Control type="file" accept="application/pdf" onChange={handlePdfUpload} />
       </Form.Group>
 
+      {/* ✅ Patterns Table */}
+      <h5 className="mt-4">Patterns to Search</h5>
+      {patterns.length > 0 ? (
+        <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+          <Table striped bordered hover size="sm">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Codes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {patterns.map((pattern, index) => (
+                <tr key={index}>
+                  <td>{pattern.name}</td>
+                  <td>{pattern.codes.join(", ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      ) : (
+        <Alert variant="warning">No patterns loaded. Check the spreadsheet.</Alert>
+      )}
+
+      {/* ✅ Analysis Button */}
       <Button variant="primary" onClick={handleAnalyze} disabled={loading || !pdfText}>
         {loading ? 'Analyzing...' : 'Analyze PDF'}
       </Button>
 
       {loading && <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-3" />}
 
+      {/* ✅ Display Errors */}
+      {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+
+      {/* ✅ Display AI Analysis */}
       {aiAnalysis && (
         <Alert variant="success" className="mt-3">
           <h5>AI Analysis Report</h5>
