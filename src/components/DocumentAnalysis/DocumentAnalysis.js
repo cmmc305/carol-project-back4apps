@@ -3,29 +3,26 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Alert, ProgressBar, Table } from 'react-bootstrap';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-// Set up the PDF worker (place pdf.worker.min.js in your public folder)
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 const DocumentAnalysis = () => {
-  // State for PDF extraction and analysis
   const [pdfText, setPdfText] = useState("");
   const [patterns, setPatterns] = useState([]);
-  const [formattedResponse, setFormattedResponse] = useState("");
+  const [basicAnalysisResult, setBasicAnalysisResult] = useState(""); // Result from PDF worker pattern matching
+  const [formattedResponse, setFormattedResponse] = useState(""); // AI response
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
-  
-  // Custom prompt for AI analysis (disabled for now)
+  // The custom prompt field (disabled for now)
   const [customPrompt, setCustomPrompt] = useState("Identify relevant financial patterns in this document.");
-  
-  // Fetch patterns from the Google Sheets via the opensheet API
+
+  // Fetch patterns from the Google Sheets using the opensheet API
   useEffect(() => {
     const fetchPatterns = async () => {
       try {
         const response = await fetch('https://opensheet.elk.sh/1wpnDIkr7A_RpM8sulHh2OcifbJD7zXol19dlmeJDmug/1');
         if (!response.ok) throw new Error("Error loading patterns from the spreadsheet.");
         const data = await response.json();
-        // Extract only the "Name" and "Codes" columns
         const extractedPatterns = data
           .filter(item => item.Name && item.Codes)
           .map(item => ({
@@ -40,7 +37,7 @@ const DocumentAnalysis = () => {
     };
     fetchPatterns();
   }, []);
-  
+
   // Handle PDF upload and extract text using PDF.js
   const handlePdfUpload = (e) => {
     setError("");
@@ -53,15 +50,28 @@ const DocumentAnalysis = () => {
           const pdf = await pdfjsLib.getDocument(typedArray).promise;
           let extractedText = "";
           const totalPages = pdf.numPages;
+          let basicResults = []; // to store basic pattern matching result
+
           for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
             const content = await page.getTextContent();
             const pageText = content.items.map(item => item.str).join(" ");
             extractedText += "\f" + pageText;
             setUploadProgress(Math.round((pageNum / totalPages) * 100));
+
+            // Basic analysis on each page using the loaded patterns
+            let foundPatterns = [];
+            patterns.forEach(pattern => {
+              const matches = pattern.codes.filter(code => pageText.includes(code));
+              if (matches.length > 0) {
+                foundPatterns.push({ name: pattern.name, matchedCodes: matches });
+              }
+            });
+            basicResults.push({ page: pageNum, patterns: foundPatterns });
           }
-          console.log("Extracted PDF text (first 200 chars):", extractedText.substring(0, 200) + "...");
+
           setPdfText(extractedText);
+          setBasicAnalysisResult(JSON.stringify({ pages: basicResults }, null, 2));
         } catch (err) {
           console.error("Error extracting PDF text:", err);
           setError("Failed to extract text from the PDF.");
@@ -76,7 +86,7 @@ const DocumentAnalysis = () => {
     }
   };
 
-  // Call the AI API to analyze the PDF text using your custom prompt
+  // Call the AI API to analyze the PDF text using the custom prompt
   const handleAnalyze = async () => {
     if (!pdfText) {
       setError("No extracted text from PDF. Please upload a file first.");
@@ -84,22 +94,26 @@ const DocumentAnalysis = () => {
     }
     setLoading(true);
     setFormattedResponse("");
-    
+    setError("");
+
     try {
       console.log("Sending request to AI API...");
-      // Note: Use your absolute URL here
       const response = await fetch('https://carolsproject-wkzz9vvb.b4a.run/api/analyze-pdf', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: pdfText, customPrompt })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Unknown error from API");
+      if (!response.ok || !data.aiAnalysis) {
+        throw new Error(data.error || "No valid AI response");
+      }
       console.log("AI API response:", data);
       setFormattedResponse(data.aiAnalysis);
     } catch (err) {
       console.error("Failed to get AI response:", err);
-      setError("Failed to get response from AI.");
+      setError("Failed to get response from AI. Displaying basic analysis result.");
+      // Fallback: use basic analysis result from the PDF worker pattern matching
+      setFormattedResponse(basicAnalysisResult);
     }
     setLoading(false);
   };
@@ -166,7 +180,7 @@ const DocumentAnalysis = () => {
       
       {formattedResponse && (
         <Alert variant="success" className="mt-3">
-          <h5>AI Analysis Report</h5>
+          <h5>Analysis Report</h5>
           <pre style={{ whiteSpace: "pre-wrap" }}>{formattedResponse}</pre>
         </Alert>
       )}
