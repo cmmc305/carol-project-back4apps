@@ -3,25 +3,29 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Alert, ProgressBar, Table } from 'react-bootstrap';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+// Set up the PDF worker (place pdf.worker.min.js in your public folder)
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 const DocumentAnalysis = () => {
+  // State for PDF extraction and analysis
   const [pdfText, setPdfText] = useState("");
   const [patterns, setPatterns] = useState([]);
-  const [analysisResult, setAnalysisResult] = useState("");
+  const [formattedResponse, setFormattedResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
+  
+  // Custom prompt for AI analysis (disabled for now)
   const [customPrompt, setCustomPrompt] = useState("Identify relevant financial patterns in this document.");
-  const [formattedResponse, setFormattedResponse] = useState("");
-
-  // Fetch patterns from the Google Sheets using the opensheet API
+  
+  // Fetch patterns from the Google Sheets via the opensheet API
   useEffect(() => {
     const fetchPatterns = async () => {
       try {
         const response = await fetch('https://opensheet.elk.sh/1wpnDIkr7A_RpM8sulHh2OcifbJD7zXol19dlmeJDmug/1');
         if (!response.ok) throw new Error("Error loading patterns from the spreadsheet.");
         const data = await response.json();
+        // Extract only the "Name" and "Codes" columns
         const extractedPatterns = data
           .filter(item => item.Name && item.Codes)
           .map(item => ({
@@ -34,11 +38,10 @@ const DocumentAnalysis = () => {
         setError("Failed to load patterns from the spreadsheet.");
       }
     };
-
     fetchPatterns();
   }, []);
-
-  // Process the PDF upload and extract text using PDF.js
+  
+  // Handle PDF upload and extract text using PDF.js
   const handlePdfUpload = (e) => {
     setError("");
     const file = e.target.files[0];
@@ -57,7 +60,7 @@ const DocumentAnalysis = () => {
             extractedText += "\f" + pageText;
             setUploadProgress(Math.round((pageNum / totalPages) * 100));
           }
-          console.log("Extracted PDF text:", extractedText.substring(0, 200) + "...");
+          console.log("Extracted PDF text (first 200 chars):", extractedText.substring(0, 200) + "...");
           setPdfText(extractedText);
         } catch (err) {
           console.error("Error extracting PDF text:", err);
@@ -80,12 +83,11 @@ const DocumentAnalysis = () => {
       return;
     }
     setLoading(true);
-    setAnalysisResult("");
     setFormattedResponse("");
-
+    
     try {
       console.log("Sending request to AI API...");
-      // Note: Using the absolute URL for your API endpoint
+      // Note: Use your absolute URL here
       const response = await fetch('https://carolsproject-wkzz9vvb.b4a.run/api/analyze-pdf', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -105,7 +107,7 @@ const DocumentAnalysis = () => {
   return (
     <Container>
       <h2 className="mb-4">Document Analysis</h2>
-
+      
       {/* Custom Prompt (disabled for now) */}
       <Form.Group controlId="customPrompt" className="mb-3">
         <Form.Label><strong>Custom Prompt</strong></Form.Label>
@@ -115,10 +117,10 @@ const DocumentAnalysis = () => {
           value={customPrompt}
           onChange={(e) => setCustomPrompt(e.target.value)}
           placeholder="Enter analysis instructions..."
-          disabled // Disable editing for now if desired
+          disabled
         />
       </Form.Group>
-
+      
       {/* Display Patterns in a compact table */}
       <h5 className="mt-4">Patterns to Search</h5>
       {patterns.length > 0 ? (
@@ -143,21 +145,25 @@ const DocumentAnalysis = () => {
       ) : (
         <Alert variant="warning">No patterns loaded. Check the spreadsheet.</Alert>
       )}
-
+      
       {/* PDF Upload Field */}
       <Form.Group controlId="pdfFile" className="mb-3">
         <Form.Label><strong>Upload PDF</strong></Form.Label>
         <Form.Control type="file" accept="application/pdf" onChange={handlePdfUpload} />
       </Form.Group>
-
+      
       <Button variant="primary" onClick={handleAnalyze} disabled={loading || !pdfText}>
         {loading ? 'Analyzing...' : 'Analyze PDF'}
       </Button>
-
-      {loading && <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-3" />}
-
+      
+      {loading && (
+        <div className="mb-3">
+          <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-3" />
+        </div>
+      )}
+      
       {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-
+      
       {formattedResponse && (
         <Alert variant="success" className="mt-3">
           <h5>AI Analysis Report</h5>
