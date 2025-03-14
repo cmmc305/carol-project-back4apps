@@ -1,0 +1,150 @@
+/* Container for the entire registration and user management page */
+.registerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+/* Box for the registration form */
+.registerBox {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+/* Title styling */
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Form group spacing */
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+/* Label styling */
+.label {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 0.25rem;
+}
+
+/* Input fields styling */
+.input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.input:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* Submit button styling */
+.submitButton {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submitButton:hover,
+.submitButton:focus {
+  background-color: #0056b3;
+  outline: none;
+}
+
+/* Alert spacing */
+.alert {
+  margin-bottom: 1rem;
+}
+
+/* User list container */
+.userListBox {
+  margin-top: 2rem;
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Table styling for user listing */
+.userListTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.userListTable th, 
+.userListTable td {
+  border: 1px solid #dee2e6;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.userListTable th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+/* Action buttons (edit, delete) */
+.actionButton {
+  margin-right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.editButton {
+  background-color: #ffc107;
+  color: #fff;
+}
+
+.editButton:hover {
+  background-color: #e0a800;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.deleteButton:hover {
+  background-color: #c82333;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  .registerContainer {
+    padding: 1rem;
+  }
+  .registerBox {
+    padding: 1.5rem;
+    max-width: 100%;
+  }
+}

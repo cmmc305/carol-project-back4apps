@@ -1,7 +1,7 @@
 import Parse from 'parse';
 
-const APP_ID = '2NDD1ZpiL8vDCXeIOGfVlDCsYSDH1Pnl23Qazy17';
-const JAVASCRIPT_KEY = 'zdysUdPok7hl1X3hH6xnfbr48X35J0Fl734HjroY';
+const APP_ID = '9kdguQXyPc3Nhl46o5VdMhgXOgKIb4wgaGb1zUba';
+const JAVASCRIPT_KEY = 'JaDWJwxMUgde1QBR0fZsJUfa5V6aX9R7Ijpl1dUv';
 const SERVER_URL = 'https://parseapi.back4app.com/';
 
 Parse.initialize(APP_ID, JAVASCRIPT_KEY);

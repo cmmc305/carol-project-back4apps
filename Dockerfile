@@ -10,7 +10,17 @@ COPY package*.json ./
 # Instalar dependências
 RUN npm install
 
-RUN npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
+RUN npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core
+
+RUN npm install styled-components
+
+RUN npm install react-currency-input-field
+
+RUN npm install express body-parser openai dotenv
+
+RUN npm install pdfjs-dist@2.5.207
+
+RUN npm install papaparse
 
 # Copiar o restante do código do aplicativo
 COPY . .
