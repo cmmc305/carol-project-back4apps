@@ -98,7 +98,7 @@ const DocumentAnalysis = () => {
 
     try {
       console.log("Sending request to AI API...");
-      const response = await fetch('https://carolsproject-wkzz9vvb.b4a.run/api/analyze-pdf', { 
+      const response = await fetch('https://www.caseappliens.com/api/analyze-pdf', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: pdfText, customPrompt })
