@@ -8,13 +8,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 const DocumentAnalysis = () => {
   const [pdfText, setPdfText] = useState("");
   const [patterns, setPatterns] = useState([]);
-  const [basicAnalysisResult, setBasicAnalysisResult] = useState(""); // Result from PDF worker pattern matching
-  const [formattedResponse, setFormattedResponse] = useState(""); // AI response
+  const [analysisResults, setAnalysisResults] = useState([]); // Array of analysis per page
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
   // The custom prompt field (disabled for now)
-  const [customPrompt, setCustomPrompt] = useState("Identify relevant financial patterns in this document.");
+  const [customPrompt] = useState("Identify relevant financial patterns in this document.");
 
   // Fetch patterns from the Google Sheets using the opensheet API
   useEffect(() => {
@@ -49,8 +48,8 @@ const DocumentAnalysis = () => {
           const typedArray = new Uint8Array(this.result);
           const pdf = await pdfjsLib.getDocument(typedArray).promise;
           let extractedText = "";
+          let results = [];
           const totalPages = pdf.numPages;
-          let basicResults = []; // to store basic pattern matching result
 
           for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
@@ -59,7 +58,7 @@ const DocumentAnalysis = () => {
             extractedText += "\f" + pageText;
             setUploadProgress(Math.round((pageNum / totalPages) * 100));
 
-            // Basic analysis on each page using the loaded patterns
+            // Perform basic pattern matching on the page text
             let foundPatterns = [];
             patterns.forEach(pattern => {
               const matches = pattern.codes.filter(code => pageText.includes(code));
@@ -67,11 +66,10 @@ const DocumentAnalysis = () => {
                 foundPatterns.push({ name: pattern.name, matchedCodes: matches });
               }
             });
-            basicResults.push({ page: pageNum, patterns: foundPatterns });
+            results.push({ page: pageNum, patterns: foundPatterns });
           }
-
           setPdfText(extractedText);
-          setBasicAnalysisResult(JSON.stringify({ pages: basicResults }, null, 2));
+          setAnalysisResults(results);
         } catch (err) {
           console.error("Error extracting PDF text:", err);
           setError("Failed to extract text from the PDF.");
@@ -86,42 +84,23 @@ const DocumentAnalysis = () => {
     }
   };
 
-  // Call the AI API to analyze the PDF text using the custom prompt
-  const handleAnalyze = async () => {
+  // Handle analyze button (using only basic analysis)
+  const handleAnalyze = () => {
     if (!pdfText) {
       setError("No extracted text from PDF. Please upload a file first.");
       return;
     }
     setLoading(true);
-    setFormattedResponse("");
     setError("");
 
-    try {
-      console.log("Sending request to AI API...");
-      const response = await fetch('https://www.caseappliens.com/api/analyze-pdf', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: pdfText, customPrompt })
-      });
-      const data = await response.json();
-      if (!response.ok || !data.aiAnalysis) {
-        throw new Error(data.error || "No valid AI response");
-      }
-      console.log("AI API response:", data);
-      setFormattedResponse(data.aiAnalysis);
-    } catch (err) {
-      console.error("Failed to get AI response:", err);
-      setError("Failed to get response from AI. Displaying basic analysis result.");
-      // Fallback: use basic analysis result from the PDF worker pattern matching
-      setFormattedResponse(basicAnalysisResult);
-    }
+    // Since we're not using an AI API for now, we just use the analysisResults from the worker
     setLoading(false);
   };
 
   return (
     <Container>
       <h2 className="mb-4">Document Analysis</h2>
-      
+
       {/* Custom Prompt (disabled for now) */}
       <Form.Group controlId="customPrompt" className="mb-3">
         <Form.Label><strong>Custom Prompt</strong></Form.Label>
@@ -129,12 +108,11 @@ const DocumentAnalysis = () => {
           as="textarea"
           rows={3}
           value={customPrompt}
-          onChange={(e) => setCustomPrompt(e.target.value)}
+          readOnly
           placeholder="Enter analysis instructions..."
-          disabled
         />
       </Form.Group>
-      
+
       {/* Display Patterns in a compact table */}
       <h5 className="mt-4">Patterns to Search</h5>
       {patterns.length > 0 ? (
@@ -159,30 +137,55 @@ const DocumentAnalysis = () => {
       ) : (
         <Alert variant="warning">No patterns loaded. Check the spreadsheet.</Alert>
       )}
-      
+
       {/* PDF Upload Field */}
       <Form.Group controlId="pdfFile" className="mb-3">
         <Form.Label><strong>Upload PDF</strong></Form.Label>
         <Form.Control type="file" accept="application/pdf" onChange={handlePdfUpload} />
       </Form.Group>
-      
+
       <Button variant="primary" onClick={handleAnalyze} disabled={loading || !pdfText}>
         {loading ? 'Analyzing...' : 'Analyze PDF'}
       </Button>
-      
-      {loading && (
-        <div className="mb-3">
-          <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-3" />
-        </div>
-      )}
-      
+
+      {loading && <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} className="mt-3" />}
+
       {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-      
-      {formattedResponse && (
-        <Alert variant="success" className="mt-3">
-          <h5>Analysis Report</h5>
-          <pre style={{ whiteSpace: "pre-wrap" }}>{formattedResponse}</pre>
-        </Alert>
+
+      {/* Display Analysis Results in a table */}
+      {analysisResults.length > 0 && (
+        <>
+          <h5 className="mt-4">Analysis Results</h5>
+          <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+            <Table striped bordered hover size="sm">
+              <thead>
+                <tr>
+                  <th>Page</th>
+                  <th>Pattern Name</th>
+                  <th>Matched Codes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analysisResults.map(result => (
+                  result.patterns.length > 0 ? (
+                    result.patterns.map((pattern, idx) => (
+                      <tr key={`${result.page}-${idx}`}>
+                        <td>{result.page}</td>
+                        <td>{pattern.name}</td>
+                        <td>{pattern.matchedCodes.join(", ")}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr key={`no-match-${result.page}`}>
+                      <td>{result.page}</td>
+                      <td colSpan="2">No patterns found</td>
+                    </tr>
+                  )
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </>
       )}
     </Container>
   );
