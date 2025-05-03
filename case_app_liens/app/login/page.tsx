@@ -22,7 +22,7 @@ export default function LoginPage() {
       // Login bem-sucedido, redirecionar para a página inicial
       router.push('/');
     } catch {
-      setError('Nome de usuário ou senha incorretos.');
+      setError('Incorrect username or password.');
     }
   };
 
@@ -38,7 +38,7 @@ export default function LoginPage() {
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
-              Nome de usuário
+              Username
             </label>
             <input
               type="text"
@@ -50,7 +50,7 @@ export default function LoginPage() {
           </div>
           <div className="mb-6 relative"> {/* Adicione relative para posicionar o botão */}
             <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
-              Senha
+              Password
             </label>
             <input
               type={showPassword ? 'text' : 'password'} // Alterne o tipo do input
@@ -73,7 +73,7 @@ export default function LoginPage() {
           </div>
           <div className="flex items-center justify-between">
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:pointer"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:cursor-pointer"
               type="submit"
             >
               Entrar
