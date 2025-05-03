@@ -1,15 +1,17 @@
 // src/components/Sidebar.tsx
 'use client';
 
-import React from 'react';
+import React, {useState} from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  HomeIcon,
-  ClipboardIcon,
-  UsersIcon,
-  CogIcon,
+  DocumentIcon,    // For Document Analysis
+  PlusCircleIcon,  // For Create Request
+  ListBulletIcon,  // For List Request
+  UserPlusIcon,     // For Register User
   ArrowLeftOnRectangleIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline'; // Certifique-se de instalar @heroicons/react
 
 interface NavItem {
@@ -19,25 +21,39 @@ interface NavItem {
 }
 
 const navigationItems: NavItem[] = [
-  { href: '/', label: 'Home', icon: <HomeIcon className="h-5 w-5" /> },
-  { href: '/tarefas', label: 'Tarefas', icon: <ClipboardIcon className="h-5 w-5" /> },
-  { href: '/usuarios', label: 'Usuários', icon: <UsersIcon className="h-5 w-5" /> },
-  { href: '/configuracoes', label: 'Configurações', icon: <CogIcon className="h-5 w-5" /> },
+  { href: '/document-analysis', label: 'Document Analysis', icon: <DocumentIcon className="h-5 w-5" /> },
+  { href: '/create-request', label: 'Create Request', icon: <PlusCircleIcon className="h-5 w-5" /> },
+  { href: '/list-requests', label: 'List Requests', icon: <ListBulletIcon className="h-5 w-5" /> },
+  { href: '/register-user', label: 'Register User', icon: <UserPlusIcon className="h-5 w-5" /> },
 ];
 
 const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleLogout = async () => {
     console.log('Logout realizado');
     router.push('/login');
   };
 
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  const sidebarWidth = isCollapsed ? 'w-16' : 'w-64';
+  const textVisibility = isCollapsed ? 'opacity-0 absolute left-full transition-opacity duration-300' : 'opacity-100 transition-opacity duration-300';
+  const iconMargin = isCollapsed ? 'mr-0' : 'mr-3';
+
   return (
-    <aside className="fixed top-0 left-0 h-full w-64 bg-gray-800 text-white z-50">
-      <div className="p-4">
-        <h1 className="text-2xl font-semibold">Case App Liens</h1>
+    <aside
+      className={`fixed top-0 left-0 h-full bg-gray-800 text-white z-50 transition-all duration-300 ${sidebarWidth}`}
+    >
+      <div className="p-4 flex items-center justify-between">
+        <h1 className={`text-2xl font-semibold ${textVisibility} ${!isCollapsed ? 'relative' : ''}`}>Case App Liens</h1>
+        <button onClick={toggleCollapse} className="text-gray-400 hover:text-white focus:outline-none focus:shadow-outline">
+          {isCollapsed ? <Bars3Icon className="h-6 w-6" /> : <XMarkIcon className="h-6 w-6" />}
+        </button>
       </div>
       <nav className="mt-6">
         {navigationItems.map((item) => (
@@ -49,7 +65,7 @@ const Sidebar = () => {
             }`}
           >
             {item.icon}
-            <span className="ml-3">{item.label}</span>
+            <span className={`ml-3 ${textVisibility}`}>{item.label}</span>
           </Link>
         ))}
       </nav>
@@ -58,8 +74,8 @@ const Sidebar = () => {
           onClick={handleLogout}
           className="flex items-center w-full p-4 hover:bg-gray-700 transition-colors duration-200"
         >
-          <ArrowLeftOnRectangleIcon className="h-5 w-5" />
-          <span className="ml-3">Logout</span>
+          <ArrowLeftOnRectangleIcon className={`h-5 w-5 ${iconMargin}`} />
+          <span className={`${textVisibility}`}>Logout</span>
         </button>
       </div>
     </aside>

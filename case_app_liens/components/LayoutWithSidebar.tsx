@@ -16,7 +16,7 @@ const LayoutWithSidebar: React.FC<LayoutWithSidebarProps> = ({ children }) => {
   return (
     <div className="flex h-screen bg-gray-100">
       {!isLoginPage && <Sidebar />}
-      <div className={`flex-1 overflow-y-auto bg-gray-200 ${isLoginPage ? '' : 'pl-64'}`}>
+      <div className={`flex-1 overflow-y-auto bg-gray-200  ${isLoginPage ? '' : 'pl-64'}`}>
         <main>{children}</main>
       </div>
     </div>
