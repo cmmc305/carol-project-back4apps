@@ -237,14 +237,14 @@ const RegisterUserPage = () => {
                     {user.createdAt.toLocaleDateString()} {user.createdAt.toLocaleTimeString()}
                   </TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button size="sm" onClick={() => openPasswordChangeDialog(user)}>
+                    <Button className='cursor-pointer' size="sm" onClick={() => openPasswordChangeDialog(user)}>
                       Change Password
                     </Button>
                     <AlertDialog open={userToDelete?.objectId === user.objectId} onOpenChange={(open) => {
                       if (!open) setUserToDelete(null);
                     }}>
                       <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="destructive" onClick={() => handleOpenDeleteConfirmation(user)}>
+                        <Button className='cursor-pointer' size="sm" variant="destructive" onClick={() => handleOpenDeleteConfirmation(user)}>
                           Delete
                         </Button>
                       </AlertDialogTrigger>
@@ -256,8 +256,8 @@ const RegisterUserPage = () => {
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel onClick={() => setUserToDelete(null)}>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleDeleteUser}>Delete</AlertDialogAction>
+                          <AlertDialogCancel className='cursor-pointer' onClick={() => setUserToDelete(null)}>Cancel</AlertDialogCancel>
+                          <AlertDialogAction className='cursor-pointer' onClick={handleDeleteUser}>Delete</AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
@@ -292,10 +292,10 @@ const RegisterUserPage = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="secondary" onClick={closePasswordChangeDialog}>
+            <Button className='cursor-pointer' type="button" variant="secondary" onClick={closePasswordChangeDialog}>
               Cancel
             </Button>
-            <Button onClick={handleUpdatePassword} disabled={!newPassword}>
+            <Button className='cursor-pointer' onClick={handleUpdatePassword} disabled={!newPassword}>
               Save Password
             </Button>
           </DialogFooter>
