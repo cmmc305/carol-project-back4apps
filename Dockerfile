@@ -1,5 +1,9 @@
 # Use a imagem oficial do Node.js como base
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
+
+# Instale ferramentas necessárias para compilar pacotes nativos
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+
 
 # Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app
@@ -16,6 +20,9 @@ RUN npm install -g npm@11.3.0
 # Instale as dependências
 RUN npm install --legacy-peer-deps
 
+# Remova dependências de desenvolvimento
+RUN npm prune --production
+
 # Copie o restante do código da aplicação
 COPY . .
 
@@ -26,7 +33,7 @@ ENV NODE_OPTIONS=--max_old_space_size=512
 RUN npm run build
 
 # Use uma imagem leve para servir a aplicação
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 
 # Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app
@@ -35,7 +42,7 @@ WORKDIR /app
 COPY --from=builder /app/package.json /app/package-lock.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./next.config.js
+COPY --from=builder /app/next.config.ts ./next.config.ts
 
 # Configure o limite de memória do Node.js
 ENV NODE_OPTIONS=--max_old_space_size=512
