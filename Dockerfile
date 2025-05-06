@@ -10,11 +10,11 @@ COPY package.json package-lock.json ./
 # Configure o limite de memória do Node.js
 ENV NODE_OPTIONS=--max_old_space_size=512
 
-# Instale as dependências
-RUN npm install --legacy-peer-deps
-
 # Atualize o npm para a versão 11.3.0
 RUN npm install -g npm@11.3.0
+
+# Instale as dependências
+RUN npm install --legacy-peer-deps
 
 # Copie o restante do código da aplicação
 COPY . .
