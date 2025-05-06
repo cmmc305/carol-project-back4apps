@@ -4,7 +4,6 @@ FROM node:20-slim AS builder
 # Instale ferramentas necessárias para compilar pacotes nativos
 RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
-
 # Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
@@ -14,7 +13,7 @@ COPY package.json package-lock.json ./
 # Configure o limite de memória do Node.js
 ENV NODE_OPTIONS=--max_old_space_size=512
 
-# Atualize o npm para a versão 11.3.0
+# Atualize o npm para a versão mais recente
 RUN npm install -g npm@11.3.0
 
 # Instale as dependências
@@ -25,9 +24,6 @@ RUN npm prune --production
 
 # Copie o restante do código da aplicação
 COPY . .
-
-# Configure o limite de memória do Node.js
-ENV NODE_OPTIONS=--max_old_space_size=512
 
 # Construa a aplicação Next.js
 RUN npm run build
@@ -46,9 +42,6 @@ COPY --from=builder /app/next.config.ts ./next.config.ts
 
 # Configure o limite de memória do Node.js
 ENV NODE_OPTIONS=--max_old_space_size=512
-
-# Instale apenas as dependências de produção
-RUN npm install --production --legacy-peer-deps
 
 # Configure a variável de ambiente para produção
 ENV NODE_ENV=production
