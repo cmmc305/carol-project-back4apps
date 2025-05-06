@@ -4,16 +4,7 @@
 import React, {useState} from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import {
-  DocumentIcon,    // For Document Analysis
-  PlusCircleIcon,  // For Create Request
-  ListBulletIcon,  // For List Request
-  UserPlusIcon,     // For Register User
-  ArrowLeftOnRectangleIcon,
-  Bars3Icon,
-  XMarkIcon,
-  BanknotesIcon
-} from '@heroicons/react/24/outline'; // Certifique-se de instalar @heroicons/react
+import { ArrowLeftIcon, BanknoteIcon, FileIcon, ListTodoIcon, MenuIcon, PlusSquareIcon, UserPlus, XIcon } from 'lucide-react';
 
 interface NavItem {
   href: string;
@@ -22,11 +13,11 @@ interface NavItem {
 }
 
 const navigationItems: NavItem[] = [
-  { href: '/document-analysis', label: 'Document Analysis', icon: <DocumentIcon className="h-5 w-5" /> },
-  { href: '/create-request', label: 'Create Request', icon: <PlusCircleIcon className="h-5 w-5" /> },
-  { href: '/list-requests', label: 'List Requests', icon: <ListBulletIcon className="h-5 w-5" /> },
-  { href: '/banks', label: 'Banks', icon: <BanknotesIcon className="h-5 w-5" /> },
-  { href: '/register-user', label: 'Register User', icon: <UserPlusIcon className="h-5 w-5" /> },
+  { href: '/document-analysis', label: 'Document Analysis', icon: <FileIcon className="h-5 w-5" /> },
+  { href: '/create-request', label: 'Create Request', icon: <PlusSquareIcon className="h-5 w-5" /> },
+  { href: '/list-requests', label: 'List Requests', icon: <ListTodoIcon className="h-5 w-5" /> },
+  { href: '/banks', label: 'Banks', icon: <BanknoteIcon className="h-5 w-5" /> },
+  { href: '/register-user', label: 'Register User', icon: <UserPlus className="h-5 w-5" /> },
 ];
 
 const Sidebar = () => {
@@ -54,7 +45,7 @@ const Sidebar = () => {
       <div className="p-4 flex items-center justify-between">
         <h1 className={`text-2xl font-semibold ${textVisibility} ${!isCollapsed ? 'relative' : ''}`}>Case App Liens</h1>
         <button onClick={toggleCollapse} className="text-gray-400 hover:text-white focus:outline-none focus:shadow-outline cursor-pointer">
-          {isCollapsed ? <Bars3Icon className="h-6 w-6" /> : <XMarkIcon className="h-6 w-6" />}
+          {isCollapsed ? <MenuIcon className="h-6 w-6" /> : <XIcon className="h-6 w-6" />}
         </button>
       </div>
       <nav className="mt-6">
@@ -76,7 +67,7 @@ const Sidebar = () => {
           onClick={handleLogout}
           className="flex items-center w-full p-4 hover:bg-gray-700 transition-colors duration-200"
         >
-          <ArrowLeftOnRectangleIcon className={`h-5 w-5 ${iconMargin}`} />
+          <ArrowLeftIcon className={`h-5 w-5 ${iconMargin}`} />
           <span className={`${textVisibility} cursor-pointer`}>Logout</span>
         </button>
       </div>

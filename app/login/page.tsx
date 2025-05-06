@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Parse from '../../utils/back4app';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { LucideEye, LucideEyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -65,9 +65,9 @@ export default function LoginPage() {
               onClick={togglePasswordVisibility}
             >
               {showPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
+                <LucideEyeOff className="h-5 w-5" />
               ) : (
-                <EyeIcon className="h-5 w-5" />
+                <LucideEye className="h-5 w-5" />
               )}
             </button>
           </div>
