@@ -7,11 +7,17 @@ WORKDIR /app
 # Copie os arquivos necessários para o contêiner
 COPY package.json package-lock.json ./
 
+# Configure o limite de memória do Node.js
+ENV NODE_OPTIONS=--max_old_space_size=512
+
 # Instale as dependências
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copie o restante do código da aplicação
 COPY . .
+
+# Configure o limite de memória do Node.js
+ENV NODE_OPTIONS=--max_old_space_size=512
 
 # Construa a aplicação Next.js
 RUN npm run build
@@ -28,8 +34,11 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.js ./next.config.js
 
+# Configure o limite de memória do Node.js
+ENV NODE_OPTIONS=--max_old_space_size=512
+
 # Instale apenas as dependências de produção
-RUN npm install --production
+RUN npm install --production --legacy-peer-deps
 
 # Configure a variável de ambiente para produção
 ENV NODE_ENV=production
