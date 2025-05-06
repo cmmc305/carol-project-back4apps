@@ -57,4 +57,4 @@ ENV NODE_ENV=production
 EXPOSE 80
 
 # Comando para iniciar a aplicação
-CMD ["npm", "run" ,"start"]
+CMD ["npm", "run", "start", "--", "-p", "80"]
