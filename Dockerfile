@@ -31,8 +31,11 @@ COPY --from=builder /app/next.config.js ./next.config.js
 # Instale apenas as dependências de produção
 RUN npm install --production
 
+# Configure a variável de ambiente para produção
+ENV NODE_ENV=production
+
 # Exponha a porta que o Next.js usará
 EXPOSE 80
 
 # Comando para iniciar a aplicação
-CMD ["npm", "start"]
+CMD ["npm", "run" ,"start"]
