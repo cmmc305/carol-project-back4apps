@@ -1,5 +1,5 @@
 # Use a imagem oficial do Node.js como base
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app
@@ -26,7 +26,7 @@ ENV NODE_OPTIONS=--max_old_space_size=512
 RUN npm run build
 
 # Use uma imagem leve para servir a aplicação
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 # Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app
