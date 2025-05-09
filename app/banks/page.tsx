@@ -18,7 +18,7 @@ export default function BanksList() {
       try {
         const results = await query.find();
         const banksData = results.map((bank) => ({
-          id: bank.get('objectId'),
+          id: bank._getId(),
           name: bank.get('bankName'),
           phone: bank.get('phoneNumber'),
           address: bank.get('Address'),
@@ -27,6 +27,7 @@ export default function BanksList() {
           email: bank.get('email'),
         }));
         setBanks(banksData);
+        console.log('Fetched banks:', banksData);
       } catch (error) {
         console.error('Error fetching banks:', error);
       }
@@ -43,6 +44,7 @@ export default function BanksList() {
       newBankObject.set('phoneNumber', newBank.phone);
       newBankObject.set('Address', newBank.address);
       newBankObject.set('fax', newBank.fax);
+      newBankObject.set('email', newBank.email);
       newBankObject.set('codes', newBank.codes.split(',').map((code) => code.trim()));
 
       await newBankObject.save();
@@ -217,7 +219,7 @@ export default function BanksList() {
               <input
                 type="text"
                 placeholder="Name"
-                value={editingBank.name}
+                value={editingBank?.name || ''} // Ensure a fallback value
                 onChange={(e) =>
                   setEditingBank({ ...editingBank, name: e.target.value })
                 }
@@ -226,7 +228,7 @@ export default function BanksList() {
               <input
                 type="text"
                 placeholder="Phone Number"
-                value={editingBank.phone}
+                value={editingBank?.phone || ''} // Ensure a fallback value
                 onChange={(e) =>
                   setEditingBank({ ...editingBank, phone: e.target.value })
                 }
@@ -235,7 +237,7 @@ export default function BanksList() {
               <input
                 type="text"
                 placeholder="Address"
-                value={editingBank.address}
+                value={editingBank?.address || ''} // Ensure a fallback value
                 onChange={(e) =>
                   setEditingBank({ ...editingBank, address: e.target.value })
                 }
@@ -244,7 +246,7 @@ export default function BanksList() {
               <input
                 type="text"
                 placeholder="FAX"
-                value={editingBank.fax}
+                value={editingBank?.fax || ''} // Ensure a fallback value
                 onChange={(e) =>
                   setEditingBank({ ...editingBank, fax: e.target.value })
                 }
@@ -253,7 +255,7 @@ export default function BanksList() {
               <input
                 type="text"
                 placeholder="Email"
-                value={editingBank.email}
+                value={editingBank?.email || ''} // Ensure a fallback value
                 onChange={(e) =>
                   setEditingBank({ ...editingBank, email: e.target.value })
                 }
@@ -262,7 +264,7 @@ export default function BanksList() {
               <input
                 type="text"
                 placeholder="Codes (comma-separated)"
-                value={editingBank.codes.join(', ')}
+                value={editingBank?.codes.join(', ') || ''} // Ensure a fallback value
                 onChange={(e) =>
                   setEditingBank({
                     ...editingBank,
