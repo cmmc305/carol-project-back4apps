@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import Parse from '@/utils/back4app';
 
 export default function BanksList() {
-  const [banks, setBanks] = useState<{ id: string; name: string; phone: string; address: string; fax: string; codes: string[] }[]>([]);
+  const [banks, setBanks] = useState<{ id: string; name: string; phone: string; address: string; fax: string; codes: string[]; email: string }[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [newBank, setNewBank] = useState({ name: '', phone: '', address: '', fax: '', codes: '' });
-  const [editingBank, setEditingBank] = useState<{ id: string; name: string; phone: string; address: string; fax: string; codes: string[] } | null>(null);
+  const [newBank, setNewBank] = useState({ name: '', phone: '', address: '', fax: '', codes: '', email: '' });
+  const [editingBank, setEditingBank] = useState<{ id: string; name: string; phone: string; address: string; fax: string; codes: string[]; email: string } | null>(null);
 
   useEffect(() => {
     const fetchBanks = async () => {
@@ -24,6 +24,7 @@ export default function BanksList() {
           address: bank.get('Address'),
           fax: bank.get('fax'),
           codes: bank.get('codes') || [],
+          email: bank.get('email'),
         }));
         setBanks(banksData);
       } catch (error) {
@@ -55,11 +56,12 @@ export default function BanksList() {
           address: newBank.address,
           fax: newBank.fax,
           codes: newBank.codes.split(',').map((code) => code.trim()),
+          email: newBank.email,
         },
       ]);
 
       setIsModalOpen(false);
-      setNewBank({ name: '', phone: '', address: '', fax: '', codes: '' });
+      setNewBank({ name: '', phone: '', address: '', fax: '', codes: '', email: '' });
     } catch (error) {
       console.error('Error adding bank:', error);
     }
@@ -78,6 +80,7 @@ export default function BanksList() {
       bankToEdit.set('Address', editingBank.address);
       bankToEdit.set('fax', editingBank.fax);
       bankToEdit.set('codes', editingBank.codes);
+      bankToEdit.set('email', editingBank.email);
 
       await bankToEdit.save();
 
@@ -110,6 +113,7 @@ export default function BanksList() {
             <th className="px-4 py-2 border-b">Phone Number</th>
             <th className="px-4 py-2 border-b">Address</th>
             <th className="px-4 py-2 border-b">FAX</th>
+            <th className="px-4 py-2 border-b">Email</th>
             <th className="px-4 py-2 border-b">Codes</th>
             <th className="px-4 py-2 border-b">Actions</th>
           </tr>
@@ -121,6 +125,7 @@ export default function BanksList() {
               <td className="px-4 py-2 border-b">{bank.phone}</td>
               <td className="px-4 py-2 border-b">{bank.address}</td>
               <td className="px-4 py-2 border-b">{bank.fax}</td>
+              <td className="px-4 py-2 border-b">{bank.email}</td>
               <td className="px-4 py-2 border-b">{bank.codes.join(', ')}</td>
               <td className="px-4 py-2 border-b">
                 <button
@@ -169,6 +174,13 @@ export default function BanksList() {
                 placeholder="FAX"
                 value={newBank.fax}
                 onChange={(e) => setNewBank({ ...newBank, fax: e.target.value })}
+                className="border border-gray-300 p-2 rounded"
+              />
+              <input
+                type="text"
+                placeholder="Email"
+                value={newBank.email}
+                onChange={(e) => setNewBank({ ...newBank, email: e.target.value })}
                 className="border border-gray-300 p-2 rounded"
               />
               <input
@@ -235,6 +247,15 @@ export default function BanksList() {
                 value={editingBank.fax}
                 onChange={(e) =>
                   setEditingBank({ ...editingBank, fax: e.target.value })
+                }
+                className="border border-gray-300 p-2 rounded"
+              />
+              <input
+                type="text"
+                placeholder="Email"
+                value={editingBank.email}
+                onChange={(e) =>
+                  setEditingBank({ ...editingBank, email: e.target.value })
                 }
                 className="border border-gray-300 p-2 rounded"
               />
