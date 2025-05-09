@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/genai": "^0.13.0",
     "@radix-ui/react-alert-dialog": "^1.1.13",
     "@radix-ui/react-dialog": "^1.1.13",
     "@radix-ui/react-label": "^2.1.6",
@@ -21,6 +22,7 @@
     "next": "^15.3.1",
     "parse": "^6.1.1",
     "pdfjs-dist": "^5.2.133",
+    "pdfmake": "^0.2.19",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-toastify": "^11.0.5",

@@ -4,7 +4,7 @@
 import React, {useState} from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ArrowLeftIcon, BanknoteIcon, FileIcon, ListTodoIcon, MenuIcon, PlusSquareIcon, UserPlus, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, BanknoteIcon, FileIcon, ListTodoIcon, MenuIcon, PlusSquareIcon, Settings, UserPlus, XIcon } from 'lucide-react';
 
 interface NavItem {
   href: string;
@@ -18,6 +18,7 @@ const navigationItems: NavItem[] = [
   { href: '/list-requests', label: 'List Requests', icon: <ListTodoIcon className="h-5 w-5" /> },
   { href: '/banks', label: 'Banks', icon: <BanknoteIcon className="h-5 w-5" /> },
   { href: '/register-user', label: 'Register User', icon: <UserPlus className="h-5 w-5" /> },
+  { href: '/settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
 ];
 
 const Sidebar = () => {
